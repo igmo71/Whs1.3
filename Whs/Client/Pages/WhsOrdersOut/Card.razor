@@ -1,0 +1,50 @@
+﻿@using Whs.Shared.Models
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col">@Value.Номер</div>
+            <div class="col">@Value.Дата</div>
+        </div>
+        <div class="row">
+            <div class="col">@Value.Склад_Name</div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="card-text">
+            <div class="row">
+                <div class="col @ifExpired">@Value.СрокВыполнения</div>
+            </div>
+            <div class="row">
+                <div class="col">@Value.НаправлениеДоставки_Name</div>
+            </div>
+            <div class="row">
+                <div class="col @ifMoving">@Value.ОтправительПолучатель_Name</div>
+            </div>
+            <div class="row">
+                <div class="col">@Value.Комментарий</div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="float-left">Строк: @Value.КоличествоСтрок</div>
+        <div class="float-right">Вес: @Value.Вес</div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public WhsOrderOut Value { get; set; }
+    string ifExpired;
+    string ifAtwork;
+    string ifMoving;
+    protected override void OnParametersSet()
+    {
+        if ((Value.СрокВыполнения != DateTime.Parse("01.01.0001 0:00:00")) && Value.СрокВыполнения < DateTime.Now)
+            ifExpired = "bg-danger text-white";
+        if (Value.ЭтоПеремещение)
+            ifMoving = "bg-warning text-white";
+        //if (Value.ApplicationUser != null)
+        //    ifAtwork = "bg-primary text-white";
+
+    }
+}
