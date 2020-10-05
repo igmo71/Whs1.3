@@ -20,12 +20,12 @@ namespace Whs.Shared.Models
     public class ProductIn : Product
     {
         [JsonIgnore]
-        public WhsOrderIn StorageOrder { get; set; }
+        public WhsOrderIn WhsOrder { get; set; }
     }
 
     public class ProductOut : Product
     {
         [JsonIgnore]
-        public WhsOrderOut StorageOrder { get; set; }
+        public WhsOrderOut WhsOrder { get; set; }
     }
 }
