@@ -53,7 +53,7 @@ namespace Whs.Server.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(whsOrderOut).State = EntityState.Modified;
+            _context.Update(whsOrderOut);
 
             try
             {
