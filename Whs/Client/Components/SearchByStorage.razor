@@ -1,0 +1,28 @@
+﻿@using Whs.Shared.Models
+@if (Warehouses != null)
+{
+    <label>
+        <select class="form-control" @onchange="OnChange">
+            <option value="@Guid.Empty">- Все склады -</option>
+            @foreach (var item in Warehouses)
+            {
+                <option value="@item.Id">@item.Name</option>
+            }
+        </select>
+    </label>
+}
+
+@code {
+    [Parameter]
+    public Warehouse[] Warehouses { get; set; }
+    [Parameter]
+    public EventCallback<string> OnSelect { get; set; }
+
+    public string SelectedValue { get; set; }
+
+    private async Task OnChange(ChangeEventArgs args)
+    {
+        SelectedValue = args.Value.ToString();
+        await OnSelect.InvokeAsync(SelectedValue);
+    }
+}

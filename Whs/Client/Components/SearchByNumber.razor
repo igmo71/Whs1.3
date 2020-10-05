@@ -1,0 +1,36 @@
+﻿@using System.Threading
+<div class="input-group">
+    <input type="text" class="form-control" placeholder="Поиск по номеру"
+           @bind-value="SearchTerm" @bind-value:event="oninput" @onkeyup="SearchChanged" />
+    <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" @onclick="Clear">&times;</button>
+    </div>
+</div>
+
+@code{
+    [Parameter]
+    public EventCallback<string> OnSearchChanged { get; set; }
+    [Parameter]
+    public string Value { get; set; }
+
+    public string SearchTerm { get; set; }
+    private Timer _timer;
+
+    private void SearchChanged()
+    {
+        if (_timer != null)
+            _timer.Dispose();
+        _timer = new Timer(OnTimerElapsed, null, 1000, 0);
+    }
+
+    private void OnTimerElapsed(object state)
+    {
+        OnSearchChanged.InvokeAsync(SearchTerm);
+        _timer.Dispose();
+    }
+
+    public void Clear()
+    {
+        SearchTerm = string.Empty;
+    }
+}

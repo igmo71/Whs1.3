@@ -1,0 +1,46 @@
+﻿@using Whs.Shared.Models
+<label>
+    @if (Destinations != null)
+    {
+        <select class="form-control" @bind="DestinationId">
+            @foreach (var item in Destinations)
+            {
+                <option value="@item.Id">@item.Name</option>
+            }
+        </select>
+    }
+</label>
+
+@code {
+    [Parameter]
+    public Destination[] Destinations { get; set; }
+
+    private string destinationId { get; set; }
+    [Parameter]
+    public string DestinationId
+    {
+        get { return destinationId; }
+        set
+        {
+            if (destinationId != value)
+            {
+                destinationId = value;
+                if (OnSelect.HasDelegate && isInvokeDelegate)
+                {
+                    OnSelect.InvokeAsync(value);
+                }
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> OnSelect { get; set; }
+
+    private bool isInvokeDelegate = true;
+    public void Clear()
+    {
+        isInvokeDelegate = false;
+        DestinationId = Destinations[0].Id;
+        isInvokeDelegate = true;
+    }
+}
