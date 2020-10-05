@@ -32,9 +32,9 @@ namespace Whs.Server.Controllers
             return await _context.WhsOrdersOut.ToListAsync();
         }
 
-        // GET: api/WhsOrderOuts/ByQueType
+        // GET: api/WhsOrdersOuts/ByQueType
         [HttpGet("DtoByQueType")]
-        public ActionResult<WhsOrdersDtoOut> GetWhsOrdersOutDtoByQueType(WhsOrderParameters parameters)
+        public ActionResult<WhsOrdersDtoOut> GetWhsOrdersOutDtoByQueType([FromQuery] WhsOrderParameters parameters)
         {
             WhsOrdersDtoOut Dto = new WhsOrdersDtoOut();
 

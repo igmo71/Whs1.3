@@ -13,6 +13,8 @@ namespace Whs.Client.Pages.WhsOrdersOut
 {
     public partial class CardsByQueType
     {
+        [Parameter]
+        public string NewTab { get; set; }
         [Inject]
         public HttpClient HttpClient { get; set; }
         [Inject]
@@ -23,9 +25,9 @@ namespace Whs.Client.Pages.WhsOrdersOut
         private Notification Notification;
         private string Barcode;
 
-        private WhsOrdersDtoOut WhsOrdersDtoOut;
+        private WhsOrdersDtoOut WhsOrdersDto;
 
-        private WhsOrderParameters OrderParameters;
+        private WhsOrderParameters WhsOrderParameters;
         private SearchByNumber SearchByNumber;
         private SearchByDestination SearchByDestination;
         private Warehouse[] Warehouses;
@@ -34,12 +36,10 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         protected override async Task OnInitializedAsync()
         {
-            DateTime timeBegin = DateTime.Now;
-            OrderParameters = new WhsOrderParameters();
+            WhsOrderParameters = new WhsOrderParameters();
             await GetWarehousesAsync();
             await GetDestinationsAsync();
-            await GetWhsOrdersDtoOutAsync();
-            Console.WriteLine($"OnInitializedAsync: {DateTime.Now - timeBegin}");
+            await GetWhsOrdersDtoAsync();
         }
 
         private async Task GetWarehousesAsync()
@@ -52,24 +52,89 @@ namespace Whs.Client.Pages.WhsOrdersOut
             Destinations = await HttpClient.GetFromJsonAsync<Destination[]>("api/Destinations");
         }
 
-        private async Task GetWhsOrdersDtoOutAsync()
+        private async Task GetWhsOrdersDtoAsync()
         {
             string requestUri = $"api/WhsOrdersOut/DtoByQueType?" +
-                $"SearchBarcode={OrderParameters.SearchBarcode}&" +
-                $"SearchTerm={OrderParameters.SearchTerm}&" +
-                $"SearchWhsId={OrderParameters.SearchWhsId}&" +
-                $"SearchDestinationId={OrderParameters.SearchDestinationId}";
+                $"SearchBarcode={WhsOrderParameters.SearchBarcode}&" +
+                $"SearchTerm={WhsOrderParameters.SearchTerm}&" +
+                $"SearchWhsId={WhsOrderParameters.SearchWhsId}&" +
+                $"SearchDestinationId={WhsOrderParameters.SearchDestinationId}";
 
             try
             {
-                WhsOrdersDtoOut = await HttpClient.GetFromJsonAsync<WhsOrdersDtoOut>(requestUri);
+                WhsOrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoOut>(requestUri);
             }
             catch
             {
                 await Notification.ShowAsync($"Не найдено", 1);
             }
-            StateHasChanged();
+            //StateHasChanged();
+        }
+        private async Task SearchByNumberAsync(string searchTerm)
+        {
+            WhsOrderParameters.SearchBarcode = null;
+            WhsOrderParameters.SearchTerm = searchTerm;
+            await GetWhsOrdersDtoAsync();
         }
 
+        private async Task SearchByWarehouseAsync(string searchStorageId)
+        {
+            WhsOrderParameters.SearchBarcode = null;
+            WhsOrderParameters.SearchWhsId = searchStorageId;
+            await GetWhsOrdersDtoAsync();
+        }
+
+        private async Task SearchByDestinationsAsync(string searchDestinationId)
+        {
+            WhsOrderParameters.SearchBarcode = null;
+            WhsOrderParameters.SearchDestinationId = searchDestinationId;
+            await GetWhsOrdersDtoAsync();
+        }
+
+        private void SearchClear()
+        {
+            //SearchByNumber.Clear();
+            SearchByNumber.SearchTerm = string.Empty;
+            SearchByDestination.Clear();
+            WhsOrderParameters.SearchTerm = null;
+            WhsOrderParameters.SearchDestinationId = null;
+        }
+        private async Task ScannedBarcodeAsync(ChangeEventArgs args)
+        {
+            Barcode = args.Value.ToString();
+            await SearchByBarcodeAsync();
+        }
+
+        private async Task SearchByBarcodeAsync()
+        {
+            SearchClear();
+            WhsOrderParameters.SearchBarcode = Barcode;
+            await GetWhsOrdersDtoAsync();
+
+            if (!string.IsNullOrEmpty(WhsOrdersDto.SingleId))
+            {
+                await OpenItemAsync(WhsOrdersDto.SingleId);
+            }
+        }
+
+        private async Task SearchByBarcodeClearAsync()
+        {
+            WhsOrdersDto.SingleId = null;
+            WhsOrdersDto.MngrOrderName = null;
+            WhsOrderParameters.SearchBarcode = null;
+            await GetWhsOrdersDtoAsync();
+        }
+        private async Task OpenItemAsync(string id)
+        {
+            if (NewTab == "NewTab")
+            {
+                WhsOrderParameters.SearchBarcode = null;
+                await JSRuntime.InvokeVoidAsync("window.open", $"/storageordersout/{id}", "_blank");
+            }
+            else
+                NavigationManager.NavigateTo($"/storageordersout/{id}");
+        }
+
+        private async Task PrintAsync() => await JSRuntime.InvokeVoidAsync("print");
     }
 }
