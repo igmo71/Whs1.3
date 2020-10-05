@@ -2,7 +2,7 @@
 
 namespace Whs.Shared.Models
 {
-    public abstract class MngOrder
+    public abstract class MngrOrder
     {
         public string Документ_Id { get; set; }
         public string Документ_Name { get; set; }
@@ -10,13 +10,13 @@ namespace Whs.Shared.Models
         public string Распоряжение_Name { get; set; }
     }
 
-    public class MngOrderIn : MngOrder
+    public class MngrOrderIn : MngrOrder
     {
         [JsonIgnore]
         public WhsOrderIn WhsOrder { get; set; }
     }
 
-    public class MngOrderOut : MngOrder
+    public class MngrOrderOut : MngrOrder
     {
         [JsonIgnore]
         public WhsOrderOut WhsOrder { get; set; }

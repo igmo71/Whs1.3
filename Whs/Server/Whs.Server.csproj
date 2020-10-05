@@ -5,18 +5,29 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\Migrations\20201005130927_Initial.cs" />
+    <Compile Remove="Data\Migrations\20201005130927_Initial.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201005133101_Initial.cs" />
+    <Compile Remove="Data\Migrations\20201005133101_Initial.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201005133522_Initial.cs" />
+    <Compile Remove="Data\Migrations\20201005133522_Initial.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201005141058_Initial.cs" />
+    <Compile Remove="Data\Migrations\20201005141058_Initial.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="3.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Client\Whs.Client.csproj" />
     <ProjectReference Include="..\Shared\Whs.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data\Migrations\" />
   </ItemGroup>
 
 
