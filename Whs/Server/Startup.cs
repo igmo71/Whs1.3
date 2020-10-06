@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Net.Http.Headers;
+using System.Text;
 using Whs.Server.Data;
 
 namespace Whs.Server
@@ -23,6 +26,27 @@ namespace Whs.Server
         {
             string defaultConnection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(defaultConnection));
+
+            //  Configure HttpClients
+            HttpClientSettings httpClientSettings = Configuration.GetSection(HttpClientSettings.HttpClient).Get<HttpClientSettings>();
+
+            services.AddHttpClient("ClientOData", httpClient =>
+            {
+                httpClient.BaseAddress = new Uri($"{httpClientSettings.BaseAddress}{httpClientSettings.Service.OData}");
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/octet-stream"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                        "Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{httpClientSettings.Username}:{httpClientSettings.Password}")));
+            });
+
+            services.AddHttpClient("ClientHttpService", httpClient =>
+            {
+                httpClient.BaseAddress = new Uri($"{httpClientSettings.BaseAddress}{httpClientSettings.Service.HttpService}");
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/octet-stream"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                        "Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{httpClientSettings.Username}:{httpClientSettings.Password}")));
+            });
 
             services.AddControllersWithViews();
             services.AddRazorPages();

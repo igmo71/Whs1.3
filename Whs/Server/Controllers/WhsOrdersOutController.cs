@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Mime;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Whs.Server.Data;
 using Whs.Shared.Models;
 using Whs.Shared.Utils;
@@ -18,11 +23,15 @@ namespace Whs.Server.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly WhsOrderSettings _settings;
+        private readonly HttpClient _clientHttpService;
+        private readonly ILogger<WhsOrdersOutController> _logger;
 
-        public WhsOrdersOutController(ApplicationDbContext context, IConfiguration configuration)
+        public WhsOrdersOutController(ApplicationDbContext context, IConfiguration configuration, IHttpClientFactory clientFactory, ILogger<WhsOrdersOutController> logger)
         {
             _context = context;
+            _clientHttpService = clientFactory.CreateClient("ClientHttpService");
             _settings = configuration.GetSection(WhsOrderSettings.WhsOrder).Get<WhsOrderSettings>();
+            _logger = logger;
         }
 
         // GET: api/WhsOrdersOuts/DtoByQueType
@@ -78,7 +87,10 @@ namespace Whs.Server.Controllers
             };
 
             if (Dto.Item == null)
+            {
+                _logger.LogError($"---> Dto/{id}: NotFound");
                 return NotFound();
+            }
 
             return Dto;
         }
@@ -91,6 +103,7 @@ namespace Whs.Server.Controllers
         {
             if (id != whsOrderOut.Документ_Id)
             {
+                _logger.LogError($"---> PutWhsOrderOut/{id}: BadRequest ({whsOrderOut.Номер})");
                 return BadRequest();
             }
 
@@ -104,10 +117,12 @@ namespace Whs.Server.Controllers
             {
                 if (!WhsOrderOutExists(id))
                 {
+                    _logger.LogError($"---> PutWhsOrderOut/{id}: DbUpdateConcurrencyException - NotFound ({whsOrderOut.Номер})");
                     return NotFound();
                 }
                 else
                 {
+                    _logger.LogError($"---> PutWhsOrderOut/{id}: DbUpdateConcurrencyException ({whsOrderOut.Номер})");
                     throw;
                 }
             }
@@ -130,10 +145,12 @@ namespace Whs.Server.Controllers
             {
                 if (WhsOrderOutExists(whsOrderOut.Документ_Id))
                 {
+                    _logger.LogError($"---> PostWhsOrderOut: DbUpdateException - Conflict ({whsOrderOut.Номер})");
                     return Conflict();
                 }
                 else
                 {
+                    _logger.LogError($"---> PostWhsOrderOut: DbUpdateException ({whsOrderOut.Номер})");
                     throw;
                 }
             }
@@ -160,6 +177,23 @@ namespace Whs.Server.Controllers
         private bool WhsOrderOutExists(string id)
         {
             return _context.WhsOrdersOut.Any(e => e.Документ_Id == id);
+        }
+
+
+                
+        private async Task<WhsOrderOut> PostTo1cAsync(WhsOrderOut whsOrderOut)
+        {
+            string content = JsonSerializer.Serialize(whsOrderOut);
+            StringContent stringContent = new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json);
+            HttpResponseMessage response = await _clientHttpService.PostAsync($"РасходныйОрдерНаТовары/{whsOrderOut.Документ_Id}", stringContent);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Response1cOut response1C = JsonSerializer.Deserialize<Response1cOut>(responseContent);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError($"---> PostTo1cAsync: ({whsOrderOut.Номер}) \r\n  {response1C.Ошибка}");
+                return null;
+            }            
+            return response1C.Результат;
         }
     }
 }
