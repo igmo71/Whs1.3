@@ -69,6 +69,7 @@ namespace Whs.Server.Controllers
                     Dto.SingleId = items.FirstOrDefault()?.Документ_Id;
             }
 
+            Dto.TotalWeight = items.Sum(e => e.Вес).ToString();
             Dto.Items = items.GroupBy(e => e.ТипОчереди).ToDictionary(e => string.IsNullOrEmpty(e.Key) ? "Очередность не указана" : e.Key, e => e.ToArray());
 
             return Dto;

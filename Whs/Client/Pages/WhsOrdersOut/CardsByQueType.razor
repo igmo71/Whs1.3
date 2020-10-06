@@ -14,13 +14,13 @@
 </div>
 <div class="row">
     <div class="col d-print-none">
-        <SearchByNumber @ref="SearchByNumber" OnSearchChanged="SearchByNumberAsync" />
-    </div>
-    <div class="col d-print-none">
         @if (Warehouses != null)
         {
             <SearchByWarehouseAsync Warehouses="Warehouses" OnSelect="SearchByWarehouseAsync" />
         }
+    </div>
+    <div class="col d-print-none">
+        <SearchByNumber @ref="SearchByNumber" OnSearchChanged="SearchByNumberAsync" />
     </div>
     <div class="col">
         @if (Destinations != null)

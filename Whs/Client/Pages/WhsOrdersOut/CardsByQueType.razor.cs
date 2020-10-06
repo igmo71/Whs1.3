@@ -70,17 +70,17 @@ namespace Whs.Client.Pages.WhsOrdersOut
             }
             //StateHasChanged();
         }
-        private async Task SearchByNumberAsync(string searchTerm)
-        {
-            WhsOrderParameters.SearchBarcode = null;
-            WhsOrderParameters.SearchTerm = searchTerm;
-            await GetWhsOrdersDtoAsync();
-        }
-
         private async Task SearchByWarehouseAsync(string searchStorageId)
         {
             WhsOrderParameters.SearchBarcode = null;
             WhsOrderParameters.SearchWhsId = searchStorageId;
+            await GetWhsOrdersDtoAsync();
+        }
+
+        private async Task SearchByNumberAsync(string searchTerm)
+        {
+            WhsOrderParameters.SearchBarcode = null;
+            WhsOrderParameters.SearchTerm = searchTerm;
             await GetWhsOrdersDtoAsync();
         }
 
@@ -93,9 +93,8 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private void SearchClear()
         {
-            //SearchByNumber.Clear();
-            SearchByNumber.SearchTerm = string.Empty;
             SearchByDestination.Clear();
+            SearchByNumber.SearchTerm = string.Empty;
             WhsOrderParameters.SearchTerm = null;
             WhsOrderParameters.SearchDestinationId = null;
         }
