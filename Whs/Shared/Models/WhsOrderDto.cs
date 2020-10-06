@@ -5,14 +5,13 @@
         public string BarcodeBase64 { get; set; }
     }
 
-    public class WhsOrderDtoOut : WhsOrderDto
-    {
-        public WhsOrderOut Item { get; set; }
-    }
-
     public class WhsOrderDtoIn : WhsOrderDto
     {
         public WhsOrderIn Item { get; set; }
     }
 
+    public class WhsOrderDtoOut : WhsOrderDto
+    {
+        public WhsOrderOut Item { get; set; }
+    }
 }

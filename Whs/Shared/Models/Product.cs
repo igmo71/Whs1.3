@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Whs.Shared.Models
 {
@@ -27,5 +28,15 @@ namespace Whs.Shared.Models
     {
         [JsonIgnore]
         public WhsOrderOut WhsOrder { get; set; }
+    }
+
+    public class ProductData
+    {
+        public string Документ_Id { get; set; }
+        public int НомерСтроки { get; set; }
+        public Product Product { get; set; }
+
+        public Guid EditingCauseId { get; set; }
+        public EditingCause EditingCause { get; set; }
     }
 }

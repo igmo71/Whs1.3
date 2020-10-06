@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -18,7 +16,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
         [Inject]
         public HttpClient HttpClient { get; set; }
         [Inject]
-        public IJSRuntime JSRuntime { get; set; }
+        public IJSRuntime JSRuntime { get; set; }   
         [Inject]
         public NavigationManager NavigationManager { get; set; }
 
@@ -52,12 +50,13 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private async Task GetOrdersDtoAsync()
         {
+            DateTime beginTime = DateTime.Now;
+            System.Console.WriteLine("GetOrdersDtoAsync - begin");
             string requestUri = $"api/WhsOrdersOut/DtoByQueType?" +
                 $"SearchBarcode={OrderParameters.SearchBarcode}&" +
                 $"SearchTerm={OrderParameters.SearchTerm}&" +
                 $"SearchWhsId={OrderParameters.SearchWhsId}&" +
                 $"SearchDestinationId={OrderParameters.SearchDestinationId}";
-
             try
             {
                 OrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoOut>(requestUri);
@@ -67,6 +66,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
                 await Notification.ShowAsync($"Не найдено", 1);
             }
             //StateHasChanged();
+            System.Console.WriteLine($"GetOrdersDtoAsync - duration: {DateTime.Now - beginTime}");
         }
         private async Task SearchByWarehouseAsync(string searchStorageId)
         {

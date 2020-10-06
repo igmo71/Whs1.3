@@ -71,6 +71,20 @@ namespace Whs.Server.Controllers
             return Dto;
         }
 
+        // GET: api/WhsOrdersOut/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<WhsOrderOut>> Get(string id)
+        {
+            var whsOrderOut = await _context.WhsOrdersOut.FindAsync(id);
+
+            if (whsOrderOut == null)
+            {
+                return NotFound();
+            }
+
+            return whsOrderOut;
+        }
+
         // GET: api/WhsOrdersOut/Dto/5
         [HttpGet("Dto/{id}")]
         public async Task<ActionResult<WhsOrderDtoOut>> GetDto(string id)
@@ -155,7 +169,7 @@ namespace Whs.Server.Controllers
                 }
             }
 
-            return CreatedAtAction("GetWhsOrderOut", new { id = whsOrderOut.Документ_Id }, whsOrderOut);
+            return CreatedAtAction("Get", new { id = whsOrderOut.Документ_Id }, whsOrderOut);
         }
 
         // DELETE: api/WhsOrdersOut/5
@@ -165,7 +179,6 @@ namespace Whs.Server.Controllers
             var whsOrderOut = await _context.WhsOrdersOut.FindAsync(id);
             if (whsOrderOut == null)
             {
-                _logger.LogError($"---> DeleteAsync/{id}: NotFound ({whsOrderOut.Документ_Name})");
                 return NotFound();
             }
 
@@ -179,7 +192,7 @@ namespace Whs.Server.Controllers
 
         // PUT: api/WhsOrdersOut/UpdateStatus/5
         [HttpPut("UpdateStatus/{id}")]
-        public async Task<IActionResult> PutUpdateStatusAsync(string id, WhsOrderOut whsOrderOut)
+        public async Task<ActionResult<WhsOrderOut>> PutUpdateStatusAsync(string id, WhsOrderOut whsOrderOut)
         {
             if (id != whsOrderOut.Документ_Id)
             {
@@ -209,7 +222,7 @@ namespace Whs.Server.Controllers
                 }
             }
 
-            return NoContent();
+            return whsOrderOut;
         }
 
         private async Task<WhsOrderOut> PostUpdateStatusTo1cAsync(WhsOrderOut whsOrderOut)
@@ -218,7 +231,7 @@ namespace Whs.Server.Controllers
             StringContent stringContent = new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json);
             HttpResponseMessage response = await _clientHttpService.PostAsync($"РасходныйОрдерНаТовары/{whsOrderOut.Документ_Id}", stringContent);
             string responseContent = await response.Content.ReadAsStringAsync();
-            Response1cOut response1C = JsonSerializer.Deserialize<Response1cOut>(responseContent);
+            Response1cOut response1C = JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true});
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError($"---> PostTo1cAsync: {response1C.Ошибка} ({whsOrderOut.Документ_Name})");

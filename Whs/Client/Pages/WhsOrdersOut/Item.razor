@@ -1,5 +1,11 @@
 ﻿@page "/WhsOrdersOut/Item/{Id}"
 @page "/WhsOutItem/{Id}"
+@using Whs.Client.Components
+
+<Notification @ref="Notification" />
+
+<input type="hidden" id="Barcode" value="@Barcode" @onchange="ScannedBarcodeAsync" />
+
 <h3>Расходные ордера на товары</h3>
 @if (OrderDto == null)
 {

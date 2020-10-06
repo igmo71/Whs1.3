@@ -31,7 +31,7 @@ namespace Whs.Server.Controllers
                 .Where(e => _settings.MatchingStatusOut.Show.Contains(e.Статус))
                 .Select(e => new Destination { Id = e.НаправлениеДоставки_Id, Name = e.НаправлениеДоставки_Name })
                 .Distinct().ToArrayAsync();
-            if (items == null)
+            if (items == null || items.Count() == 0)
                 return NoContent();
             items.FirstOrDefault(e => e.Id == Guid.Empty.ToString()).Name = "- Без направления -";
             Destination[] item = { new Destination { Id = "0", Name = "- Все направления -" } };
