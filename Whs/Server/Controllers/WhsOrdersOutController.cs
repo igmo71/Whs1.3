@@ -34,7 +34,7 @@ namespace Whs.Server.Controllers
 
         // GET: api/WhsOrdersOuts/ByQueType
         [HttpGet("DtoByQueType")]
-        public ActionResult<WhsOrdersDtoOut> GetWhsOrdersOutDtoByQueType([FromQuery] WhsOrderParameters parameters)
+        public ActionResult<WhsOrdersDtoOut> GetDtoByQueType([FromQuery] WhsOrderParameters parameters)
         {
             WhsOrdersDtoOut Dto = new WhsOrdersDtoOut();
 
