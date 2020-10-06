@@ -99,11 +99,11 @@ namespace Whs.Server.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutWhsOrderOut(string id, WhsOrderOut whsOrderOut)
+        public async Task<IActionResult> PutAsync(string id, WhsOrderOut whsOrderOut)
         {
             if (id != whsOrderOut.Документ_Id)
             {
-                _logger.LogError($"---> PutWhsOrderOut/{id}: BadRequest ({whsOrderOut.Номер})");
+                _logger.LogError($"---> PutAsync/{id}: BadRequest ({whsOrderOut.Номер})");
                 return BadRequest();
             }
 
@@ -115,14 +115,14 @@ namespace Whs.Server.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!WhsOrderOutExists(id))
+                if (!Exists(id))
                 {
-                    _logger.LogError($"---> PutWhsOrderOut/{id}: DbUpdateConcurrencyException - NotFound ({whsOrderOut.Номер})");
+                    _logger.LogError($"---> PutAsync/{id}: DbUpdateConcurrencyException - NotFound ({whsOrderOut.Документ_Name})");
                     return NotFound();
                 }
                 else
                 {
-                    _logger.LogError($"---> PutWhsOrderOut/{id}: DbUpdateConcurrencyException ({whsOrderOut.Номер})");
+                    _logger.LogError($"---> PutAsync/{id}: DbUpdateConcurrencyException ({whsOrderOut.Документ_Name})");
                     throw;
                 }
             }
@@ -134,7 +134,7 @@ namespace Whs.Server.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<WhsOrderOut>> PostWhsOrderOut(WhsOrderOut whsOrderOut)
+        public async Task<ActionResult<WhsOrderOut>> PostAsync(WhsOrderOut whsOrderOut)
         {
             _context.WhsOrdersOut.Add(whsOrderOut);
             try
@@ -143,14 +143,14 @@ namespace Whs.Server.Controllers
             }
             catch (DbUpdateException)
             {
-                if (WhsOrderOutExists(whsOrderOut.Документ_Id))
+                if (Exists(whsOrderOut.Документ_Id))
                 {
-                    _logger.LogError($"---> PostWhsOrderOut: DbUpdateException - Conflict ({whsOrderOut.Номер})");
+                    _logger.LogError($"---> PostAsync: DbUpdateException - Conflict ({whsOrderOut.Документ_Name})");
                     return Conflict();
                 }
                 else
                 {
-                    _logger.LogError($"---> PostWhsOrderOut: DbUpdateException ({whsOrderOut.Номер})");
+                    _logger.LogError($"---> PostAsync: DbUpdateException ({whsOrderOut.Документ_Name})");
                     throw;
                 }
             }
@@ -160,11 +160,12 @@ namespace Whs.Server.Controllers
 
         // DELETE: api/WhsOrdersOut/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<WhsOrderOut>> DeleteWhsOrderOut(string id)
+        public async Task<ActionResult<WhsOrderOut>> DeleteAsync(string id)
         {
             var whsOrderOut = await _context.WhsOrdersOut.FindAsync(id);
             if (whsOrderOut == null)
             {
+                _logger.LogError($"---> DeleteAsync/{id}: NotFound ({whsOrderOut.Документ_Name})");
                 return NotFound();
             }
 
@@ -174,25 +175,55 @@ namespace Whs.Server.Controllers
             return whsOrderOut;
         }
 
-        private bool WhsOrderOutExists(string id)
+        private bool Exists(string id) => _context.WhsOrdersOut.Any(e => e.Документ_Id == id);
+
+        // PUT: api/WhsOrdersOut/UpdateStatus/5
+        [HttpPut("UpdateStatus/{id}")]
+        public async Task<IActionResult> PutUpdateStatusAsync(string id, WhsOrderOut whsOrderOut)
         {
-            return _context.WhsOrdersOut.Any(e => e.Документ_Id == id);
+            if (id != whsOrderOut.Документ_Id)
+            {
+                _logger.LogError($"---> PutUpdateStatusAsync/{id}: BadRequest ({whsOrderOut.Номер})");
+                return BadRequest();
+            }
+
+            whsOrderOut = await PostUpdateStatusTo1cAsync(whsOrderOut);
+            if (whsOrderOut != null)
+                _context.Update(whsOrderOut);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!Exists(id))
+                {
+                    _logger.LogError($"---> PutUpdateStatusAsync/{id}: DbUpdateConcurrencyException - NotFound ({whsOrderOut.Документ_Name})");
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogError($"---> PutUpdateStatusAsync/{id}: DbUpdateConcurrencyException ({whsOrderOut.Документ_Name})");
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-
-                
-        private async Task<WhsOrderOut> PostTo1cAsync(WhsOrderOut whsOrderOut)
+        private async Task<WhsOrderOut> PostUpdateStatusTo1cAsync(WhsOrderOut whsOrderOut)
         {
             string content = JsonSerializer.Serialize(whsOrderOut);
             StringContent stringContent = new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json);
             HttpResponseMessage response = await _clientHttpService.PostAsync($"РасходныйОрдерНаТовары/{whsOrderOut.Документ_Id}", stringContent);
-            var responseContent = await response.Content.ReadAsStringAsync();
+            string responseContent = await response.Content.ReadAsStringAsync();
             Response1cOut response1C = JsonSerializer.Deserialize<Response1cOut>(responseContent);
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError($"---> PostTo1cAsync: ({whsOrderOut.Номер}) \r\n  {response1C.Ошибка}");
+                _logger.LogError($"---> PostTo1cAsync: {response1C.Ошибка} ({whsOrderOut.Документ_Name})");
                 return null;
-            }            
+            }
             return response1C.Результат;
         }
     }
