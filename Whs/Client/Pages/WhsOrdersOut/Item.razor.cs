@@ -16,21 +16,19 @@ namespace Whs.Client.Pages.WhsOrdersOut
         [Inject]
         HttpClient HttpClient { get; set; }
 
-        WhsOrderDtoOut WhsOrderDto;
+        WhsOrderDtoOut OrderDto;
 
 
         protected override async Task OnInitializedAsync()
         {
-            Console.WriteLine("OnInitializedAsync - start");
+            try
+            {
+                 OrderDto = await HttpClient.GetFromJsonAsync<WhsOrderDtoOut>($"api/WhsOrdersOut/Dto/{Id}");
+            }
+            catch
+            {
 
-            //var response = await HttpClient.GetAsync($"api/WhsOrdersOut/Dto/{Id}");
-            //var content = await response.Content.ReadAsStringAsync();
-            //WhsOrderDto = System.Text.Json.JsonSerializer.Deserialize<WhsOrderDtoOut>(content);
-
-            WhsOrderDto = await HttpClient.GetFromJsonAsync<WhsOrderDtoOut>($"api/WhsOrdersOut/Dto/{Id}");
-
-
-            Console.WriteLine("OnInitializedAsync - end");
+            }
         }
     }
 }

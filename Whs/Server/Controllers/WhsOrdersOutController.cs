@@ -25,16 +25,9 @@ namespace Whs.Server.Controllers
             _settings = configuration.GetSection(WhsOrderSettings.WhsOrder).Get<WhsOrderSettings>();
         }
 
-        // GET: api/WhsOrdersOut
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetWhsOrdersOut()
-        {
-            return await _context.WhsOrdersOut.ToListAsync();
-        }
-
         // GET: api/WhsOrdersOuts/DtoByQueType
         [HttpGet("DtoByQueType")]
-        public ActionResult<WhsOrdersDtoOut> GetWhsOrdersOutDtoByQueType([FromQuery] WhsOrderParameters parameters)
+        public ActionResult<WhsOrdersDtoOut> GetDtoByQueType([FromQuery] WhsOrderParameters parameters)
         {
             WhsOrdersDtoOut Dto = new WhsOrdersDtoOut();
 
@@ -68,23 +61,9 @@ namespace Whs.Server.Controllers
             return Dto;
         }
 
-        // GET: api/WhsOrdersOut/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<WhsOrderOut>> GetWhsOrderOut(string id)
-        {
-            var whsOrderOut = await _context.WhsOrdersOut.FindAsync(id);
-
-            if (whsOrderOut == null)
-            {
-                return NotFound();
-            }
-
-            return whsOrderOut;
-        }
-
         // GET: api/WhsOrdersOut/Dto/5
         [HttpGet("Dto/{id}")]
-        public async Task<ActionResult<WhsOrderDtoOut>> GetWhsOrderDtoOut(string id)
+        public async Task<ActionResult<WhsOrderDtoOut>> GetDto(string id)
         {
             WhsOrderDtoOut Dto = new WhsOrderDtoOut
             {
@@ -97,9 +76,7 @@ namespace Whs.Server.Controllers
             };
 
             if (Dto.Item == null)
-            {
                 return NotFound();
-            }
 
             return Dto;
         }

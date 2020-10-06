@@ -22,24 +22,22 @@ namespace Whs.Client.Pages.WhsOrdersOut
         [Inject]
         public NavigationManager NavigationManager { get; set; }
 
-        private Notification Notification;
         private string Barcode;
-
-        private WhsOrdersDtoOut WhsOrdersDto;
-
-        private WhsOrderParameters WhsOrderParameters;
-        private SearchByNumber SearchByNumber;
-        private SearchByDestination SearchByDestination;
+        private Notification Notification;
+        private WhsOrdersDtoOut OrdersDto;
+        private WhsOrderParameters OrderParameters;
         private Warehouse[] Warehouses;
         private Destination[] Destinations;
+        private SearchByNumber SearchByNumber;
+        private SearchByDestination SearchByDestination;
 
 
         protected override async Task OnInitializedAsync()
         {
-            WhsOrderParameters = new WhsOrderParameters();
+            OrderParameters = new WhsOrderParameters();
             await GetWarehousesAsync();
             await GetDestinationsAsync();
-            await GetWhsOrdersDtoAsync();
+            await GetOrdersDtoAsync();
         }
 
         private async Task GetWarehousesAsync()
@@ -52,17 +50,17 @@ namespace Whs.Client.Pages.WhsOrdersOut
             Destinations = await HttpClient.GetFromJsonAsync<Destination[]>("api/Destinations");
         }
 
-        private async Task GetWhsOrdersDtoAsync()
+        private async Task GetOrdersDtoAsync()
         {
             string requestUri = $"api/WhsOrdersOut/DtoByQueType?" +
-                $"SearchBarcode={WhsOrderParameters.SearchBarcode}&" +
-                $"SearchTerm={WhsOrderParameters.SearchTerm}&" +
-                $"SearchWhsId={WhsOrderParameters.SearchWhsId}&" +
-                $"SearchDestinationId={WhsOrderParameters.SearchDestinationId}";
+                $"SearchBarcode={OrderParameters.SearchBarcode}&" +
+                $"SearchTerm={OrderParameters.SearchTerm}&" +
+                $"SearchWhsId={OrderParameters.SearchWhsId}&" +
+                $"SearchDestinationId={OrderParameters.SearchDestinationId}";
 
             try
             {
-                WhsOrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoOut>(requestUri);
+                OrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoOut>(requestUri);
             }
             catch
             {
@@ -72,31 +70,31 @@ namespace Whs.Client.Pages.WhsOrdersOut
         }
         private async Task SearchByWarehouseAsync(string searchStorageId)
         {
-            WhsOrderParameters.SearchBarcode = null;
-            WhsOrderParameters.SearchWhsId = searchStorageId;
-            await GetWhsOrdersDtoAsync();
+            OrderParameters.SearchBarcode = null;
+            OrderParameters.SearchWhsId = searchStorageId;
+            await GetOrdersDtoAsync();
         }
 
         private async Task SearchByNumberAsync(string searchTerm)
         {
-            WhsOrderParameters.SearchBarcode = null;
-            WhsOrderParameters.SearchTerm = searchTerm;
-            await GetWhsOrdersDtoAsync();
+            OrderParameters.SearchBarcode = null;
+            OrderParameters.SearchTerm = searchTerm;
+            await GetOrdersDtoAsync();
         }
 
         private async Task SearchByDestinationsAsync(string searchDestinationId)
         {
-            WhsOrderParameters.SearchBarcode = null;
-            WhsOrderParameters.SearchDestinationId = searchDestinationId;
-            await GetWhsOrdersDtoAsync();
+            OrderParameters.SearchBarcode = null;
+            OrderParameters.SearchDestinationId = searchDestinationId;
+            await GetOrdersDtoAsync();
         }
 
         private void SearchClear()
         {
             SearchByDestination.Clear();
             SearchByNumber.SearchTerm = string.Empty;
-            WhsOrderParameters.SearchTerm = null;
-            WhsOrderParameters.SearchDestinationId = null;
+            OrderParameters.SearchTerm = null;
+            OrderParameters.SearchDestinationId = null;
         }
         private async Task ScannedBarcodeAsync(ChangeEventArgs args)
         {
@@ -107,27 +105,27 @@ namespace Whs.Client.Pages.WhsOrdersOut
         private async Task SearchByBarcodeAsync()
         {
             SearchClear();
-            WhsOrderParameters.SearchBarcode = Barcode;
-            await GetWhsOrdersDtoAsync();
+            OrderParameters.SearchBarcode = Barcode;
+            await GetOrdersDtoAsync();
 
-            if (!string.IsNullOrEmpty(WhsOrdersDto.SingleId))
+            if (!string.IsNullOrEmpty(OrdersDto.SingleId))
             {
-                await OpenItemAsync(WhsOrdersDto.SingleId);
+                await OpenItemAsync(OrdersDto.SingleId);
             }
         }
 
         private async Task SearchByBarcodeClearAsync()
         {
-            WhsOrdersDto.SingleId = null;
-            WhsOrdersDto.MngrOrderName = null;
-            WhsOrderParameters.SearchBarcode = null;
-            await GetWhsOrdersDtoAsync();
+            OrdersDto.SingleId = null;
+            OrdersDto.MngrOrderName = null;
+            OrderParameters.SearchBarcode = null;
+            await GetOrdersDtoAsync();
         }
         private async Task OpenItemAsync(string id)
         {
             if (NewTab == "NewTab")
             {
-                WhsOrderParameters.SearchBarcode = null;
+                OrderParameters.SearchBarcode = null;
                 await JSRuntime.InvokeVoidAsync("window.open", $"/WhsOutItem/{id}", "_blank");
             }
             else
