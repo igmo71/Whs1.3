@@ -128,10 +128,10 @@ namespace Whs.Client.Pages.WhsOrdersOut
             if (NewTab == "NewTab")
             {
                 WhsOrderParameters.SearchBarcode = null;
-                await JSRuntime.InvokeVoidAsync("window.open", $"/storageordersout/{id}", "_blank");
+                await JSRuntime.InvokeVoidAsync("window.open", $"/WhsOutItem/{id}", "_blank");
             }
             else
-                NavigationManager.NavigateTo($"/storageordersout/{id}");
+                NavigationManager.NavigateTo($"/WhsOutItem/{id}");
         }
 
         private async Task PrintAsync() => await JSRuntime.InvokeVoidAsync("print");

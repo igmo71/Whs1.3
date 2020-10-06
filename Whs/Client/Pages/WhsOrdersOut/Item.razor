@@ -1,0 +1,49 @@
+﻿@page "/WhsOrdersOut/Item/{Id}"
+@page "/WhsOutItem/{Id}"
+<h3>Item</h3>
+@if (WhsOrderDto == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-3 wh-label">
+            <span class="display-3 align-middle text-center border border-dark">
+                @WhsOrderDto.Item?.НомерОчереди
+            </span>
+        </div>
+        <div class="col-5 h3">
+            @WhsOrderDto.Item?.Документ_Name
+        </div>
+        <div class="col-4 d-none d-print-inline">
+            <div class="float-right">
+                <img src=@($"data:image/jpeg;base64,{WhsOrderDto.BarcodeBase64}") alt="штрих код" width="300" height="80" />
+            </div>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Кол план</th>
+                <th>Кол факт</th>
+                <th>Упак</th>
+                <th>Вес</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in WhsOrderDto.Item.Товары)
+            {
+                <tr>
+                    <td>@item.Номенклатура_Name</td>
+                    <td>@item.КоличествоПлан</td>
+                    <td>@item.КоличествоФакт</td>
+                    <td>@item.Упаковка_Name</td>
+                    <td>@item.Вес</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

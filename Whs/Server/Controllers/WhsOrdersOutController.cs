@@ -25,16 +25,16 @@ namespace Whs.Server.Controllers
             _settings = configuration.GetSection(WhsOrderSettings.WhsOrder).Get<WhsOrderSettings>();
         }
 
-        // GET: api/WhsOrderOuts
+        // GET: api/WhsOrdersOut
         [HttpGet]
         public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetWhsOrdersOut()
         {
             return await _context.WhsOrdersOut.ToListAsync();
         }
 
-        // GET: api/WhsOrdersOuts/ByQueType
+        // GET: api/WhsOrdersOuts/DtoByQueType
         [HttpGet("DtoByQueType")]
-        public ActionResult<WhsOrdersDtoOut> GetDtoByQueType([FromQuery] WhsOrderParameters parameters)
+        public ActionResult<WhsOrdersDtoOut> GetWhsOrdersOutDtoByQueType([FromQuery] WhsOrderParameters parameters)
         {
             WhsOrdersDtoOut Dto = new WhsOrdersDtoOut();
 
@@ -47,7 +47,6 @@ namespace Whs.Server.Controllers
                 .AsNoTracking();
 
             IEnumerable<WhsOrderOut> items;
-
             if (parameters.SearchBarcode == null)
             {
                 items = query.AsEnumerable();
@@ -55,27 +54,21 @@ namespace Whs.Server.Controllers
             else
             {
                 string id = GuidConvert.FromNumStr(parameters.SearchBarcode);
-
                 items = query.Where(e => e.Документ_Id == id).AsEnumerable();
-
                 if (items.Count() == 0)   //  Если не найдено, ищем по штрихкоду распоряжения
                 {
                     items = query.Where(e => e.Распоряжения.Any(o => o.Распоряжение_Id == id)).AsEnumerable();
-
                     Dto.MngrOrderName = items.FirstOrDefault()?.Распоряжения.FirstOrDefault(e => e.Распоряжение_Id == id).Распоряжение_Name;
                 }
-
                 if (items.Count() == 1)
                     Dto.SingleId = items.FirstOrDefault()?.Документ_Id;
             }
-
             Dto.TotalWeight = items.Sum(e => e.Вес).ToString();
             Dto.Items = items.GroupBy(e => e.ТипОчереди).ToDictionary(e => string.IsNullOrEmpty(e.Key) ? "Очередность не указана" : e.Key, e => e.ToArray());
-
             return Dto;
         }
 
-        // GET: api/WhsOrderOuts/5
+        // GET: api/WhsOrdersOut/5
         [HttpGet("{id}")]
         public async Task<ActionResult<WhsOrderOut>> GetWhsOrderOut(string id)
         {
@@ -89,7 +82,29 @@ namespace Whs.Server.Controllers
             return whsOrderOut;
         }
 
-        // PUT: api/WhsOrderOuts/5
+        // GET: api/WhsOrdersOut/Dto/5
+        [HttpGet("Dto/{id}")]
+        public async Task<ActionResult<WhsOrderDtoOut>> GetWhsOrderDtoOut(string id)
+        {
+            WhsOrderDtoOut Dto = new WhsOrderDtoOut
+            {
+                Item = await _context.WhsOrdersOut
+                .Include(e => e.Товары)
+                .Include(e => e.Распоряжения)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Документ_Id == id),
+                BarcodeBase64 = new NetBarcode.Barcode(GuidConvert.ToNumStr(id), NetBarcode.Type.Code128C, false).GetBase64Image()
+            };
+
+            if (Dto.Item == null)
+            {
+                return NotFound();
+            }
+
+            return Dto;
+        }
+
+        // PUT: api/WhsOrdersOut/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
@@ -121,7 +136,7 @@ namespace Whs.Server.Controllers
             return NoContent();
         }
 
-        // POST: api/WhsOrderOuts
+        // POST: api/WhsOrdersOut
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
@@ -147,7 +162,7 @@ namespace Whs.Server.Controllers
             return CreatedAtAction("GetWhsOrderOut", new { id = whsOrderOut.Документ_Id }, whsOrderOut);
         }
 
-        // DELETE: api/WhsOrderOuts/5
+        // DELETE: api/WhsOrdersOut/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<WhsOrderOut>> DeleteWhsOrderOut(string id)
         {
