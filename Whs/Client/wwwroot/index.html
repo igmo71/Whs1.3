@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
@@ -19,6 +19,20 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script src="js/onscan/onscan.min.js"></script>
+    <script type="text/javascript">
+        onScan.attachTo(document, {
+            suffixKeyCodes: [13],
+            reactToPaste: false,
+            onScan: function (sCode, iQty) {
+                var Barcode = document.getElementById('Barcode');
+                Barcode.value = sCode
+                var changeEvent = document.createEvent('Event');
+                changeEvent.initEvent('change', true, true);
+                Barcode.dispatchEvent(changeEvent);
+            }
+        });
+    </script>
 </body>
 
 </html>
