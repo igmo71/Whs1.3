@@ -32,6 +32,7 @@ namespace Whs.Server.Controllers
             WhsOrdersDtoOut Dto = new WhsOrdersDtoOut();
 
             IQueryable<WhsOrderOut> query = _context.WhsOrdersOut
+                .Where(e => e.Проведен)
                 .Where(e => _settings.MatchingStatusOut.Show.Contains(e.Статус))
                 .Search(parameters)
                 .Include(e => e.Распоряжения)
@@ -68,6 +69,7 @@ namespace Whs.Server.Controllers
             WhsOrderDtoOut Dto = new WhsOrderDtoOut
             {
                 Item = await _context.WhsOrdersOut
+                .Where(e => e.Проведен)
                 .Include(e => e.Товары)
                 .Include(e => e.Распоряжения)
                 .AsNoTracking()
