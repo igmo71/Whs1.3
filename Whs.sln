@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whs.Server", "Whs\Server\Whs.Server.csproj", "{0FE0501F-3549-4172-B78E-5436D3E554D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Whs.Server", "Whs\Server\Whs.Server.csproj", "{0FE0501F-3549-4172-B78E-5436D3E554D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whs.Client", "Whs\Client\Whs.Client.csproj", "{9D3B5CF3-4462-48EA-A0D6-A03325DE5246}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Whs.Client", "Whs\Client\Whs.Client.csproj", "{9D3B5CF3-4462-48EA-A0D6-A03325DE5246}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whs.Shared", "Whs\Shared\Whs.Shared.csproj", "{347504A0-D572-41CC-A17C-EB7ECE8CAD5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Whs.Shared", "Whs\Shared\Whs.Shared.csproj", "{347504A0-D572-41CC-A17C-EB7ECE8CAD5D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
