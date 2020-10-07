@@ -1,15 +1,17 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using System.Timers;
 using Whs.Client.Components;
 using Whs.Shared.Models;
 
 namespace Whs.Client.Pages.WhsOrdersOut
 {
-    public partial class CardsByQueType
+    public partial class CardsByQueType : IDisposable
     {
         [Parameter]
         public string NewTab { get; set; }
@@ -19,7 +21,10 @@ namespace Whs.Client.Pages.WhsOrdersOut
         public IJSRuntime JSRuntime { get; set; }   
         [Inject]
         public NavigationManager NavigationManager { get; set; }
+        [Inject]
+        public IConfiguration Configuration { get; set; }
 
+        private Timer Timer;
         private string Barcode;
         private Notification Notification;
         private WhsOrdersDtoOut OrdersDto;
@@ -32,10 +37,14 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         protected override async Task OnInitializedAsync()
         {
+            DateTime beginTime = DateTime.Now;
+            System.Console.WriteLine("OnInitializedAsync - begin");
             OrderParameters = new WhsOrderParameters();
             await GetWarehousesAsync();
             await GetDestinationsAsync();
             await GetOrdersDtoAsync();
+            SetTimer(double.Parse(Configuration["timerInterval"]), true);
+            System.Console.WriteLine($"OnInitializedAsync - duration: {DateTime.Now - beginTime}");
         }
 
         private async Task GetWarehousesAsync()
@@ -130,6 +139,25 @@ namespace Whs.Client.Pages.WhsOrdersOut
             }
             else
                 NavigationManager.NavigateTo($"/WhsOutItem/{id}");
+        }
+
+        public void SetTimer(double interval, bool autoReset)
+        {
+            Timer = new Timer(interval * 1000);
+            Timer.Elapsed += async delegate
+            {
+                Console.WriteLine($"Timer.Elapsed at: {DateTime.Now}");
+                await GetOrdersDtoAsync();
+                await GetDestinationsAsync();
+            };
+            Timer.AutoReset = autoReset;
+            Timer.Enabled = true;
+        }
+
+        public void Dispose()
+        {
+            if (Timer != null)
+                Timer.Dispose();
         }
 
         private async Task PrintAsync() => await JSRuntime.InvokeVoidAsync("print");
