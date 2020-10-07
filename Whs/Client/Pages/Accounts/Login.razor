@@ -1,0 +1,43 @@
+﻿@page "/login"
+
+<h3>Вход</h3>
+
+<div class="alert alert-info" role="alert">
+    Введите логин/пароль или просканируйте свой штрих код.
+</div>
+
+@if (ShowAuthError)
+{
+    <div class="alert alert-danger" role="alert">
+        @Error
+    </div>
+}
+
+<input type="hidden" id="searchBarcode" value="@_userForAuthentication.Barcode" @onchange="ScannedBarcode" />
+
+<EditForm Model="_userForAuthentication" OnValidSubmit="ExecuteLogin" class="card card-body bg-light mt-5">
+    <DataAnnotationsValidator />
+    <div class="form-group row">
+        <span for="email" class="col-md-2 col-form-label">Email:</span>
+        <div class="col-md-10">
+            <label>
+                <InputText id="email" class="form-control" @bind-Value="_userForAuthentication.Email" />
+            </label>
+            <ValidationMessage For="@(() => _userForAuthentication.Email)" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <span for="password" class="col-md-2 col-form-label">Пароль:</span>
+        <div class="col-md-10">
+            <label>
+                <InputText type="password" id="password" class="form-control" @bind-Value="_userForAuthentication.Password" />
+            </label>
+            <ValidationMessage For="@(() => _userForAuthentication.Password)" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <button type="submit" class="btn btn-success">Вход</button>
+        </div>
+    </div>
+</EditForm>
