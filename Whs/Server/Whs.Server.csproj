@@ -16,6 +16,8 @@
     <Compile Remove="Data\Migrations\20201005141058_Initial.Designer.cs" />
     <Compile Remove="Data\Migrations\20201006145237_WhsOrderData.cs" />
     <Compile Remove="Data\Migrations\20201006145237_WhsOrderData.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201006150723_WhsOrderData.cs" />
+    <Compile Remove="Data\Migrations\20201006150723_WhsOrderData.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

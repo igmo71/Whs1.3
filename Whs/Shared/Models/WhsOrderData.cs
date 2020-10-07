@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Whs.Shared.Models
 {
@@ -19,11 +21,13 @@ namespace Whs.Shared.Models
     public class WhsOrderDataIn : WhsOrderData
     {
         public string WhsOrderInId { get; set; }
+        [JsonIgnore]
         public WhsOrderIn WhsOrderIn { get; set; }
     }
     public class WhsOrderDataOut : WhsOrderData
     {
         public string WhsOrderOutId { get; set; }
+        [JsonIgnore]
         public WhsOrderOut WhsOrderOut { get; set; }
     }
 }
