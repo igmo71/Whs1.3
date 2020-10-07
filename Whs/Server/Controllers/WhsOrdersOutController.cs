@@ -37,7 +37,7 @@ namespace Whs.Server.Controllers
 
         // GET: api/WhsOrdersOuts/
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetWhsOrdersOut()
+        public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetListAsync()
         {
             return await _context.WhsOrdersOut
                 .Include(e => e.Товары)
@@ -87,7 +87,7 @@ namespace Whs.Server.Controllers
 
         // GET: api/WhsOrdersOut/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<WhsOrderOut>> Get(string id)
+        public async Task<ActionResult<WhsOrderOut>> GetAsync(string id)
         {
             var whsOrderOut = await _context.WhsOrdersOut
                 .Include(e => e.Товары)
@@ -105,7 +105,7 @@ namespace Whs.Server.Controllers
 
         // GET: api/WhsOrdersOut/Dto/5
         [HttpGet("Dto/{id}")]
-        public async Task<ActionResult<WhsOrderDtoOut>> GetDto(string id)
+        public async Task<ActionResult<WhsOrderDtoOut>> GetDtoAsync(string id)
         {
             WhsOrderDtoOut Dto = new WhsOrderDtoOut
             {
@@ -152,50 +152,9 @@ namespace Whs.Server.Controllers
                 }
             }
 
-            return CreatedAtAction("Get", new { id = whsOrderOut.Документ_Id }, whsOrderOut);
+            return CreatedAtAction("GetAsync", new { id = whsOrderOut.Документ_Id }, whsOrderOut);
         }
-
-        // PUT: api/WhsOrdersOut/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutAsync(string id, WhsOrderOut whsOrderOut)
-        //{
-        //    if (id != whsOrderOut.Документ_Id)
-        //    {
-        //        _logger.LogError($"---> PutAsync/{id}: BadRequest" +
-        //            $"{Environment.NewLine}{whsOrderOut.Номер}");
-        //        return BadRequest();
-        //    }
-
-        //    _context.Update(whsOrderOut);
-
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!Exists(id))
-        //        {
-        //            _logger.LogError($"---> PutAsync/{id}: DbUpdateConcurrencyException - NotFound" +
-        //                $"{Environment.NewLine}{whsOrderOut.Документ_Name}");
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            _logger.LogError($"---> PutAsync/{id}: DbUpdateConcurrencyException" +
-        //                $"{Environment.NewLine}{whsOrderOut.Документ_Name}");
-        //            throw;
-        //        }
-        //    }
-
-        //    return NoContent();
-        //}
-
-        // PUT: api/WhsOrdersOut/UpdateStatus/5
-        //[HttpPut("UpdateStatus/{id}")]
-        //public async Task<ActionResult<WhsOrderOut>> PutUpdateStatusAsync(string id, WhsOrderOut whsOrderOut)
+        
         [HttpPut("{id}")]
         [HttpPut("{id}/{to1C}")]
         public async Task<IActionResult> PutAsync(string id, string to1C, WhsOrderOut whsOrderOut)
@@ -244,7 +203,6 @@ namespace Whs.Server.Controllers
                 }
             }
 
-            //return whsOrderOut;
             return NoContent();
         }
 
