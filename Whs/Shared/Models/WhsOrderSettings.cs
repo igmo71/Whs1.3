@@ -8,6 +8,7 @@ namespace Whs.Shared.Models
     {
         public const string WhsOrder = "WhsOrder";
 
+        public int OrdersPerPage { get; set; }
         public MatchingStatus MatchingStatusOut { get; set; }
         public MatchingStatus MatchingStatusIn { get; set; }
     }
@@ -15,8 +16,8 @@ namespace Whs.Shared.Models
     public class MatchingStatus
     {
         public string[] Show { get; set; }
-        public string[] AtWork { get; set; }
-        public string[] ToShipment { get; set; }
-        public string[] Complete { get; set; }
+        public string AtWork { get; set; }
+        public string ToShipment { get; set; }
+        public string Complete { get; set; }
     }
 }

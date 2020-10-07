@@ -43,7 +43,7 @@ namespace Whs.Server.Controllers
                 .Include(e => e.Товары)
                 .Include(e => e.Распоряжения)
                 .AsNoTracking()
-                .Take(20)
+                .Take(_settings.OrdersPerPage)
                 .ToListAsync();
         }
 
@@ -57,7 +57,7 @@ namespace Whs.Server.Controllers
                 .Where(e => e.Проведен)
                 .Where(e => _settings.MatchingStatusOut.Show.Contains(e.Статус))
                 .Search(parameters)
-                .Take(20)
+                .Take(_settings.OrdersPerPage)
                 .Include(e => e.Распоряжения)
                 .OrderByDescending(e => e.ВесовойКоэффициент)
                 .ThenBy(e => e.СрокВыполнения)
