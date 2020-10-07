@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Whs.Shared.Models.Accounts;
 
 namespace Whs.Shared.Models
 {

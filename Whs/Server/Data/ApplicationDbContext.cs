@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Whs.Shared.Models;
+using Whs.Shared.Models.Accounts;
 
 namespace Whs.Server.Data
 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Whs.Shared.Models
+namespace Whs.Shared.Models.Accounts
 {
     public class ApplicationUser : IdentityUser
     {
