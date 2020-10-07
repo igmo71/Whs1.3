@@ -24,7 +24,7 @@ namespace Whs.Server.Controllers
         public AccountsController(UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             _userManager = userManager;
-            _jwtSettings = configuration.GetSection("JwtSettings");
+            _jwtSettings = configuration.GetSection("JWT");
 
         }
 
