@@ -26,7 +26,7 @@
             reactToPaste: false,
             onScan: function (sCode, iQty) {
                 var Barcode = document.getElementById('Barcode');
-                Barcode.value = sCode
+                Barcode.value = sCode;
                 var changeEvent = document.createEvent('Event');
                 changeEvent.initEvent('change', true, true);
                 Barcode.dispatchEvent(changeEvent);

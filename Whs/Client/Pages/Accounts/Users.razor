@@ -1,0 +1,56 @@
+﻿@page "/Users"
+
+@using Whs.Shared.Models.Accounts
+@using Whs.Shared.Models
+
+@inject HttpClient _httpClient
+
+<h3>Users</h3>
+<a href="Registration">Регистрация</a>
+@if (AppUsers != null)
+{
+    <table>
+        @foreach (var item in AppUsers.OrderBy(e => e.Warehouse?.Name).ThenBy(e => e.FullName).ToList())
+        {
+            var barcode = item.Barcode;
+            <tr>
+                <td>@(item.Warehouse?.Name ?? "")</td>
+                <td class="text-center">
+                    <div class="card">
+                        <div class="card-header">
+                            @item.FullName<br>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <img src="@($"http://barcodes4.me/barcode/c128c/{barcode}.png")" />
+                            </h5>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </table>
+}
+
+@code {
+
+    private List<ApplicationUser> AppUsers;
+    private List<Warehouse> Warehouses = new List<Warehouse>();
+
+    protected async override Task OnInitializedAsync()
+    {
+        await GetWarehousesAsync();
+        await GetAppUsersAsync();
+    }
+
+    private async Task GetAppUsersAsync()
+    {
+        AppUsers = await _httpClient.GetFromJsonAsync<List<ApplicationUser>>("api/Accounts/GetUsers");
+        AppUsers.ForEach(u => u.Warehouse = Warehouses.FirstOrDefault(s => s.Id == u.WarehouseId));
+    }
+
+    private async Task GetWarehousesAsync()
+    {
+        Warehouses = await _httpClient.GetFromJsonAsync<List<Warehouse>>("api/Warehouses");
+    }
+}

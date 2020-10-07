@@ -55,6 +55,8 @@ namespace Whs.Server.Data
             builder.Entity<MngrOrderOut>().HasKey(e => new { e.Документ_Id, e.Распоряжение_Id });
             builder.Entity<MngrOrderOut>().HasIndex(e => new { e.Документ_Id, e.Распоряжение_Id }).HasName("IX_MngOrdersOut_ДокументIdРаспоряжениеId");
             builder.Entity<MngrOrderOut>().HasOne(e => e.WhsOrder).WithMany(e => e.Распоряжения).HasForeignKey(e => e.Документ_Id).OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Warehouse>().HasMany(e => e.Users).WithOne(e => e.Warehouse).OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

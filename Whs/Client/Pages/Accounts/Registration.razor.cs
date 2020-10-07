@@ -30,9 +30,9 @@ namespace Whs.Client.Pages.Accounts
 
         protected override async Task OnInitializedAsync()
         {
-            await GetСкладыAsync();
+            await GetWarehousesAsync();
         }
-        private async Task GetСкладыAsync()
+        private async Task GetWarehousesAsync()
         {
             Warehouses = await _httpClient.GetFromJsonAsync<List<Warehouse>>("api/Warehouses");
         }

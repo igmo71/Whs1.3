@@ -34,7 +34,7 @@ namespace Whs.Client.Identity
             var content = JsonSerializer.Serialize(userForRegistration);
             var bodyContent = new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json);
 
-            var registrationResult = await _httpClient.PostAsync("api/accounts/registration", bodyContent);
+            var registrationResult = await _httpClient.PostAsync("api/Accounts/Registration", bodyContent);
             var registrationContent = await registrationResult.Content.ReadAsStringAsync();
 
             if (!registrationResult.IsSuccessStatusCode)
@@ -50,7 +50,7 @@ namespace Whs.Client.Identity
         {
             var content = JsonSerializer.Serialize(userForAuthentication);
             var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-            var authResult = await _httpClient.PostAsync("api/accounts/login", bodyContent);
+            var authResult = await _httpClient.PostAsync("api/Accounts/Login", bodyContent);
             var authContent = await authResult.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<AuthResponseDto>(authContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 

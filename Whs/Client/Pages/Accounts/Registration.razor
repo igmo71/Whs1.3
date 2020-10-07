@@ -1,4 +1,4 @@
-﻿@page "/registration"
+﻿@page "/Registration"
 
 <h3>Регистрация</h3>
 
@@ -45,14 +45,14 @@
     <div class="form-group row">
         <label for="confirm" class="col-md-2 col-form-label">Склад:</label>
         <div class="col-md-10">
-            <InputSelect class="form-control" @bind-Value="_userForRegistration.StorageKey">
+            <InputSelect class="form-control" @bind-Value="_userForRegistration.WarehouseId">
                 <option value="@Guid.Empty"></option>
                 @foreach (var item in Warehouses)
                 {
                     <option value="@item.Id">@item.Name</option>
                 }
             </InputSelect>
-            <ValidationMessage For="@(() => _userForRegistration.StorageKey)" />
+            <ValidationMessage For="@(() => _userForRegistration.WarehouseId)" />
         </div>
     </div>
     <div class="row">

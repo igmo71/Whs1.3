@@ -20,7 +20,7 @@ namespace Whs.Shared.Models.Accounts
         public string ConfirmPassword { get; set; }
 
         //[Required(ErrorMessage = "Укажите склад.")]
-        public string StorageKey { get; set; }
+        public string WarehouseId { get; set; }
     }
 
     public class RegistrationResponseDto

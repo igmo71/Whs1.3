@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -11,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Whs.Shared.Models.Accounts;
 using Whs.Shared.Utils;
+
 
 namespace Whs.Server.Controllers
 {
@@ -39,7 +41,7 @@ namespace Whs.Server.Controllers
                 FullName = userForRegistration.FullName,
                 UserName = userForRegistration.Email,
                 Email = userForRegistration.Email,
-                WarehouseId = userForRegistration.StorageKey
+                WarehouseId = userForRegistration.WarehouseId
             };
 
             var result = await _userManager.CreateAsync(user, userForRegistration.Password);
@@ -128,5 +130,10 @@ namespace Whs.Server.Controllers
 
             return tokenOptions;
         }
+
+
+        [HttpGet("GetUsers")]
+        public IEnumerable<ApplicationUser> GetUsersAsync([FromQuery] ApplicationUserParameters parameters) =>
+            _userManager.Users.Search(parameters).OrderBy(e => e.FullName).AsNoTracking().ToArray();
     }
 }

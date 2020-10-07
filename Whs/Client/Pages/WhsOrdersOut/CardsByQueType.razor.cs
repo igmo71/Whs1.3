@@ -55,7 +55,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
             string requestUri = $"api/WhsOrdersOut/DtoByQueType?" +
                 $"SearchBarcode={OrderParameters.SearchBarcode}&" +
                 $"SearchTerm={OrderParameters.SearchTerm}&" +
-                $"SearchWhsId={OrderParameters.SearchWhsId}&" +
+                $"SearchWarehouseId={OrderParameters.SearchWarehouseId}&" +
                 $"SearchDestinationId={OrderParameters.SearchDestinationId}";
             try
             {
@@ -68,10 +68,10 @@ namespace Whs.Client.Pages.WhsOrdersOut
             //StateHasChanged();
             System.Console.WriteLine($"GetOrdersDtoAsync - duration: {DateTime.Now - beginTime}");
         }
-        private async Task SearchByWarehouseAsync(string searchStorageId)
+        private async Task SearchByWarehouseAsync(string searchWarehouseId)
         {
             OrderParameters.SearchBarcode = null;
-            OrderParameters.SearchWhsId = searchStorageId;
+            OrderParameters.SearchWarehouseId = searchWarehouseId;
             await GetOrdersDtoAsync();
         }
 

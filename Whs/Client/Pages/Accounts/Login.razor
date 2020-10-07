@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/Login"
 
 <h3>Вход</h3>
 
@@ -13,7 +13,7 @@
     </div>
 }
 
-<input type="hidden" id="searchBarcode" value="@_userForAuthentication.Barcode" @onchange="ScannedBarcode" />
+<input type="hidden" id="Barcode" value="@_userForAuthentication.Barcode" @onchange="ScannedBarcode" />
 
 <EditForm Model="_userForAuthentication" OnValidSubmit="ExecuteLogin" class="card card-body bg-light mt-5">
     <DataAnnotationsValidator />
