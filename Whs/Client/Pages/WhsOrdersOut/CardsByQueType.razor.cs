@@ -43,7 +43,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
             await GetWarehousesAsync();
             await GetDestinationsAsync();
             await GetOrdersDtoAsync();
-            SetTimer(double.Parse(Configuration["timerInterval"]), true);
+            SetTimer(double.Parse(Configuration["TimerInterval"]), true);
             System.Console.WriteLine($"OnInitializedAsync - duration: {DateTime.Now - beginTime}");
         }
 
