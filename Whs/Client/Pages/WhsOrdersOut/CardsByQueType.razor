@@ -1,7 +1,11 @@
 ﻿@page "/WhsOrdersOut/CardsByQueType"
 @page "/WhsOutsByQueType"
 @page "/WhsOutsByQueType/{NewTab}"
+
+@using Microsoft.AspNetCore.Authorization
 @using Whs.Client.Components
+
+@attribute [Authorize]
 
 <Notification @ref="Notification" />
 

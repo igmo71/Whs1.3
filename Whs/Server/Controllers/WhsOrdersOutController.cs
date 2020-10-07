@@ -44,6 +44,7 @@ namespace Whs.Server.Controllers
                 .Where(e => e.Проведен)
                 .Where(e => _settings.MatchingStatusOut.Show.Contains(e.Статус))
                 .Search(parameters)
+                .Take(20)
                 .Include(e => e.Распоряжения)
                 .OrderByDescending(e => e.ВесовойКоэффициент)
                 .ThenBy(e => e.СрокВыполнения)
