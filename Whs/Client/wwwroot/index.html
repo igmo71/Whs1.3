@@ -25,6 +25,7 @@
             suffixKeyCodes: [13],
             reactToPaste: false,
             onScan: function (sCode, iQty) {
+                console.log('Scanned: ' + sCode);
                 var Barcode = document.getElementById('Barcode');
                 Barcode.value = sCode;
                 var changeEvent = document.createEvent('Event');

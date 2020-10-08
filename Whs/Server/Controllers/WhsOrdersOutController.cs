@@ -154,10 +154,11 @@ namespace Whs.Server.Controllers
 
             return CreatedAtAction("GetAsync", new { id = whsOrderOut.Документ_Id }, whsOrderOut);
         }
-        
+
+        // POST: api/WhsOrdersOut
         [HttpPut("{id}")]
-        [HttpPut("{id}/{to1C}")]
-        public async Task<IActionResult> PutAsync(string id, string to1C, WhsOrderOut whsOrderOut)
+        [HttpPut("{id}/{barcode}")]
+        public async Task<IActionResult> PutAsync(string id, string barcode, WhsOrderOut whsOrderOut)
         {
             if (id != whsOrderOut.Документ_Id)
             {
@@ -165,13 +166,13 @@ namespace Whs.Server.Controllers
                 return BadRequest();
             }
 
-            if (to1C == "to1C")
+            if (!(barcode == null || barcode == Guid.Empty.ToString()))
             {
                 whsOrderOut = await PutTo1cAsync(whsOrderOut);
                 if (whsOrderOut == null)
                 {
                     _logger.LogError($"---> PutUpdateStatusAsync/{id}: Problem - 1C");
-                    return Problem();
+                    return Problem(detail: "Проблема в 1С");
                 }
             }
 
@@ -208,21 +209,22 @@ namespace Whs.Server.Controllers
 
         private async Task<WhsOrderOut> PutTo1cAsync(WhsOrderOut whsOrderOut)
         {
-            string content = JsonSerializer.Serialize(whsOrderOut);
-            StringContent stringContent = new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json);
-            HttpResponseMessage response = await _clientHttpService.PutAsync($"РасходныйОрдерНаТовары/{whsOrderOut.Документ_Id}", stringContent);
-            string responseContent = await response.Content.ReadAsStringAsync();
+            string responseContent = string.Empty;
             try
             {
-                Response1cOut response1C = JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                string content = JsonSerializer.Serialize(whsOrderOut);
+                StringContent stringContent = new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json);
+                HttpResponseMessage response = await _clientHttpService.PutAsync($"РасходныйОрдерНаТовары/{whsOrderOut.Документ_Id}", stringContent);
+                responseContent = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
                 {
                     _logger.LogInformation($"---> PutTo1cAsync: {whsOrderOut.Документ_Name} - Ok");
-                    return response1C.Результат;
+                    return JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
                 }
                 else
                 {
-                    _logger.LogError($"---> PutTo1cAsync: {whsOrderOut.Документ_Name}{Environment.NewLine}Ошибка: {response1C.Ошибка}");
+                    _logger.LogError($"---> PutTo1cAsync: {whsOrderOut.Документ_Name}{Environment.NewLine}" +
+                        $"Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
                 }
             }
             catch (Exception exception)

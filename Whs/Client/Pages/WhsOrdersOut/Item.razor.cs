@@ -55,17 +55,22 @@ namespace Whs.Client.Pages.WhsOrdersOut
             DateTime beginTime = DateTime.Now;
             Console.WriteLine("ScannedBarcodeAsync - begin");
             Barcode = args.Value.ToString();
+            Console.WriteLine($"ScannedBarcodeAsync Barcode: {Barcode}");
             try
             {
-                HttpResponseMessage response = await HttpClient.PutAsJsonAsync<WhsOrderOut>($"api/WhsOrdersOut/UpdateStatus/{OrderDto.Item.Документ_Id}/to1C", OrderDto.Item);
+                Console.WriteLine($"ScannedBarcodeAsync requestUri: {$"api/WhsOrdersOut/{OrderDto.Item.Документ_Id}/{Barcode}"}");
+                HttpResponseMessage response = await HttpClient.PutAsJsonAsync<WhsOrderOut>($"api/WhsOrdersOut/{OrderDto.Item.Документ_Id}/{Barcode}", OrderDto.Item);
+                Console.WriteLine($"HttpResponseMessage Status: {response.StatusCode}");
+                Console.WriteLine($"HttpResponseMessage Content: {await response.Content.ReadAsStringAsync()}");
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
                     NavigationManager.NavigateTo("/WhsOutsByQueType");
                     //  TODO: Print ???
                 }
             }
-            catch
+            catch(Exception ex)
             {
+                Console.WriteLine($"ScannedBarcodeAsync Exception: {ex.Message}");
                 await Notification.ShowAsync($"Ошибка изменения статуса", 1);
             }
             Console.WriteLine($"ScannedBarcodeAsync - duration: {DateTime.Now - beginTime}");
