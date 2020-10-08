@@ -3,6 +3,7 @@
     public class WhsOrderDto
     {
         public string BarcodeBase64 { get; set; }
+        public bool IsAutoPrint { get; set; }
     }
 
     public class WhsOrderDtoIn : WhsOrderDto

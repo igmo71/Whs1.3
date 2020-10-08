@@ -50,8 +50,9 @@ namespace Whs.Client.Identity
                         claims.Add(new Claim(ClaimTypes.Role, parsedRole));
                     }
                 }
-                catch (JsonException)
+                catch (JsonException ex)
                 {
+                    Console.WriteLine($"ExtractRolesFromJWT JsonException: {ex.Message} ");
                     var parsedRole = roles.ToString();
                     claims.Add(new Claim(ClaimTypes.Role, parsedRole));
                 }

@@ -36,7 +36,7 @@ namespace Whs.Server.Controllers
         public async Task<ActionResult<IEnumerable<Warehouse>>> GetWarehousesForIn()
         {
             Warehouse[] items = await _context.WhsOrdersIn.AsNoTracking()
-               .Where(e => _settings.MatchingStatusOut.Show.Contains(e.Статус))
+               .Where(e => e.Статус == _settings.MatchingStatusOut.New)
                .Select(e => new Warehouse { Id = e.Склад_Id, Name = e.Склад_Name })
                .Distinct().ToArrayAsync();
             if (items == null)
@@ -49,7 +49,7 @@ namespace Whs.Server.Controllers
         public async Task<ActionResult<IEnumerable<Warehouse>>> GetWarehousesForOut()
         {
             Warehouse[] items = await _context.WhsOrdersOut.AsNoTracking()
-               .Where(e => _settings.MatchingStatusOut.Show.Contains(e.Статус))
+               .Where(e => e.Статус == _settings.MatchingStatusOut.New)
                .Select(e => new Warehouse { Id = e.Склад_Id, Name = e.Склад_Name })
                .Distinct().ToArrayAsync();
             if (items == null)

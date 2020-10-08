@@ -18,7 +18,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
         [Inject]
         public HttpClient HttpClient { get; set; }
         [Inject]
-        public IJSRuntime JSRuntime { get; set; }   
+        public IJSRuntime JSRuntime { get; set; }
         [Inject]
         public NavigationManager NavigationManager { get; set; }
         [Inject]
@@ -38,13 +38,13 @@ namespace Whs.Client.Pages.WhsOrdersOut
         protected override async Task OnInitializedAsync()
         {
             DateTime beginTime = DateTime.Now;
-            System.Console.WriteLine("OnInitializedAsync - begin");
+            Console.WriteLine("OnInitializedAsync - begin");
             OrderParameters = new WhsOrderParameters();
             await GetWarehousesAsync();
             await GetDestinationsAsync();
             await GetOrdersDtoAsync();
             SetTimer(double.Parse(Configuration["TimerInterval"]), true);
-            System.Console.WriteLine($"OnInitializedAsync - duration: {DateTime.Now - beginTime}");
+            Console.WriteLine($"OnInitializedAsync - duration: {DateTime.Now - beginTime}");
         }
 
         private async Task GetWarehousesAsync()
@@ -60,7 +60,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
         private async Task GetOrdersDtoAsync()
         {
             DateTime beginTime = DateTime.Now;
-            System.Console.WriteLine("GetOrdersDtoAsync - begin");
+            Console.WriteLine("GetOrdersDtoAsync - begin");
             string requestUri = $"api/WhsOrdersOut/DtoByQueType?" +
                 $"SearchBarcode={OrderParameters.SearchBarcode}&" +
                 $"SearchTerm={OrderParameters.SearchTerm}&" +
@@ -69,13 +69,22 @@ namespace Whs.Client.Pages.WhsOrdersOut
             try
             {
                 OrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoOut>(requestUri);
+                StateHasChanged();
+                Console.WriteLine($"GetOrdersDtoAsync - count: {OrdersDto.Items.Count}");
+                Console.WriteLine($"GetOrdersDtoAsync - (OrdersDto.Items.Count == 0): {OrdersDto.Items.Count == 0}");
+                if (OrdersDto.Items.Count == 0)
+                {
+                    await Notification.ShowAsync($"Не найдено", 1);
+                    if (OrderParameters.SearchBarcode != null)
+                        await SearchByBarcodeClearAsync();
+                }
             }
-            catch
+            catch(Exception ex)
             {
-                await Notification.ShowAsync($"Не найдено", 1);
+                Console.WriteLine($"GetOrdersDtoAsync - Exception: {Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                await Notification.ShowAsync($"Ошибка{Environment.NewLine}{ex.Message}", 2);
             }
-            //StateHasChanged();
-            System.Console.WriteLine($"GetOrdersDtoAsync - duration: {DateTime.Now - beginTime}");
+            Console.WriteLine($"GetOrdersDtoAsync - duration: {DateTime.Now - beginTime}");
         }
         private async Task SearchByWarehouseAsync(string searchWarehouseId)
         {

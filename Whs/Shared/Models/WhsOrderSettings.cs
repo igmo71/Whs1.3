@@ -15,7 +15,7 @@ namespace Whs.Shared.Models
 
     public class MatchingStatus
     {
-        public string[] Show { get; set; }
+        public string New { get; set; }
         public string AtWork { get; set; }
         public string ToShipment { get; set; }
         public string Complete { get; set; }

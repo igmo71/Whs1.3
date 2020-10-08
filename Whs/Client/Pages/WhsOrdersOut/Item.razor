@@ -6,28 +6,31 @@
 
 <input type="hidden" id="Barcode" value="@Barcode" @onchange="ScannedBarcodeAsync" />
 
-<h3>Расходные ордера на товары</h3>
 @if (OrderDto == null)
 {
-    <p><em>Loading...</em></p>
+    <h3>Расходный ордер на товары</h3>
+    <p><em>Загрузка...</em></p>
 }
 else
 {
-    <div class="row">
-        <div class="col-3 wh-label">
-            <span class="display-3 align-middle text-center border border-dark">
-                @OrderDto.Item?.НомерОчереди
-            </span>
+<div class="row">
+    <div class="col-2 wh-label">
+        <div class="display-4 align-middle text-center border border-dark">
+            @OrderDto.Item?.НомерОчереди
         </div>
-        <div class="col-5 h3">
-            @OrderDto.Item?.Документ_Name
+        <div class="align-middle text-center border border-dark">
+            @OrderDto.Item?.Статус
         </div>
-        <div class="col-4 d-none d-print-inline">
-            <div class="float-right">
-                <img src=@($"data:image/jpeg;base64,{OrderDto.BarcodeBase64}") alt="штрих код" width="300" height="80" />
-            </div>
+    </div>    
+    <div class="col-5 h3">
+        @OrderDto.Item?.Документ_Name
+    </div>
+    <div class="col-4 d-none d-print-inline">
+        <div class="float-right">
+            <img src=@($"data:image/jpeg;base64,{OrderDto.BarcodeBase64}") alt="штрих код" width="300" height="80" />
         </div>
     </div>
+</div>
 
     <table class="table">
         <thead>
