@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Whs.Shared.Models.Accounts;
 
@@ -11,8 +12,9 @@ namespace Whs.Shared.Models
         public string ApplicationUserId { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
 
+        [Column("Status")]
         public string OldStatus { get; set; }
-        public string NewStatus { get; set; }
+        [Column("DateTime")]
         public DateTime StatusSwitchDate { get; set; }
     }
 

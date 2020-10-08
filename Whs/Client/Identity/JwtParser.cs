@@ -52,7 +52,7 @@ namespace Whs.Client.Identity
                 }
                 catch (JsonException ex)
                 {
-                    Console.WriteLine($"ExtractRolesFromJWT JsonException: {ex.Message} ");
+                    Console.WriteLine($"ExtractRolesFromJWT JsonException: {Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
                     var parsedRole = roles.ToString();
                     claims.Add(new Claim(ClaimTypes.Role, parsedRole));
                 }

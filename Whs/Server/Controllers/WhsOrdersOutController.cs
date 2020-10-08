@@ -146,12 +146,12 @@ namespace Whs.Server.Controllers
             {
                 if (Exists(whsOrderOut.Документ_Id))
                 {
-                    _logger.LogError($"---> PostAsync: Conflict {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PostAsync: Conflict {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
                     return Conflict();
                 }
                 else
                 {
-                    _logger.LogError($"---> PostAsync: {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PostAsync: {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
                     throw;
                 }
             }
@@ -178,6 +178,13 @@ namespace Whs.Server.Controllers
                     _logger.LogError($"---> PutAsync/{id}: Problem - 1C");
                     return Problem(detail: "Problem - 1C");
                 }
+
+                //WhsOrderDataOut whsOrderDataOut = new WhsOrderDataOut
+                //{
+                //    WhsOrderOutId = whsOrderOut.Документ_Id,
+                //    ApplicationUserId = GuidConvert.FromNumStr(barcode),
+                //    OldStatus = oldStatus,
+                //}
             }
 
             IQueryable<ProductOut> productsToRemove = _context.ProductsOut.Where(e => e.Документ_Id == whsOrderOut.Документ_Id);
@@ -198,12 +205,12 @@ namespace Whs.Server.Controllers
             {
                 if (!Exists(id))
                 {
-                    _logger.LogError($"---> PutAsync/{id}: NotFound {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PutAsync/{id}: NotFound {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
                     return NotFound();
                 }
                 else
                 {
-                    _logger.LogError($"---> PutAsync/{id}: {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PutAsync/{id}: {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
                     throw;
                 }
             }
