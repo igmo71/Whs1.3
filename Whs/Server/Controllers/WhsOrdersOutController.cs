@@ -34,7 +34,6 @@ namespace Whs.Server.Controllers
             _logger = logger;
         }
 
-
         // GET: api/WhsOrdersOuts/
         [HttpGet]
         public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetListAsync()
@@ -81,7 +80,6 @@ namespace Whs.Server.Controllers
                         break;
                     default: break;
                 }
-
                 items = query.Take(_settings.OrdersPerPage).AsEnumerable();
             }
             else
