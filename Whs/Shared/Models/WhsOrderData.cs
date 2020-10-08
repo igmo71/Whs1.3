@@ -12,10 +12,8 @@ namespace Whs.Shared.Models
         public string ApplicationUserId { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
 
-        [Column("Status")]
-        public string OldStatus { get; set; }
-        [Column("DateTime")]
-        public DateTime StatusSwitchDate { get; set; }
+        public string Status { get; set; }
+        public DateTime DateTime { get; set; }
     }
 
     public class WhsOrderDataIn : WhsOrderData

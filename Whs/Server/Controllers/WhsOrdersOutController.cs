@@ -57,7 +57,6 @@ namespace Whs.Server.Controllers
                 .Where(e => e.Проведен)
                 //.Where(e => _settings.MatchingStatusOut.Show.Contains(e.Статус))
                 .Search(parameters)
-                .Take(_settings.OrdersPerPage)
                 .Include(e => e.Распоряжения)
                 .OrderByDescending(e => e.ВесовойКоэффициент)
                 .ThenBy(e => e.СрокВыполнения)
@@ -66,9 +65,24 @@ namespace Whs.Server.Controllers
             IEnumerable<WhsOrderOut> items;
             if (parameters.SearchBarcode == null)
             {
-                items = query
-                    .Where(e => e.Статус == _settings.MatchingStatusOut.New)
-                    .AsEnumerable();
+                switch (parameters.SearchStatus)
+                {
+                    case SearchStatus.New:
+                        query = query.Where(e => e.Статус == _settings.MatchingStatusOut.New);
+                        break;
+                    case SearchStatus.AtWork:
+                        query = query.Where(e => e.Статус == _settings.MatchingStatusOut.AtWork);
+                        break;
+                    case SearchStatus.ToShipment:
+                        query = query.Where(e => e.Статус == _settings.MatchingStatusOut.ToShipment);
+                        break;
+                    case SearchStatus.Complete:
+                        query = query.Where(e => e.Статус == _settings.MatchingStatusOut.Complete);
+                        break;
+                    default: break;
+                }
+
+                items = query.Take(_settings.OrdersPerPage).AsEnumerable();
             }
             else
             {
@@ -146,12 +160,12 @@ namespace Whs.Server.Controllers
             {
                 if (Exists(whsOrderOut.Документ_Id))
                 {
-                    _logger.LogError($"---> PostAsync: Conflict {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                    _logger.LogError($"---> PostAsync: Conflict {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}");
                     return Conflict();
                 }
                 else
                 {
-                    _logger.LogError($"---> PostAsync: {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                    _logger.LogError($"---> PostAsync: {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}");
                     throw;
                 }
             }
@@ -178,13 +192,6 @@ namespace Whs.Server.Controllers
                     _logger.LogError($"---> PutAsync/{id}: Problem - 1C");
                     return Problem(detail: "Problem - 1C");
                 }
-
-                //WhsOrderDataOut whsOrderDataOut = new WhsOrderDataOut
-                //{
-                //    WhsOrderOutId = whsOrderOut.Документ_Id,
-                //    ApplicationUserId = GuidConvert.FromNumStr(barcode),
-                //    OldStatus = oldStatus,
-                //}
             }
 
             IQueryable<ProductOut> productsToRemove = _context.ProductsOut.Where(e => e.Документ_Id == whsOrderOut.Документ_Id);
@@ -197,6 +204,15 @@ namespace Whs.Server.Controllers
             await _context.ProductsOut.AddRangeAsync(whsOrderOut.Товары);
             await _context.MngrOrdersOut.AddRangeAsync(whsOrderOut.Распоряжения);
 
+            WhsOrderDataOut whsOrderDataOut = new WhsOrderDataOut
+            {
+                WhsOrderOutId = whsOrderOut.Документ_Id,
+                ApplicationUserId = barcode == null ? null : GuidConvert.FromNumStr(barcode),
+                Status = whsOrderOut.Статус,
+                DateTime = DateTime.Now
+            };
+            await _context.WhsOrdersDataOut.AddAsync(whsOrderDataOut);
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -205,12 +221,12 @@ namespace Whs.Server.Controllers
             {
                 if (!Exists(id))
                 {
-                    _logger.LogError($"---> PutAsync/{id}: NotFound {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                    _logger.LogError($"---> PutAsync/{id}: NotFound {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}");
                     return NotFound();
                 }
                 else
                 {
-                    _logger.LogError($"---> PutAsync/{id}: {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                    _logger.LogError($"---> PutAsync/{id}: {whsOrderOut.Документ_Name}{Environment.NewLine}{ex.Message}");
                     throw;
                 }
             }

@@ -10,5 +10,8 @@ namespace Whs.Shared.Models
         public string SearchWarehouseId { get; set; }
         public string SearchDestinationId { get; set; }
         public string SearchBarcode { get; set; }
+        public SearchStatus SearchStatus { get; set; }
     }
+
+    public enum SearchStatus { Undefined, New, AtWork, ToShipment, Complete }
 }

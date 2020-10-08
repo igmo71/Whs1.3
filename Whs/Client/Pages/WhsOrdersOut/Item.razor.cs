@@ -3,7 +3,6 @@ using Microsoft.JSInterop;
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Whs.Client.Components;
 using Whs.Shared.Models;
@@ -45,48 +44,48 @@ namespace Whs.Client.Pages.WhsOrdersOut
                 DateTime beginTime = DateTime.Now;
                 Console.WriteLine("GetOrderDtoAsync - begin");
                 OrderDto = await HttpClient.GetFromJsonAsync<WhsOrderDtoOut>($"api/WhsOrdersOut/Dto/{Id}");
+                StateHasChanged();
                 Console.WriteLine($"GetOrderDtoAsync - duration: {DateTime.Now - beginTime}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Console.WriteLine($"GetOrderDtoAsync Excepton: {Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
-                await Notification.ShowAsync($"Ошибка{Environment.NewLine}{ex.Message}", 2);
+                await Notification.ShowAsync($"Ошибка загрузки ордера. {Environment.NewLine}{ex.Message}", 2);
+                Console.WriteLine($"GetOrderDtoAsync - Excepton: {ex.Message}");
+                Console.WriteLine($"{ex.StackTrace}");
             }
         }
 
         private async Task ScannedBarcodeAsync(ChangeEventArgs args)
         {
-            DateTime beginTime = DateTime.Now;
-            Console.WriteLine("ScannedBarcodeAsync - begin");
-            Barcode = args.Value.ToString();
-            Console.WriteLine($"ScannedBarcodeAsync - Barcode: {Barcode}");
             try
             {
-                Console.WriteLine($"ScannedBarcodeAsync - requestUri: {$"api/WhsOrdersOut/{OrderDto.Item.Документ_Id}/{Barcode}"}");
+                DateTime beginTime = DateTime.Now;
+                Console.WriteLine("ScannedBarcodeAsync - begin");
+                Barcode = args.Value.ToString();
                 HttpResponseMessage response = await HttpClient.PutAsJsonAsync<WhsOrderOut>($"api/WhsOrdersOut/{OrderDto.Item.Документ_Id}/{Barcode}", OrderDto.Item);
                 Console.WriteLine($"HttpResponseMessage - response: {response.StatusCode} - {response.ReasonPhrase} - {await response.Content.ReadAsStringAsync()}");
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
                     if (OrderDto.IsAutoPrint)
                     {
-                        DateTime beginTimePrint = DateTime.Now;
                         await GetOrderDtoAsync();
-                        StateHasChanged();
-                        Console.WriteLine("GetOrderDtoAsync Print - begin");
                         await PrintAsync();
-                        Console.WriteLine($"GetOrderDtoAsync Print - duration: {DateTime.Now - beginTimePrint}");
                     }
                     NavigationManager.NavigateTo("/WhsOutsByQueType");
                 }
+                else
+                {
+                    await Notification.ShowAsync($"Cтатус изменить не удалось. {Environment.NewLine}{response.ReasonPhrase}", 2);
+                }
+                Console.WriteLine($"ScannedBarcodeAsync - duration: {DateTime.Now - beginTime}");
             }
             catch (Exception ex)
             {
+                await Notification.ShowAsync($"Ошибка изменения статуса. {Environment.NewLine}{ex.Message}", 2);
                 Console.WriteLine($"ScannedBarcodeAsync - Exception: {ex.Message}");
-                await Notification.ShowAsync($"Ошибка изменения статуса{Environment.NewLine}{ex.Message}", 3);
+                Console.WriteLine($"{ex.StackTrace}");
             }
-            Console.WriteLine($"ScannedBarcodeAsync - duration: {DateTime.Now - beginTime}");
         }
-
 
         private async Task PrintAsync() => await JSRuntime.InvokeVoidAsync("print");
     }

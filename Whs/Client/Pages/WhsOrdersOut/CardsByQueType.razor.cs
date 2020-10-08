@@ -40,6 +40,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
             DateTime beginTime = DateTime.Now;
             Console.WriteLine("OnInitializedAsync - begin");
             OrderParameters = new WhsOrderParameters();
+            OrderParameters.SearchStatus = SearchStatus.New;
             await GetWarehousesAsync();
             await GetDestinationsAsync();
             await GetOrdersDtoAsync();
@@ -59,32 +60,33 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private async Task GetOrdersDtoAsync()
         {
-            DateTime beginTime = DateTime.Now;
-            Console.WriteLine("GetOrdersDtoAsync - begin");
-            string requestUri = $"api/WhsOrdersOut/DtoByQueType?" +
-                $"SearchBarcode={OrderParameters.SearchBarcode}&" +
-                $"SearchTerm={OrderParameters.SearchTerm}&" +
-                $"SearchWarehouseId={OrderParameters.SearchWarehouseId}&" +
-                $"SearchDestinationId={OrderParameters.SearchDestinationId}";
             try
             {
+                DateTime beginTime = DateTime.Now;
+                Console.WriteLine("GetOrdersDtoAsync - begin");
+                string requestUri = $"api/WhsOrdersOut/DtoByQueType?" +
+                    $"SearchBarcode={OrderParameters.SearchBarcode}&" +
+                    $"SearchStatus={OrderParameters.SearchStatus}&" +
+                    $"SearchTerm={OrderParameters.SearchTerm}&" +
+                    $"SearchWarehouseId={OrderParameters.SearchWarehouseId}&" +
+                    $"SearchDestinationId={OrderParameters.SearchDestinationId}";
+                Console.WriteLine($"GetOrdersDtoAsync - requestUri: {requestUri}");
                 OrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoOut>(requestUri);
                 StateHasChanged();
-                Console.WriteLine($"GetOrdersDtoAsync - count: {OrdersDto.Items.Count}");
-                Console.WriteLine($"GetOrdersDtoAsync - (OrdersDto.Items.Count == 0): {OrdersDto.Items.Count == 0}");
                 if (OrdersDto.Items.Count == 0)
                 {
                     await Notification.ShowAsync($"Не найдено", 1);
                     if (OrderParameters.SearchBarcode != null)
                         await SearchByBarcodeClearAsync();
                 }
+                Console.WriteLine($"GetOrdersDtoAsync - duration: {DateTime.Now - beginTime}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                Console.WriteLine($"GetOrdersDtoAsync - Exception: {Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
-                await Notification.ShowAsync($"Ошибка{Environment.NewLine}{ex.Message}", 2);
+                await Notification.ShowAsync($"Ошибка загрузки ордеров. {Environment.NewLine}{ex.Message}", 2);
+                Console.WriteLine($"GetOrdersDtoAsync - Exception: {ex.Message}");
+                Console.WriteLine($"{ex.StackTrace}");
             }
-            Console.WriteLine($"GetOrdersDtoAsync - duration: {DateTime.Now - beginTime}");
         }
         private async Task SearchByWarehouseAsync(string searchWarehouseId)
         {
