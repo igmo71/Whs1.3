@@ -30,7 +30,7 @@ namespace Whs.Server.Controllers
             Destination[] items = await _context.WhsOrdersOut.AsNoTracking()
                 //.Where(e => e.Статус == "Подготовлено")
                 .Select(e => new Destination { Id = e.НаправлениеДоставки_Id, Name = e.НаправлениеДоставки_Name })
-                .Distinct().ToArrayAsync();
+                .Distinct().AsNoTracking().ToArrayAsync();
             if (items == null || items.Count() == 0)
                 return NoContent();
             items.FirstOrDefault(e => e.Id == Guid.Empty.ToString()).Name = "- Без направления -";

@@ -36,9 +36,9 @@ namespace Whs.Server.Controllers
         public async Task<ActionResult<IEnumerable<Warehouse>>> GetWarehousesForIn()
         {
             Warehouse[] items = await _context.WhsOrdersIn.AsNoTracking()
-               .Where(e => e.Статус == "Подготовлено")
+               //.Where(e => e.Статус == "Подготовлено")
                .Select(e => new Warehouse { Id = e.Склад_Id, Name = e.Склад_Name })
-               .Distinct().ToArrayAsync();
+               .Distinct().AsNoTracking().ToArrayAsync();
             if (items == null)
                 return NoContent();
             return items;
@@ -51,7 +51,7 @@ namespace Whs.Server.Controllers
             Warehouse[] items = await _context.WhsOrdersOut.AsNoTracking()
                //.Where(e => e.Статус == "Подготовлено")
                .Select(e => new Warehouse { Id = e.Склад_Id, Name = e.Склад_Name })
-               .Distinct().ToArrayAsync();
+               .Distinct().AsNoTracking().ToArrayAsync();
             if (items == null)
                 return NoContent();
             return items;

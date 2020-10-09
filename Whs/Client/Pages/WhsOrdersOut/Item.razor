@@ -85,22 +85,57 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Товар</th>
-                <th>Кол план</th>
-                <th>Кол факт</th>
-                <th>Упак</th>
-                <th>Вес</th>
+                <th class="wh-th">№</th>
+                <th class="wh-th">Артикул</th>
+                <th class="wh-th">Товар</th>
+                <th class="wh-th">Кол план</th>
+                @if (OrderDto.Item?.Статус != "Подготовлено")
+                {
+                    <th class="wh-th d-print-none">Причина изменения</th>
+                    <th class="wh-th d-print-none">Кол факт</th>
+                    <th class="wh-th d-none d-print-table-cell">Кол факт</th>
+                }
+                <th class="wh-th">Упак</th>
+                <th class="wh-th">Вес</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in OrderDto.Item.Товары)
             {
                 <tr>
-                    <td>@item.Номенклатура_Name</td>
-                    <td>@item.КоличествоПлан</td>
-                    <td>@item.КоличествоФакт</td>
-                    <td>@item.Упаковка_Name</td>
-                    <td>@item.Вес</td>
+                    <td class="wh-td-col-1">@item.НомерСтроки</td>
+                    <td class="wh-td-col-2">@item.Артикул</td>
+                    <td class="wh-td-col-3">@item.Номенклатура_Name</td>
+                    <td class="wh-td-col-4">@item.КоличествоПлан</td>
+
+                    @if (OrderDto.Item?.Статус != "Подготовлено")
+                    {
+                        <td class="wh-td-col-5 d-print-none">
+                            <select class="form-control" @bind="item.Data.EditingCauseId">
+                                <option value="@Guid.Empty" selected></option>
+                                @foreach (var cause in EditingCauses)
+                                {
+                                    <option value="@cause.Id">@cause.Name</option>
+                                }
+                            </select>
+                        </td>
+                        <td class="wh-td-col-6 d-print-none">
+                            <input class="form-control" @bind="item.КоличествоФакт" />
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" >&times;</button>
+                            </div>
+                        </td>
+                        <td class="wh-td-col-6 d-none d-print-table-cell">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                    }
+                    @if (OrderDto.Item?.Статус == "Подготовлено")
+                    {
+                        <td class="wh-td-col-5">@item.Data?.EditingCause.Name</td>
+                        <td class="wh-td-col-6 d-print-none">@item.КоличествоФакт</td>
+                    }
+                    <td class="wh-td-col-7">@item.Упаковка_Name</td>
+                    <td class="wh-td-col-8">@item.Вес</td>
                 </tr>
             }
         </tbody>

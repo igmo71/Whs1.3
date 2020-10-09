@@ -25,19 +25,19 @@ namespace Whs.Client.Pages.WhsOrdersOut
         private string Barcode;
         private Notification Notification;
         WhsOrderDtoOut OrderDto;
-        //public EditingCause[] EditingCause { get; set; }
+        public EditingCause[] EditingCauses { get; set; }
 
 
         protected override async Task OnInitializedAsync()
         {
-            //await GetEditingReasonsAsync();
+            await GetEditingReasonsAsync();
             await GetOrderDtoAsync();
         }
 
-        //private async Task GetEditingReasonsAsync()
-        //{
-        //    EditingCause = await HttpClient.GetFromJsonAsync<EditingCause[]>("api/EditingReasons/getOuts");
-        //}
+        private async Task GetEditingReasonsAsync()
+        {
+            EditingCauses = await HttpClient.GetFromJsonAsync<EditingCause[]>("api/EditingCauses/ForOut");
+        }
 
         private async Task GetOrderDtoAsync()
         {
@@ -45,7 +45,8 @@ namespace Whs.Client.Pages.WhsOrdersOut
             {
                 DateTime beginTime = DateTime.Now;
                 Console.WriteLine("GetOrderDtoAsync - begin");
-                OrderDto = await HttpClient.GetFromJsonAsync<WhsOrderDtoOut>($"api/WhsOrdersOut/Dto/{Id}");
+                OrderDto = await HttpClient.GetFromJsonAsync<WhsOrderDtoOut>($"api/WhsOrdersOut/Dto/{Id}", new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true});                
+                Console.WriteLine($"GetOrderDtoAsync - OrderDto.Item.Статус: {OrderDto.Item.Статус}");
                 StateHasChanged();
                 Console.WriteLine($"GetOrderDtoAsync - duration: {DateTime.Now - beginTime}");
             }

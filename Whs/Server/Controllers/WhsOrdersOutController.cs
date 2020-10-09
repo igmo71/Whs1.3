@@ -109,7 +109,9 @@ namespace Whs.Server.Controllers
                 Item = await _context.WhsOrdersOut
                 .Where(e => e.Проведен)
                 .Include(e => e.Товары)
+                    .ThenInclude(e => e.Data)
                 .Include(e => e.Распоряжения)
+                .Include(e => e.Data)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Документ_Id == id),
                 BarcodeBase64 = new NetBarcode.Barcode(GuidConvert.ToNumStr(id), NetBarcode.Type.Code128C, false).GetBase64Image()
@@ -120,6 +122,9 @@ namespace Whs.Server.Controllers
                 _logger.LogError($"---> GetDto/{id}: NotFound");
                 return NotFound();
             }
+            foreach (var item in Dto.Item.Товары)
+                if (item.Data == null)
+                    item.Data = new ProductDataOut(item);
 
             return Dto;
         }
@@ -163,6 +168,10 @@ namespace Whs.Server.Controllers
                 return BadRequest();
             }
 
+            List<ProductDataOut> productsDataOut = new List<ProductDataOut>();
+            foreach (ProductOut item in whsOrderOut.Товары)
+                productsDataOut.Add(item.Data);
+
             if (!(barcode == null || barcode == Guid.Empty.ToString()))
             {
                 whsOrderOut = await PutTo1cAsync(whsOrderOut);
@@ -173,6 +182,14 @@ namespace Whs.Server.Controllers
                 }
             }
 
+            WhsOrderDataOut whsOrderDataOut = new WhsOrderDataOut
+            {
+                DateTime = DateTime.Now,
+                Статус = whsOrderOut.Статус,
+                Документ_Id = whsOrderOut.Документ_Id,
+                ApplicationUserId = barcode == null ? null : GuidConvert.FromNumStr(barcode)
+            };
+
             IQueryable<ProductOut> productsToRemove = _context.ProductsOut.Where(e => e.Документ_Id == whsOrderOut.Документ_Id);
             _context.ProductsOut.RemoveRange(productsToRemove);
             IQueryable<MngrOrderOut> mngrOrdersOutToRemove = _context.MngrOrdersOut.Where(e => e.Документ_Id == whsOrderOut.Документ_Id);
@@ -180,18 +197,12 @@ namespace Whs.Server.Controllers
             await _context.SaveChangesAsync();
 
             _context.Entry(whsOrderOut).State = EntityState.Modified;
+
             await _context.ProductsOut.AddRangeAsync(whsOrderOut.Товары);
             await _context.MngrOrdersOut.AddRangeAsync(whsOrderOut.Распоряжения);
 
-
-            WhsOrderDataOut whsOrderDataOut = new WhsOrderDataOut 
-            { 
-                DateTime = DateTime.Now,
-                Статус = whsOrderOut.Статус,
-                Документ_Id = whsOrderOut.Документ_Id,
-                ApplicationUserId = barcode == null ? null : GuidConvert.FromNumStr(barcode)
-            };            
             await _context.WhsOrdersDataOut.AddAsync(whsOrderDataOut);
+            await _context.ProductsDataOut.AddRangeAsync(productsDataOut);
 
             try
             {

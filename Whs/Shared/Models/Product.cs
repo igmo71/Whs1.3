@@ -36,11 +36,20 @@ namespace Whs.Shared.Models
     {
         public Guid Id { get; set; }
         public string Документ_Id { get; set; }
-        public int НомерСтроки { get; set; }       
+        public int НомерСтроки { get; set; }
     }
 
     public class ProductDataIn : ProductData
     {
+        public ProductDataIn()
+        {
+            EditingCause = new EditingCauseIn();
+        }
+        public ProductDataIn(ProductIn product) : this()
+        {
+            Документ_Id = product.Документ_Id;
+            НомерСтроки = product.НомерСтроки;
+        }
         public Guid EditingCauseId { get; set; }
         public EditingCauseIn EditingCause { get; set; }
         [JsonIgnore]
@@ -49,6 +58,15 @@ namespace Whs.Shared.Models
 
     public class ProductDataOut : ProductData
     {
+        public ProductDataOut()
+        {
+            EditingCause = new EditingCauseOut();
+        }
+        public ProductDataOut(ProductOut product) : this()
+        {
+            Документ_Id = product.Документ_Id;
+            НомерСтроки = product.НомерСтроки;
+        }
         public Guid EditingCauseId { get; set; }
         public EditingCauseOut EditingCause { get; set; }
         [JsonIgnore]
