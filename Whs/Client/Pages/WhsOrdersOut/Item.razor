@@ -13,33 +13,74 @@
 }
 else
 {
-<div class="row">
-    <div class="col-2 d-print-none">
-        <button class="btn btn-primary" @onclick="Return"><span class="oi oi-action-undo"></span> Назад </button>
-    </div>
-    <div class="col-6 h3">
-        @OrderDto.Item?.Документ_Name
-    </div>
-    <div class="col-4 d-none d-print-inline">
-        <div class="float-right">
-            <img src=@($"data:image/jpeg;base64,{OrderDto.BarcodeBase64}") alt="штрих код" width="300" height="80" />
+    <div class="row">
+        <div class="col-2 d-print-none">
+            <button class="btn btn-primary" @onclick="Return"><span class="oi oi-action-undo"></span> Назад </button>
+        </div>
+        <div class="col-6">
+            <div class="h3">
+                @OrderDto.Item?.Документ_Name
+            </div>
+            <div class="align-middle text-center border border-dark">
+                @OrderDto.Item?.Статус
+            </div>
+        </div>
+        <div class="col-4 d-none d-print-inline">
+            <div class="float-right">
+                <img src=@($"data:image/jpeg;base64,{OrderDto.BarcodeBase64}") alt="штрих код" width="300" height="80" />
+            </div>
+        </div>
+        <div class="col-2 mb-2 d-print-none">
+            <button class="btn btn-info" @onclick="PrintAsync"><span class="oi oi-print"></span> Печать </button>
+        </div>
+        <div class="col-2 wh-label">
+            <div class="display-4 align-middle text-center border border-dark">
+                @OrderDto.Item?.НомерОчереди
+            </div>
+            <div class="align-middle text-center border border-dark">
+                @(OrderDto.Item.Оплачено ? "оплачено" : "НЕ оплачено")
+            </div>
         </div>
     </div>
-    <div class="col-2 mb-2 d-print-none">
-        <button class="btn btn-info" @onclick="PrintAsync"><span class="oi oi-print"></span> Печать </button>
-    </div>
-    <div class="col-2 wh-label">
-        <div class="display-4 align-middle text-center border border-dark">
-            @OrderDto.Item?.НомерОчереди
-        </div>
-        <div class="align-middle text-center border border-dark">
-            @OrderDto.Item?.Статус
-        </div>
-        <div class="align-middle text-center border border-dark">
-            @(OrderDto.Item.Оплачено ? "оплачено" : "НЕ оплачено")
-        </div>
-    </div>
-</div>
+
+    <table>
+        <tr>
+            <th>Склад: </th>
+            <td>@OrderDto.Item?.Склад_Name</td>
+            <th>Тип очереди:</th>
+            <td>@OrderDto.Item?.ТипОчереди</td>
+        </tr>
+        <tr>
+            <th>Получатель: </th>
+            <td>@OrderDto.Item?.ОтправительПолучатель_Name</td>
+            <th>Выполнить до: </th>
+            <td>@OrderDto.Item?.СрокВыполненияString</td>
+        </tr>
+        <tr>
+            <th>Распоряжение: </th>
+            <td>
+                @foreach (var item in OrderDto.Item?.Распоряжения)
+                {
+                    @item.Распоряжение_Name <br />
+                }
+            </td>
+            <th>В работе: </th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Ответственный: </th>
+            <td>@OrderDto.Item?.Ответственный_Name</td>
+            <th>Направление: </th>
+            <td>@OrderDto.Item?.НаправлениеДоставки_Name</td>
+        </tr>
+        <tr>
+            <th>Комментарий: </th>
+            <td>@OrderDto.Item?.Комментарий</td>
+            <th>Вес: </th>
+            <td>@OrderDto.Item?.Вес</td>
+        </tr>
+    </table>
+
 
     <table class="table">
         <thead>

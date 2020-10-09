@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Whs.Shared.Models
 {
@@ -24,6 +25,10 @@ namespace Whs.Shared.Models
         public string Ответственный_Name { get; set; }
         public string ОтправительПолучатель_Id { get; set; }
         public string ОтправительПолучатель_Name { get; set; }
+
+        [NotMapped]
+        public string СрокВыполненияString => 
+            (СрокВыполнения == null || СрокВыполнения == DateTime.Parse("01.01.0001 0:00:00")) ? string.Empty : СрокВыполнения.ToString();
     }
 
     public class WhsOrderIn : WhsOrder
