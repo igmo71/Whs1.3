@@ -13,6 +13,8 @@ namespace Whs.Client.Pages.WhsOrdersOut
     {
         [Parameter]
         public string Id { get; set; }
+        [Parameter]
+        public string SearchStatus { get; set; }
         [Inject]
         HttpClient HttpClient { get; set; }
         [Inject]
@@ -66,12 +68,12 @@ namespace Whs.Client.Pages.WhsOrdersOut
                 Console.WriteLine($"HttpResponseMessage - response: {response.StatusCode} - {response.ReasonPhrase} - {await response.Content.ReadAsStringAsync()}");
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
-                    if (OrderDto.IsAutoPrint)
+                    if (OrderDto.Item.Статус == "Подготовлено")
                     {
                         await GetOrderDtoAsync();
                         await PrintAsync();
                     }
-                    NavigationManager.NavigateTo("/WhsOutsByQueType");
+                    NavigationManager.NavigateTo($"WhsOrdersOut/CardsByQueType/{SearchStatus}");
                 }
                 else
                 {

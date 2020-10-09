@@ -5,20 +5,32 @@ namespace Whs.Shared.Models
 {
     public static class WhsOrderExtensions
     {
-        public static IQueryable<WhsOrderOut> Search(this IQueryable<WhsOrderOut> items, WhsOrderParameters parameters)
+        public static IQueryable<WhsOrderOut> Search(this IQueryable<WhsOrderOut> query, WhsOrderParameters parameters)
         {
+            if (!string.IsNullOrWhiteSpace(parameters.SearchStatus))
+            {
+                switch (parameters.SearchStatus)
+                {
+                    case "Подготовлено":    query = query.Where(e => e.Статус == "Подготовлено"); break;
+                    case "К отбору":        query = query.Where(e => e.Статус == "К отбору"); break;
+                    case "К отгрузке":      query = query.Where(e => e.Статус == "К отгрузке"); break;
+                    case "Отгружено":       query = query.Where(e => e.Статус == "Отгружено"); break;
+                    default: break;
+                }
+            }
+
             if (!(string.IsNullOrWhiteSpace(parameters.SearchWarehouseId) || parameters.SearchWarehouseId == Guid.Empty.ToString()))
-                items = items.Where(e => e.Склад_Id == parameters.SearchWarehouseId);
+                query = query.Where(e => e.Склад_Id == parameters.SearchWarehouseId);
 
             if (!(string.IsNullOrWhiteSpace(parameters.SearchDestinationId) || parameters.SearchDestinationId == "0"))
-                items = items.Where(e => e.НаправлениеДоставки_Id == parameters.SearchDestinationId);
+                query = query.Where(e => e.НаправлениеДоставки_Id == parameters.SearchDestinationId);
 
             if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
             {
                 var lowerCaseSearchTerm = parameters.SearchTerm.Trim().ToLower();
-                items = items.Where(e => e.Номер.ToLower().Contains(lowerCaseSearchTerm));
+                query = query.Where(e => e.Номер.ToLower().Contains(lowerCaseSearchTerm));
             }
-            return items;
+            return query;
         }
     }
 }

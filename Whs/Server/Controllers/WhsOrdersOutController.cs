@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -6,11 +10,6 @@ using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Whs.Server.Data;
 using Whs.Shared.Models;
 using Whs.Shared.Utils;
@@ -54,7 +53,6 @@ namespace Whs.Server.Controllers
 
             IQueryable<WhsOrderOut> query = _context.WhsOrdersOut
                 .Where(e => e.Проведен)
-                //.Where(e => _settings.MatchingStatusOut.Show.Contains(e.Статус))
                 .Search(parameters)
                 .Include(e => e.Распоряжения)
                 .OrderByDescending(e => e.ВесовойКоэффициент)
@@ -64,22 +62,7 @@ namespace Whs.Server.Controllers
             IEnumerable<WhsOrderOut> items;
             if (parameters.SearchBarcode == null)
             {
-                switch (parameters.SearchStatus)
-                {
-                    case SearchStatus.New:
-                        query = query.Where(e => e.Статус == _settings.MatchingStatusOut.New);
-                        break;
-                    case SearchStatus.AtWork:
-                        query = query.Where(e => e.Статус == _settings.MatchingStatusOut.AtWork);
-                        break;
-                    case SearchStatus.ToShipment:
-                        query = query.Where(e => e.Статус == _settings.MatchingStatusOut.ToShipment);
-                        break;
-                    case SearchStatus.Complete:
-                        query = query.Where(e => e.Статус == _settings.MatchingStatusOut.Complete);
-                        break;
-                    default: break;
-                }
+                
                 items = query.Take(_settings.OrdersPerPage).AsEnumerable();
             }
             else
@@ -130,9 +113,7 @@ namespace Whs.Server.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Документ_Id == id),
                 BarcodeBase64 = new NetBarcode.Barcode(GuidConvert.ToNumStr(id), NetBarcode.Type.Code128C, false).GetBase64Image()
-            };
-
-            Dto.IsAutoPrint = Dto.Item.Статус == _settings.MatchingStatusOut.New;
+            };            
 
             if (Dto.Item == null)
             {

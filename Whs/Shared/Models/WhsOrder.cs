@@ -42,5 +42,6 @@ namespace Whs.Shared.Models
         public string НомерОчереди { get; set; }
         public string НаправлениеДоставки_Id { get; set; }
         public string НаправлениеДоставки_Name { get; set; }
+        public bool Оплачено { get; set; }
     }
 }

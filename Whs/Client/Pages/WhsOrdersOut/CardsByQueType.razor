@@ -1,6 +1,5 @@
 ﻿@page "/WhsOrdersOut/CardsByQueType"
-@page "/WhsOutsByQueType"
-@page "/WhsOutsByQueType/{NewTab}"
+@page "/WhsOrdersOut/CardsByQueType/{SearchStatus}"
 
 @using Microsoft.AspNetCore.Authorization
 @using Whs.Client.Components
@@ -43,18 +42,18 @@
     </div>
 </div>
 
-<ul class="nav nav-tabs">
+<ul class="nav nav-tabs nav-fill">
     <li class="nav-item">
-        <a class="nav-link active" href="#">Новые</a>
+        <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["Подготовлено"]" @onclick="@(() => SearchByStatus("Подготовлено"))">Подготовлено</button>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="#">В работе</a>
+        <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["К отбору"]" @onclick="@(() => SearchByStatus("К отбору"))">К отбору</button>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="#">К выдаче</a>
+        <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["К отгрузке"]" @onclick="@(() => SearchByStatus("К отгрузке"))">К отгрузке</button>
     </li>
     <li class="nav-item">
-        <a class="nav-link disabled" href="#">Отгружено</a>
+        <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["Отгружено"]" @onclick="@(() => SearchByStatus("Отгружено"))">Отгружено</button>
     </li>
 </ul>
 
