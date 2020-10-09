@@ -15,8 +15,6 @@ namespace Whs.Client.Pages.WhsOrdersOut
 {
     public partial class CardsByQueType : IDisposable
     {
-        //[Parameter]
-        //public string NewTab { get; set; }
         [Parameter]
         public string SearchStatus { get; set; }
         [Inject]
@@ -45,14 +43,23 @@ namespace Whs.Client.Pages.WhsOrdersOut
             DateTime beginTime = DateTime.Now;
             Console.WriteLine("OnInitializedAsync - begin");
             OrderParameters = new WhsOrderParameters();
-            SearchStatusButtons = new Dictionary<string, string>
-                { { "Подготовлено", "active" }, { "К отбору", ""}, { "К отгрузке", ""}, { "Отгружено", ""} };
-            OrderParameters.SearchStatus = "Подготовлено";
+            CreateSearchStatusButtons();
             await GetWarehousesAsync();
             await GetDestinationsAsync();
             await GetOrdersDtoAsync();
             SetTimer(double.Parse(Configuration["TimerInterval"]), true);
             Console.WriteLine($"OnInitializedAsync - duration: {DateTime.Now - beginTime}");
+        }
+
+        private void CreateSearchStatusButtons()
+        {
+            SearchStatusButtons = new Dictionary<string, string>
+                { { "Подготовлено", "" }, { "К отбору", ""}, { "К отгрузке", ""}, { "Отгружен", ""} };
+            OrderParameters.SearchStatus = string.IsNullOrEmpty(SearchStatus) ? "Подготовлено" : SearchStatus;
+            if(string.IsNullOrEmpty(SearchStatus))
+                SearchStatusButtons["Подготовлено"] = "active";
+            else
+                SearchStatusButtons[SearchStatus] = "active";
         }
 
         private async Task GetWarehousesAsync()
