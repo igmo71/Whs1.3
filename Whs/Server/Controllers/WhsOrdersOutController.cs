@@ -109,7 +109,6 @@ namespace Whs.Server.Controllers
                 Item = await _context.WhsOrdersOut
                 .Where(e => e.Проведен)
                 .Include(e => e.Товары)
-                    .ThenInclude(e => e.Data)
                 .Include(e => e.Распоряжения)
                 .Include(e => e.Data)
                 .AsNoTracking()
@@ -122,9 +121,6 @@ namespace Whs.Server.Controllers
                 _logger.LogError($"---> GetDto/{id}: NotFound");
                 return NotFound();
             }
-            foreach (var item in Dto.Item.Товары)
-                if (item.Data == null)
-                    item.Data = new ProductDataOut(item);
 
             return Dto;
         }
@@ -153,7 +149,7 @@ namespace Whs.Server.Controllers
                     throw;
                 }
             }
-
+            _logger.LogInformation($"---> PostAsync: Ok {whsOrderOut.Документ_Name}");
             return CreatedAtAction("GetAsync", new { id = whsOrderOut.Документ_Id }, whsOrderOut);
         }
 
@@ -168,12 +164,10 @@ namespace Whs.Server.Controllers
                 return BadRequest();
             }
 
-            List<ProductDataOut> productsDataOut = new List<ProductDataOut>();
-            foreach (ProductOut item in whsOrderOut.Товары)
-                productsDataOut.Add(item.Data);
-
-            if (!(barcode == null || barcode == Guid.Empty.ToString()))
+            if (!(barcode == null || barcode == Guid.Empty.ToString()))  //  Если запрос пришел от клиента
             {
+                await CreateProducstDataOutAsync(whsOrderOut);
+
                 whsOrderOut = await PutTo1cAsync(whsOrderOut);
                 if (whsOrderOut == null)
                 {
@@ -182,13 +176,7 @@ namespace Whs.Server.Controllers
                 }
             }
 
-            WhsOrderDataOut whsOrderDataOut = new WhsOrderDataOut
-            {
-                DateTime = DateTime.Now,
-                Статус = whsOrderOut.Статус,
-                Документ_Id = whsOrderOut.Документ_Id,
-                ApplicationUserId = barcode == null ? null : GuidConvert.FromNumStr(barcode)
-            };
+            await CreateWhsOredDataOut(barcode, whsOrderOut);
 
             IQueryable<ProductOut> productsToRemove = _context.ProductsOut.Where(e => e.Документ_Id == whsOrderOut.Документ_Id);
             _context.ProductsOut.RemoveRange(productsToRemove);
@@ -200,9 +188,6 @@ namespace Whs.Server.Controllers
 
             await _context.ProductsOut.AddRangeAsync(whsOrderOut.Товары);
             await _context.MngrOrdersOut.AddRangeAsync(whsOrderOut.Распоряжения);
-
-            await _context.WhsOrdersDataOut.AddAsync(whsOrderDataOut);
-            await _context.ProductsDataOut.AddRangeAsync(productsDataOut);
 
             try
             {
@@ -223,6 +208,31 @@ namespace Whs.Server.Controllers
             }
 
             return NoContent();
+        }
+
+        private async Task CreateWhsOredDataOut(string barcode, WhsOrderOut whsOrderOut)
+        {
+            WhsOrderDataOut whsOrderDataOut = new WhsOrderDataOut
+            {
+                DateTime = DateTime.Now,
+                Статус = whsOrderOut.Статус,
+                Документ_Id = whsOrderOut.Документ_Id,
+                ApplicationUserId = barcode == null ? null : GuidConvert.FromNumStr(barcode)
+            };
+            await _context.WhsOrdersDataOut.AddAsync(whsOrderDataOut);
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task CreateProducstDataOutAsync(WhsOrderOut whsOrderOut)
+        {
+            List<ProductDataOut> productsDataOut = new List<ProductDataOut>();
+            foreach (ProductOut product in whsOrderOut.Товары)
+            {
+                if (product.КоличествоПлан != product.КоличествоФакт)
+                    productsDataOut.Add((ProductDataOut)(Product)product);
+            }
+            await _context.ProductsDataOut.AddRangeAsync(productsDataOut);
+            await _context.SaveChangesAsync();
         }
 
         private async Task<WhsOrderOut> PutTo1cAsync(WhsOrderOut whsOrderOut)

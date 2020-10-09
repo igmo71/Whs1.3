@@ -12,7 +12,8 @@
     <div class="card-body">
         <div class="card-text">
             <div class="row">
-                <div class="col @ifExpired">@Value.СрокВыполнения</div>
+                <label for="Срок">Выполнить к: </label>
+                <div id="Срок" class="col @ifExpired">@Value.СрокВыполнения</div>
             </div>
             <div class="row">
                 <div class="col">@Value.НаправлениеДоставки_Name</div>

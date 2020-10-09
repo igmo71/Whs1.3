@@ -82,36 +82,35 @@ else
     </table>
 
 
-    <table class="table">
+    <table class="table table-bordered border-1 border-dark table-hover table-striped table-sm">
         <thead>
             <tr>
-                <th class="wh-th">№</th>
-                <th class="wh-th">Артикул</th>
-                <th class="wh-th">Товар</th>
-                <th class="wh-th">Кол план</th>
-                @if (OrderDto.Item?.Статус != "Подготовлено")
+                <th class="align-middle text-center">№</th>
+                <th class="align-middle text-center">Артикул</th>
+                <th class="align-middle text-center">Товар</th>
+                <th class="align-middle text-center">Кол</th>
+                @if (OrderDto.Item?.Статус == "К отбору")
                 {
-                    <th class="wh-th d-print-none">Причина изменения</th>
-                    <th class="wh-th d-print-none">Кол факт</th>
-                    <th class="wh-th d-none d-print-table-cell">Кол факт</th>
+                    <th class="align-middle text-center d-print-none">Причина изменения</th>
+                    <th class="align-middle text-center">Кол факт</th>
                 }
-                <th class="wh-th">Упак</th>
-                <th class="wh-th">Вес</th>
+                <th class="align-middle text-center">Упак</th>
+                <th class="align-middle text-center">Вес</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in OrderDto.Item.Товары)
             {
                 <tr>
-                    <td class="wh-td-col-1">@item.НомерСтроки</td>
-                    <td class="wh-td-col-2">@item.Артикул</td>
-                    <td class="wh-td-col-3">@item.Номенклатура_Name</td>
-                    <td class="wh-td-col-4">@item.КоличествоПлан</td>
+                    <td class="align-middle">@item.НомерСтроки</td>
+                    <td class="align-middle">@item.Артикул</td>
+                    <td class="align-middle">@item.Номенклатура_Name</td>
+                    <td class="align-middle">@item.КоличествоПлан</td>
 
-                    @if (OrderDto.Item?.Статус != "Подготовлено")
+                    @if (OrderDto.Item?.Статус == "К отбору")
                     {
-                        <td class="wh-td-col-5 d-print-none">
-                            <select class="form-control" @bind="item.Data.EditingCauseId">
+                        <td class="d-print-none">
+                            <select class="form-control" @bind="item.EditingCauseId">
                                 <option value="@Guid.Empty" selected></option>
                                 @foreach (var cause in EditingCauses)
                                 {
@@ -119,23 +118,20 @@ else
                                 }
                             </select>
                         </td>
-                        <td class="wh-td-col-6 d-print-none">
-                            <input class="form-control" @bind="item.КоличествоФакт" />
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="button" >&times;</button>
+                        <td class="d-print-none">
+                            <div class="input-group">
+                                <input class="form-control" size="4" @bind="item.КоличествоФакт" />
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button">&times;</button>
+                                </div>
                             </div>
                         </td>
-                        <td class="wh-td-col-6 d-none d-print-table-cell">
+                        <td class="d-none d-print-table-cell">
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         </td>
                     }
-                    @if (OrderDto.Item?.Статус == "Подготовлено")
-                    {
-                        <td class="wh-td-col-5">@item.Data?.EditingCause.Name</td>
-                        <td class="wh-td-col-6 d-print-none">@item.КоличествоФакт</td>
-                    }
-                    <td class="wh-td-col-7">@item.Упаковка_Name</td>
-                    <td class="wh-td-col-8">@item.Вес</td>
+                    <td class="align-middle">@item.Упаковка_Name</td>
+                    <td class="align-middle">@item.Вес</td>
                 </tr>
             }
         </tbody>

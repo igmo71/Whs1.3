@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Whs.Shared.Models
@@ -16,60 +17,19 @@ namespace Whs.Shared.Models
         public float Вес { get; set; }
         public string Упаковка_Id { get; set; }
         public string Упаковка_Name { get; set; }
+        [NotMapped]
+        public Guid EditingCauseId { get; set; }
     }
 
     public class ProductIn : Product
     {
-        public ProductDataIn Data { get; set; }
         [JsonIgnore]
         public WhsOrderIn WhsOrder { get; set; }
     }
 
     public class ProductOut : Product
     {
-        public ProductDataOut Data { get; set; }
         [JsonIgnore]
         public WhsOrderOut WhsOrder { get; set; }
-    }
-
-    public abstract class ProductData
-    {
-        public Guid Id { get; set; }
-        public string Документ_Id { get; set; }
-        public int НомерСтроки { get; set; }
-    }
-
-    public class ProductDataIn : ProductData
-    {
-        public ProductDataIn()
-        {
-            EditingCause = new EditingCauseIn();
-        }
-        public ProductDataIn(ProductIn product) : this()
-        {
-            Документ_Id = product.Документ_Id;
-            НомерСтроки = product.НомерСтроки;
-        }
-        public Guid EditingCauseId { get; set; }
-        public EditingCauseIn EditingCause { get; set; }
-        [JsonIgnore]
-        public ProductIn Product { get; set; }
-    }
-
-    public class ProductDataOut : ProductData
-    {
-        public ProductDataOut()
-        {
-            EditingCause = new EditingCauseOut();
-        }
-        public ProductDataOut(ProductOut product) : this()
-        {
-            Документ_Id = product.Документ_Id;
-            НомерСтроки = product.НомерСтроки;
-        }
-        public Guid EditingCauseId { get; set; }
-        public EditingCauseOut EditingCause { get; set; }
-        [JsonIgnore]
-        public ProductOut Product { get; set; }
-    }
+    }    
 }
