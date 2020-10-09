@@ -90,5 +90,10 @@ namespace Whs.Client.Pages.WhsOrdersOut
         }
 
         private async Task PrintAsync() => await JSRuntime.InvokeVoidAsync("print");
+
+        private void Return()
+        {
+            NavigationManager.NavigateTo($"WhsOrdersOut/CardsByQueType/{SearchStatus}");
+        }
     }
 }

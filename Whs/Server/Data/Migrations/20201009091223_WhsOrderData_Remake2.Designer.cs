@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Whs.Server.Data;
 
 namespace Whs.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201009091223_WhsOrderData_Remake2")]
+    partial class WhsOrderData_Remake2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,26 +225,6 @@ namespace Whs.Server.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("Whs.Shared.Models.EditingCause", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EditingCauses");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("EditingCause");
-                });
-
             modelBuilder.Entity("Whs.Shared.Models.MngrOrderIn", b =>
                 {
                     b.Property<string>("Документ_Id")
@@ -285,58 +267,6 @@ namespace Whs.Server.Data.Migrations
                         .HasName("IX_MngOrdersOut_ДокументIdРаспоряжениеId");
 
                     b.ToTable("MngrOrdersOut");
-                });
-
-            modelBuilder.Entity("Whs.Shared.Models.ProductDataIn", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("EditingCauseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Документ_Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("НомерСтроки")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EditingCauseId");
-
-                    b.HasIndex("Документ_Id", "НомерСтроки")
-                        .IsUnique()
-                        .HasFilter("[Документ_Id] IS NOT NULL");
-
-                    b.ToTable("ProductsDataIn");
-                });
-
-            modelBuilder.Entity("Whs.Shared.Models.ProductDataOut", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("EditingCauseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Документ_Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("НомерСтроки")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EditingCauseId");
-
-                    b.HasIndex("Документ_Id", "НомерСтроки")
-                        .IsUnique()
-                        .HasFilter("[Документ_Id] IS NOT NULL");
-
-                    b.ToTable("ProductsDataOut");
                 });
 
             modelBuilder.Entity("Whs.Shared.Models.ProductIn", b =>
@@ -638,20 +568,6 @@ namespace Whs.Server.Data.Migrations
                     b.ToTable("WhsOrdersOut");
                 });
 
-            modelBuilder.Entity("Whs.Shared.Models.EditingCauseIn", b =>
-                {
-                    b.HasBaseType("Whs.Shared.Models.EditingCause");
-
-                    b.HasDiscriminator().HasValue("EditingCauseIn");
-                });
-
-            modelBuilder.Entity("Whs.Shared.Models.EditingCauseOut", b =>
-                {
-                    b.HasBaseType("Whs.Shared.Models.EditingCause");
-
-                    b.HasDiscriminator().HasValue("EditingCauseOut");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -727,32 +643,6 @@ namespace Whs.Server.Data.Migrations
                         .HasForeignKey("Документ_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Whs.Shared.Models.ProductDataIn", b =>
-                {
-                    b.HasOne("Whs.Shared.Models.EditingCauseIn", "EditingCause")
-                        .WithMany("ProductsData")
-                        .HasForeignKey("EditingCauseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Whs.Shared.Models.ProductIn", "Product")
-                        .WithOne("Data")
-                        .HasForeignKey("Whs.Shared.Models.ProductDataIn", "Документ_Id", "НомерСтроки");
-                });
-
-            modelBuilder.Entity("Whs.Shared.Models.ProductDataOut", b =>
-                {
-                    b.HasOne("Whs.Shared.Models.EditingCauseOut", "EditingCause")
-                        .WithMany("ProductsData")
-                        .HasForeignKey("EditingCauseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Whs.Shared.Models.ProductOut", "Product")
-                        .WithOne("Data")
-                        .HasForeignKey("Whs.Shared.Models.ProductDataOut", "Документ_Id", "НомерСтроки");
                 });
 
             modelBuilder.Entity("Whs.Shared.Models.ProductIn", b =>

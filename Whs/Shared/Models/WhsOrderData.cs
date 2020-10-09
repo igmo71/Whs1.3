@@ -8,24 +8,23 @@ namespace Whs.Shared.Models
     public abstract class WhsOrderData
     {
         public Guid Id { get; set; }
-
+        public string Документ_Id { get; set; }
+        public string Статус { get; set; }
+        public DateTime DateTime { get; set; }
         public string ApplicationUserId { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
-
-        public string Status { get; set; }
-        public DateTime DateTime { get; set; }
     }
 
     public class WhsOrderDataIn : WhsOrderData
     {
-        public string WhsOrderInId { get; set; }
         [JsonIgnore]
+        [ForeignKey("Документ_Id")]
         public WhsOrderIn WhsOrderIn { get; set; }
     }
     public class WhsOrderDataOut : WhsOrderData
     {
-        public string WhsOrderOutId { get; set; }
         [JsonIgnore]
+        [ForeignKey("Документ_Id")]
         public WhsOrderOut WhsOrderOut { get; set; }
     }
 }

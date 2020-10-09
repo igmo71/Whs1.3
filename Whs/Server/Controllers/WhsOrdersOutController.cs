@@ -62,7 +62,7 @@ namespace Whs.Server.Controllers
             IEnumerable<WhsOrderOut> items;
             if (parameters.SearchBarcode == null)
             {
-                
+
                 items = query.Take(_settings.OrdersPerPage).AsEnumerable();
             }
             else
@@ -113,7 +113,7 @@ namespace Whs.Server.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Документ_Id == id),
                 BarcodeBase64 = new NetBarcode.Barcode(GuidConvert.ToNumStr(id), NetBarcode.Type.Code128C, false).GetBase64Image()
-            };            
+            };
 
             if (Dto.Item == null)
             {
@@ -183,13 +183,14 @@ namespace Whs.Server.Controllers
             await _context.ProductsOut.AddRangeAsync(whsOrderOut.Товары);
             await _context.MngrOrdersOut.AddRangeAsync(whsOrderOut.Распоряжения);
 
-            WhsOrderDataOut whsOrderDataOut = new WhsOrderDataOut
-            {
-                WhsOrderOutId = whsOrderOut.Документ_Id,
-                ApplicationUserId = barcode == null ? null : GuidConvert.FromNumStr(barcode),
-                Status = whsOrderOut.Статус,
-                DateTime = DateTime.Now
-            };
+
+            WhsOrderDataOut whsOrderDataOut = new WhsOrderDataOut 
+            { 
+                DateTime = DateTime.Now,
+                Статус = whsOrderOut.Статус,
+                Документ_Id = whsOrderOut.Документ_Id,
+                ApplicationUserId = barcode == null ? null : GuidConvert.FromNumStr(barcode)
+            };            
             await _context.WhsOrdersDataOut.AddAsync(whsOrderDataOut);
 
             try

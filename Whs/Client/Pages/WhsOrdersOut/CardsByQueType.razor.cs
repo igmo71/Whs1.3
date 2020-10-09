@@ -51,13 +51,13 @@ namespace Whs.Client.Pages.WhsOrdersOut
             Console.WriteLine($"OnInitializedAsync - duration: {DateTime.Now - beginTime}");
         }
 
-        private void CreateSearchStatusButtons()
+        private void CreateSearchStatusButtons(string initStatus = "Подготовлено")
         {
             SearchStatusButtons = new Dictionary<string, string>
                 { { "Подготовлено", "" }, { "К отбору", ""}, { "К отгрузке", ""}, { "Отгружен", ""} };
-            OrderParameters.SearchStatus = string.IsNullOrEmpty(SearchStatus) ? "Подготовлено" : SearchStatus;
+            OrderParameters.SearchStatus = string.IsNullOrEmpty(SearchStatus) ? initStatus : SearchStatus;
             if(string.IsNullOrEmpty(SearchStatus))
-                SearchStatusButtons["Подготовлено"] = "active";
+                SearchStatusButtons[initStatus] = "active";
             else
                 SearchStatusButtons[SearchStatus] = "active";
         }

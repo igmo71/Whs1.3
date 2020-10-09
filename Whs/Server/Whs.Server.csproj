@@ -18,6 +18,24 @@
     <Compile Remove="Data\Migrations\20201006145237_WhsOrderData.Designer.cs" />
     <Compile Remove="Data\Migrations\20201006150723_WhsOrderData.cs" />
     <Compile Remove="Data\Migrations\20201006150723_WhsOrderData.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201009084422_WhsOrderData_Remake2.cs" />
+    <Compile Remove="Data\Migrations\20201009084422_WhsOrderData_Remake2.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201009085942_WhsOrderData_Remake2.cs" />
+    <Compile Remove="Data\Migrations\20201009085942_WhsOrderData_Remake2.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201009090156_WhsOrderData_Remake2.cs" />
+    <Compile Remove="Data\Migrations\20201009090156_WhsOrderData_Remake2.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201009091016_WhsOrderData_Remake2.cs" />
+    <Compile Remove="Data\Migrations\20201009091016_WhsOrderData_Remake2.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201009094128_ProductData.cs" />
+    <Compile Remove="Data\Migrations\20201009094128_ProductData.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201009095552_ProductData.cs" />
+    <Compile Remove="Data\Migrations\20201009095552_ProductData.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201009095859_ProductData.cs" />
+    <Compile Remove="Data\Migrations\20201009095859_ProductData.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201009100719_ProductData.cs" />
+    <Compile Remove="Data\Migrations\20201009100719_ProductData.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201009100931_ProductData.cs" />
+    <Compile Remove="Data\Migrations\20201009100931_ProductData.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

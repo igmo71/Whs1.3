@@ -12,11 +12,11 @@ namespace Whs.Shared.Models
 
     public class EditingCauseIn : EditingCause
     {
-        public List<ProductIn> ProductsIn { get; set; }
+        public List<ProductDataIn> ProductsData { get; set; }
     }
     public class EditingCauseOut : EditingCause
     {
-        public List<ProductOut> ProductsOut { get; set; }
+        public List<ProductDataOut> ProductsData { get; set; }
     }
 
 }
