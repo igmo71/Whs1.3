@@ -226,11 +226,9 @@ namespace Whs.Server.Controllers
         private async Task CreateProducstDataOutAsync(WhsOrderOut whsOrderOut)
         {
             List<ProductDataOut> productsDataOut = new List<ProductDataOut>();
-            foreach (ProductOut product in whsOrderOut.Товары)
-            {
-                if (product.КоличествоПлан != product.КоличествоФакт)
-                    productsDataOut.Add((ProductDataOut)(Product)product);
-            }
+            foreach (ProductOut productOut in whsOrderOut.Товары)
+                if (productOut.КоличествоПлан != productOut.КоличествоФакт)
+                    productsDataOut.Add(new ProductDataOut((Product)productOut));
             await _context.ProductsDataOut.AddRangeAsync(productsDataOut);
             await _context.SaveChangesAsync();
         }

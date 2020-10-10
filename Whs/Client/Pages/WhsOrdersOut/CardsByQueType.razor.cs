@@ -56,7 +56,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
             SearchStatusButtons = new Dictionary<string, string>
                 { { "Подготовлено", "" }, { "К отбору", ""}, { "К отгрузке", ""}, { "Отгружен", ""} };
             OrderParameters.SearchStatus = string.IsNullOrEmpty(SearchStatus) ? initStatus : SearchStatus;
-            if(string.IsNullOrEmpty(SearchStatus))
+            if (string.IsNullOrEmpty(SearchStatus))
                 SearchStatusButtons[initStatus] = "active";
             else
                 SearchStatusButtons[SearchStatus] = "active";

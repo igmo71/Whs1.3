@@ -27,7 +27,7 @@ namespace Whs.Shared.Models
         public string ОтправительПолучатель_Name { get; set; }
 
         [NotMapped]
-        public string СрокВыполненияString => 
+        public string СрокВыполненияString =>
             (СрокВыполнения == null || СрокВыполнения == DateTime.Parse("01.01.0001 0:00:00")) ? string.Empty : СрокВыполнения.ToString();
     }
 

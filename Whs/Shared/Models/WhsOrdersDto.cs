@@ -16,6 +16,6 @@ namespace Whs.Shared.Models
 
     public class WhsOrdersDtoOut : WhsOrdersDto
     {
-        public Dictionary<string,WhsOrderOut[]> Items { get; set; }
+        public Dictionary<string, WhsOrderOut[]> Items { get; set; }
     }
 }

@@ -81,11 +81,7 @@ else
                         <tr><th>@item.Key</th></tr>
                         @foreach (var value in item.Value)
                         {
-                            <tr @onclick="@(() => OpenItemAsync(value.Документ_Id))">
-                                <td>
-                                    <Card Value="value" />
-                                </td>
-                            </tr>
+                            <tr @onclick="@(() => OpenItemAsync(value.Документ_Id))"><td><Card Value="value" /></td></tr>
                         }
                     </table>
                 </td>

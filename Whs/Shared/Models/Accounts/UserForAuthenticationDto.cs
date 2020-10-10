@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Whs.Shared.Models.Accounts
+﻿namespace Whs.Shared.Models.Accounts
 {
     public class UserForAuthenticationDto
     {

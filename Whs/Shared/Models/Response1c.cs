@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Whs.Shared.Models
+﻿namespace Whs.Shared.Models
 {
     public class Response1c
     {

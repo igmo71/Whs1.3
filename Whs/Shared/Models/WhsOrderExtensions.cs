@@ -11,10 +11,10 @@ namespace Whs.Shared.Models
             {
                 switch (parameters.SearchStatus)
                 {
-                    case "Подготовлено":    query = query.Where(e => e.Статус == "Подготовлено"); break;
-                    case "К отбору":        query = query.Where(e => e.Статус == "К отбору"); break;
-                    case "К отгрузке":      query = query.Where(e => e.Статус == "К отгрузке"); break;
-                    case "Отгружен":       query = query.Where(e => e.Статус == "Отгружен"); break;
+                    case "Подготовлено": query = query.Where(e => e.Статус == "Подготовлено"); break;
+                    case "К отбору": query = query.Where(e => e.Статус == "К отбору"); break;
+                    case "К отгрузке": query = query.Where(e => e.Статус == "К отгрузке"); break;
+                    case "Отгружен": query = query.Where(e => e.Статус == "Отгружен"); break;
                     default: break;
                 }
             }
