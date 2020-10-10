@@ -72,20 +72,56 @@ else
             </button>
         </div>
     }
-        <table>
-            <tr>
-                @foreach (var item in OrdersDto.Items)
+
+    <div class="row">
+        @foreach (var item in OrdersDto.Items)
+        {
+            <div class="col">
+                <div class="row align-middle text-center">@item.Key</div>
+                @foreach (var value in item.Value)
                 {
-                    <td class="align-top">
-                        <table>
-                            <tr><th class="align-middle text-center">@item.Key</th></tr>
-                            @foreach (var value in item.Value)
-                            {
-                                <tr @onclick="@(() => OpenItem(value.Документ_Id))"><td><Card Value="value" /></td></tr>
-                            }
-                        </table>
-                    </td>
+                    string ifExpired = "";
+                    string ifMoving = "";
+                    if ((value.СрокВыполнения != DateTime.Parse("01.01.0001 0:00:00")) && value.СрокВыполнения < DateTime.Now)
+                        ifExpired = "bg-danger text-white";
+                    if (value.ЭтоПеремещение)
+                        ifMoving = "bg-warning text-white";
+
+                    <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
+                        @*<Card Value="value" />*@
+                        <div class="card border border-dark rounded w-100 m-2">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col">
+                                        @value.Склад_NameString
+                                    </div>
+                                    <div class="col h1 align-middle text-right">
+                                        @value.НомерОчереди
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <span class="oi oi-timer"> &nbsp; </span> <span class="@ifExpired"> @value.СрокВыполнения </span>
+                                </div>
+                                <div class="row">
+                                    <span class="oi oi-location"> &nbsp; </span> <span> @value.НаправлениеДоставки_Name </span>
+                                </div>
+                                <div class="row">
+                                    <span class="oi oi-people"> &nbsp; </span> <span class="@ifMoving"> @value.ОтправительПолучатель_NameString </span>
+                                </div>
+                                <div class="row">
+                                    <span class="oi oi-warning"> &nbsp; </span> <span> @value.КомментарийString </span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="float-left">Строк: @value.КоличествоСтрок</div>
+                                <div class="float-right">Вес: @value.Вес</div>
+                            </div>
+                        </div>
+                    </div>
                 }
-            </tr>
-        </table>
+            </div>
+        }
+    </div>
 }
