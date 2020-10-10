@@ -77,10 +77,10 @@ else
         </div>
     }
 
-    <div class="row">
+    <div class="row mt-3">
         <div class="col-3">
-            <div class="row h5">
-                <div class="col">Живая очередь</div>
+            <div class="row h5 text-center">
+                <div class="col"><span class="oi oi-layers"></span>&nbsp;<span>Живая очередь</span></div>
             </div>
             @if (OrdersDto.Items.ContainsKey("Живая очередь"))
             {
@@ -95,8 +95,8 @@ else
             }
         </div>
         <div class="col-3">
-            <div class="row h5">
-                <div class="col">Собрать к дате</div>
+            <div class="row h5 text-center">
+                <div class="col"><span class="oi oi-calendar"></span>&nbsp;<span>Собрать к дате</span></div>
             </div>
             @if (OrdersDto.Items.ContainsKey("Собрать к дате"))
             {
@@ -111,8 +111,8 @@ else
             }
         </div>
         <div class="col-3">
-            <div class="row h5">
-                <div class="col">Собственная доставка</div>
+            <div class="row h5 text-center">
+                <div class="col"><span class="oi oi-globe"></span>&nbsp;<span>Собственная доставка</span></div>
             </div>
             @if (OrdersDto.Items.ContainsKey("Собственная доставка"))
             {
@@ -127,8 +127,8 @@ else
             }
         </div>
         <div class="col-3">
-            <div class="row h5">
-                <div class="col">Очередность не указана</div>
+            <div class="row h5 text-center">
+                <div class="col"><span class="oi oi-aperture"></span>&nbsp;<span>Очередность не указана</span></div>
             </div>
             @if (OrdersDto.Items.ContainsKey("Очередность не указана"))
             {
