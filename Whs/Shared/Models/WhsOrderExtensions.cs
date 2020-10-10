@@ -28,7 +28,10 @@ namespace Whs.Shared.Models
             if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
             {
                 var lowerCaseSearchTerm = parameters.SearchTerm.Trim().ToLower();
-                query = query.Where(e => e.Номер.ToLower().Contains(lowerCaseSearchTerm));
+                query = query.Where(e => 
+                    e.Номер.ToLower().Contains(lowerCaseSearchTerm) || 
+                    e.НомерОчереди.ToLower().Contains(lowerCaseSearchTerm) ||
+                    e.ОтправительПолучатель_Name.ToLower().Contains(lowerCaseSearchTerm));
             }
             return query;
         }

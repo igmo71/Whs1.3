@@ -1,6 +1,6 @@
 ﻿@using System.Threading
 <div class="input-group">
-    <input type="text" class="form-control" placeholder="Поиск по номеру"
+    <input type="text" class="form-control" placeholder="Поиск"
            @bind-value="SearchTerm" @bind-value:event="oninput" @onkeyup="SearchChanged" />
     <div class="input-group-append">
         <button class="btn btn-outline-secondary" type="button" @onclick="Clear">&times;</button>

@@ -1,28 +1,32 @@
 ﻿@using Whs.Shared.Models
 
-<div class="card border border-dark rounded">
+<div class="card border border-dark rounded w-100">
     <div class="card-header">
         <div class="row">
             <div class="col">
-                @Value.Склад_NameString
+                <AuthorizeView Roles="Manager">
+                    <Authorized>
+                        @Value.Склад_NameString
+                    </Authorized>
+                </AuthorizeView>
             </div>
-            <div class="col h1 align-middle text-right">
+            <div class="col h1 align-middle text-right" title="@Value.Документ_Name">
                 @Value.НомерОчереди
             </div>
         </div>
     </div>
     <div class="card-body">
         <div class="row">
-            <span class="oi oi-timer"> &nbsp; </span> <span class="@ifExpired"> @Value.СрокВыполнения </span>
+            <span class="oi oi-timer" title="Срок выполнения">&nbsp;</span><span class="@ifExpired">@Value.СрокВыполнения</span>
         </div>
         <div class="row">
-            <span class="oi oi-location"> &nbsp; </span> <span> @Value.НаправлениеДоставки_Name </span> 
+            <span class="oi oi-map-marker" title="Направление доставки">&nbsp;</span><span>@Value.НаправлениеДоставки_Name</span>
         </div>
         <div class="row">
-            <span class="oi oi-people"> &nbsp; </span> <span class="@ifMoving"> @Value.ОтправительПолучатель_NameString </span>
+            <span class="oi oi-people" title="Получатель">&nbsp;</span><span class="@ifMoving">@Value.ОтправительПолучатель_NameString</span>
         </div>
         <div class="row">
-            <span class="oi oi-warning"> &nbsp; </span> <span> @Value.КомментарийString </span>
+            <span class="oi oi-warning" title="Комментарий">&nbsp;</span><span title="@Value.Комментарий">@Value.КомментарийString</span>
         </div>
     </div>
     <div class="card-footer">

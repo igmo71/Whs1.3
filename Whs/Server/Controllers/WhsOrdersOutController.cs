@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
@@ -55,7 +54,6 @@ namespace Whs.Server.Controllers
 
             IQueryable<WhsOrderOut> query = _context.WhsOrdersOut
                 .Where(e => e.Проведен)
-                //.Search(parameters)
                 .Include(e => e.Распоряжения)
                 .OrderByDescending(e => e.ВесовойКоэффициент)
                 .ThenBy(e => e.СрокВыполнения)
@@ -64,9 +62,7 @@ namespace Whs.Server.Controllers
             IEnumerable<WhsOrderOut> items;
             if (parameters.SearchBarcode == null)
             {
-
-                items = query
-                .Search(parameters).Take(_settings.OrdersPerPage).AsEnumerable();
+                items = query.Search(parameters).Take(_settings.OrdersPerPage).AsEnumerable();
             }
             else
             {

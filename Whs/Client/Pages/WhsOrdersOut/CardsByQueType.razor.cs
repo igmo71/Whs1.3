@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Timers;
 using Whs.Client.Components;
@@ -25,6 +27,8 @@ namespace Whs.Client.Pages.WhsOrdersOut
         public NavigationManager NavigationManager { get; set; }
         [Inject]
         public IConfiguration Configuration { get; set; }
+        [Inject]
+        public AuthenticationStateProvider AuthStateProvider { get; set; }
 
         private Timer Timer;
         private string Barcode;
@@ -36,6 +40,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
         private SearchByNumber SearchByNumber;
         private SearchByDestination SearchByDestination;
         private Dictionary<string, string> SearchStatusButtons;
+        private string warehouseId;
 
 
         protected override async Task OnInitializedAsync()
@@ -49,6 +54,18 @@ namespace Whs.Client.Pages.WhsOrdersOut
             await GetOrdersDtoAsync();
             SetTimer(double.Parse(Configuration["TimerInterval"]), true);
             Console.WriteLine($"OnInitializedAsync - duration: {DateTime.Now - beginTime}");
+        }
+        private async Task GetWarehouseKeyAsync()
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity.IsAuthenticated)
+            {
+                warehouseId = user.FindFirst(c => c.Type == ClaimTypes.GroupSid)?.Value;
+                if (!user.IsInRole("Manager"))
+                    OrderParameters.SearchWarehouseId = warehouseId;
+            }
         }
 
         private void CreateSearchStatusButtons(string initStatus = "Подготовлено")

@@ -17,10 +17,14 @@
 </div>
 <div class="row">
     <div class="col d-print-none">
-        @if (Warehouses != null)
-        {
-            <SearchByWarehouseAsync Warehouses="Warehouses" OnSelect="SearchByWarehouseAsync" />
-        }
+        <AuthorizeView Roles="Manager">
+            <Authorized>
+                @if (Warehouses != null)
+                {
+                    <SearchByWarehouseAsync Warehouses="Warehouses" OnSelect="SearchByWarehouseAsync" />
+                }
+            </Authorized>
+        </AuthorizeView>
     </div>
     <div class="col d-print-none">
         <SearchByNumber @ref="SearchByNumber" OnSearchChanged="SearchByNumberAsync" />
@@ -74,54 +78,85 @@ else
     }
 
     <div class="row">
+        <div class="col-3">
+            <div class="row h5">
+                <div class="col">Живая очередь</div>
+            </div>
+            @if (OrdersDto.Items.ContainsKey("Живая очередь"))
+            {
+                @foreach (var value in OrdersDto.Items["Живая очередь"])
+                {
+                    <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
+                        <div class="col">
+                            <Card Value="value" />
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-3">
+            <div class="row h5">
+                <div class="col">Собрать к дате</div>
+            </div>
+            @if (OrdersDto.Items.ContainsKey("Собрать к дате"))
+            {
+                @foreach (var value in OrdersDto.Items["Собрать к дате"])
+                {
+                    <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
+                        <div class="col">
+                            <Card Value="value" />
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-3">
+            <div class="row h5">
+                <div class="col">Собственная доставка</div>
+            </div>
+            @if (OrdersDto.Items.ContainsKey("Собственная доставка"))
+            {
+                @foreach (var value in OrdersDto.Items["Собственная доставка"])
+                {
+                    <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
+                        <div class="col">
+                            <Card Value="value" />
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-3">
+            <div class="row h5">
+                <div class="col">Очередность не указана</div>
+            </div>
+            @if (OrdersDto.Items.ContainsKey("Очередность не указана"))
+            {
+                @foreach (var value in OrdersDto.Items["Очередность не указана"])
+                {
+                    <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
+                        <div class="col">
+                            <Card Value="value" />
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}
+
+
+@*<div class="row">
         @foreach (var item in OrdersDto.Items)
         {
             <div class="col">
                 <div class="row align-middle text-center">@item.Key</div>
                 @foreach (var value in item.Value)
                 {
-                    string ifExpired = "";
-                    string ifMoving = "";
-                    if ((value.СрокВыполнения != DateTime.Parse("01.01.0001 0:00:00")) && value.СрокВыполнения < DateTime.Now)
-                        ifExpired = "bg-danger text-white";
-                    if (value.ЭтоПеремещение)
-                        ifMoving = "bg-warning text-white";
-
                     <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
-                        @*<Card Value="value" />*@
-                        <div class="card border border-dark rounded w-100 m-2">
-                            <div class="card-header">
-                                <div class="row">
-                                    <div class="col">
-                                        @value.Склад_NameString
-                                    </div>
-                                    <div class="col h1 align-middle text-right">
-                                        @value.НомерОчереди
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <span class="oi oi-timer"> &nbsp; </span> <span class="@ifExpired"> @value.СрокВыполнения </span>
-                                </div>
-                                <div class="row">
-                                    <span class="oi oi-location"> &nbsp; </span> <span> @value.НаправлениеДоставки_Name </span>
-                                </div>
-                                <div class="row">
-                                    <span class="oi oi-people"> &nbsp; </span> <span class="@ifMoving"> @value.ОтправительПолучатель_NameString </span>
-                                </div>
-                                <div class="row">
-                                    <span class="oi oi-warning"> &nbsp; </span> <span> @value.КомментарийString </span>
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="float-left">Строк: @value.КоличествоСтрок</div>
-                                <div class="float-right">Вес: @value.Вес</div>
-                            </div>
-                        </div>
+                        <Card Value="value" />
                     </div>
                 }
             </div>
         }
-    </div>
-}
+    </div>*@
