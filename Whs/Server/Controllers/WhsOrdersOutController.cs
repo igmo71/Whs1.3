@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
@@ -163,9 +165,12 @@ namespace Whs.Server.Controllers
         [HttpPut("{id}/{barcode}")]
         public async Task<IActionResult> PutAsync(string id, string barcode, WhsOrderOut whsOrderOut)
         {
+            _logger.LogInformation($"---> PutUAsync/{id}: {whsOrderOut.Номер} - {whsOrderOut.Дата} - {whsOrderOut.НомерОчереди} - {whsOrderOut.Статус} - " +
+                $"{whsOrderOut.ТипОчереди} - {whsOrderOut.СрокВыполнения} - {whsOrderOut.Комментарий} ");
+
             if (id != whsOrderOut.Документ_Id)
             {
-                _logger.LogError($"---> PutUpdateStatusAsync/{id}: BadRequest {whsOrderOut.Номер}");
+                _logger.LogError($"---> PutUAsync/{id}: BadRequest {whsOrderOut.Номер}");
                 return BadRequest();
             }
 
@@ -211,7 +216,7 @@ namespace Whs.Server.Controllers
                     throw;
                 }
             }
-
+            _logger.LogInformation($"---> PutUAsync/{id}: Ок");
             return NoContent();
         }
 

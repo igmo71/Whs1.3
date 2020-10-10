@@ -3,31 +3,26 @@
 <div class="card border border-dark rounded">
     <div class="card-header">
         <div class="row">
-            <div class="col">@Value.Номер</div>
-            <div class="col">@Value.Дата</div>
-        </div>
-        <div class="row">
-            <div class="col">@Value.Склад_NameString</div>
+            <div class="col">
+                @Value.Склад_NameString
+            </div>
+            <div class="col h1 align-middle text-right">
+                @Value.НомерОчереди
+            </div>
         </div>
     </div>
     <div class="card-body">
-        <div class="card-text">
-            <div class="row">
-                <label for="Срок">Срок: </label>
-                <div id="Срок" class="col @ifExpired">@Value.СрокВыполнения</div>
-            </div>
-            <div class="row">
-                <label for="Направление">Направление: </label>
-                <div id="Направление" class="col">@Value.НаправлениеДоставки_Name</div>
-            </div>
-            <div class="row">
-                <label for="Получатель">Получатель: </label>
-                <div id="Получатель" class="col @ifMoving">@Value.ОтправительПолучатель_NameString</div>
-            </div>
-            <div class="row">
-                <label for="Коммент">Коммент: </label>
-                <div id="Коммент" class="col">@Value.КомментарийString</div>
-            </div>
+        <div class="row">
+            <span class="oi oi-timer"> &nbsp; </span> <span class="@ifExpired"> @Value.СрокВыполнения </span>
+        </div>
+        <div class="row">
+            <span class="oi oi-location"> &nbsp; </span> <span> @Value.НаправлениеДоставки_Name </span> 
+        </div>
+        <div class="row">
+            <span class="oi oi-people"> &nbsp; </span> <span class="@ifMoving"> @Value.ОтправительПолучатель_NameString </span>
+        </div>
+        <div class="row">
+            <span class="oi oi-warning"> &nbsp; </span> <span> @Value.КомментарийString </span>
         </div>
     </div>
     <div class="card-footer">
