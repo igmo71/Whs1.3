@@ -72,20 +72,22 @@ else
             </button>
         </div>
     }
-    <table>
-        <tr>
-            @foreach (var item in OrdersDto.Items)
-            {
-                <td class="align-top">
-                    <table>
-                        <tr><th>@item.Key</th></tr>
-                        @foreach (var value in item.Value)
-                        {
-                            <tr @onclick="@(() => OpenItemAsync(value.Документ_Id))"><td><Card Value="value" /></td></tr>
-                        }
-                    </table>
-                </td>
-            }
-        </tr>
-    </table>
+    <div class="card-deck">
+        <table>
+            <tr>
+                @foreach (var item in OrdersDto.Items)
+                {
+                    <td class="align-top">
+                        <table>
+                            <tr><th class="align-middle text-center">@item.Key</th></tr>
+                            @foreach (var value in item.Value)
+                            {
+                                <tr @onclick="@(() => OpenItem(value.Документ_Id))"><td><Card Value="value" /></td></tr>
+                            }
+                        </table>
+                    </td>
+                }
+            </tr>
+        </table>
+    </div>
 }

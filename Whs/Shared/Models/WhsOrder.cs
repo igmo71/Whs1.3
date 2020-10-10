@@ -26,9 +26,21 @@ namespace Whs.Shared.Models
         public string ОтправительПолучатель_Id { get; set; }
         public string ОтправительПолучатель_Name { get; set; }
 
+
+
         [NotMapped]
         public string СрокВыполненияString =>
             (СрокВыполнения == null || СрокВыполнения == DateTime.Parse("01.01.0001 0:00:00")) ? string.Empty : СрокВыполнения.ToString();
+        [NotMapped]
+        public string КомментарийString =>
+            (string.IsNullOrEmpty(Комментарий) || Комментарий.Length < 33) ? Комментарий : $"{Комментарий.Substring(0, 33)}...";
+        [NotMapped]
+        public string Склад_NameString => 
+            (string.IsNullOrEmpty(Склад_Name) || Склад_Name.Length < 33) ? Склад_Name : $"{Склад_Name.Substring(0, 33)}...";
+        [NotMapped]
+        public string ОтправительПолучатель_NameString =>
+            (string.IsNullOrEmpty(ОтправительПолучатель_Name) || ОтправительПолучатель_Name.Length < 33) ? ОтправительПолучатель_Name : $"{ОтправительПолучатель_Name.Substring(0, 33)}...";
+       
     }
 
     public class WhsOrderIn : WhsOrder

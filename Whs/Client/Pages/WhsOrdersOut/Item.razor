@@ -65,7 +65,7 @@ else
                 }
             </td>
             <th>В работе: </th>
-            <td></td>
+            <td>@OrderDto.UserName</td>
         </tr>
         <tr>
             <th>Ответственный: </th>
@@ -82,7 +82,7 @@ else
     </table>
 
 
-    <table class="table table-bordered border-1 border-dark table-hover table-striped table-sm">
+    <table class="table table-bordered border-dark table-hover table-striped table-sm">
         <thead>
             <tr>
                 <th class="align-middle text-center">№</th>
@@ -122,7 +122,7 @@ else
                             <div class="input-group">
                                 <input class="form-control" size="4" @bind="item.КоличествоФакт" />
                                 <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="button">&times;</button>
+                                    <button class="btn btn-outline-secondary" type="button" @onclick="@(() => item.КоличествоФакт = 0)">&times;</button>
                                 </div>
                             </div>
                         </td>

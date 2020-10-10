@@ -159,7 +159,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
             if (!string.IsNullOrEmpty(OrdersDto.SingleId))
             {
-                await OpenItemAsync(OrdersDto.SingleId);
+                OpenItem(OrdersDto.SingleId);
             }
         }
 
@@ -170,7 +170,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
             OrderParameters.SearchBarcode = null;
             await GetOrdersDtoAsync();
         }
-        private async Task OpenItemAsync(string id)
+        private void OpenItem(string id)
         {
             NavigationManager.NavigateTo($"WhsOrdersOut/Item/{id}/{OrderParameters.SearchStatus}");
         }

@@ -1,28 +1,32 @@
 ﻿@using Whs.Shared.Models
-<div class="card">
+
+<div class="card border border-dark rounded">
     <div class="card-header">
         <div class="row">
             <div class="col">@Value.Номер</div>
             <div class="col">@Value.Дата</div>
         </div>
         <div class="row">
-            <div class="col">@Value.Склад_Name</div>
+            <div class="col">@Value.Склад_NameString</div>
         </div>
     </div>
     <div class="card-body">
         <div class="card-text">
             <div class="row">
-                <label for="Срок">Выполнить к: </label>
+                <label for="Срок">Срок: </label>
                 <div id="Срок" class="col @ifExpired">@Value.СрокВыполнения</div>
             </div>
             <div class="row">
-                <div class="col">@Value.НаправлениеДоставки_Name</div>
+                <label for="Направление">Направление: </label>
+                <div id="Направление" class="col">@Value.НаправлениеДоставки_Name</div>
             </div>
             <div class="row">
-                <div class="col @ifMoving">@Value.ОтправительПолучатель_Name</div>
+                <label for="Получатель">Получатель: </label>
+                <div id="Получатель" class="col @ifMoving">@Value.ОтправительПолучатель_NameString</div>
             </div>
             <div class="row">
-                <div class="col">@Value.Комментарий</div>
+                <label for="Коммент">Коммент: </label>
+                <div id="Коммент" class="col">@Value.КомментарийString</div>
             </div>
         </div>
     </div>

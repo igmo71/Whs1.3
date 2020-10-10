@@ -53,7 +53,7 @@ namespace Whs.Server.Controllers
 
             IQueryable<WhsOrderOut> query = _context.WhsOrdersOut
                 .Where(e => e.Проведен)
-                .Search(parameters)
+                //.Search(parameters)
                 .Include(e => e.Распоряжения)
                 .OrderByDescending(e => e.ВесовойКоэффициент)
                 .ThenBy(e => e.СрокВыполнения)
@@ -63,7 +63,8 @@ namespace Whs.Server.Controllers
             if (parameters.SearchBarcode == null)
             {
 
-                items = query.Take(_settings.OrdersPerPage).AsEnumerable();
+                items = query
+                .Search(parameters).Take(_settings.OrdersPerPage).AsEnumerable();
             }
             else
             {
@@ -104,25 +105,29 @@ namespace Whs.Server.Controllers
         [HttpGet("Dto/{id}")]
         public async Task<ActionResult<WhsOrderDtoOut>> GetDtoAsync(string id)
         {
-            WhsOrderDtoOut Dto = new WhsOrderDtoOut
-            {
-                Item = await _context.WhsOrdersOut
+            WhsOrderOut whsOrder = await _context.WhsOrdersOut
                 .Where(e => e.Проведен)
                 .Include(e => e.Товары)
                 .Include(e => e.Распоряжения)
-                .Include(e => e.Data)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(e => e.Документ_Id == id),
-                BarcodeBase64 = new NetBarcode.Barcode(GuidConvert.ToNumStr(id), NetBarcode.Type.Code128C, false).GetBase64Image()
-            };
+                .FirstOrDefaultAsync(e => e.Документ_Id == id);
 
-            if (Dto.Item == null)
+            if (whsOrder == null)
             {
                 _logger.LogError($"---> GetDto/{id}: NotFound");
                 return NotFound();
             }
 
-            return Dto;
+
+            WhsOrderDtoOut dto = new WhsOrderDtoOut
+            {
+                Item = whsOrder,
+                UserName = _context.WhsOrdersDataOut.Include(e => e.ApplicationUser)
+                    .Where(e => e.Документ_Id == id).OrderByDescending(e => e.DateTime)
+                    .FirstOrDefault()?.ApplicationUser?.FullName,
+                BarcodeBase64 = new NetBarcode.Barcode(GuidConvert.ToNumStr(id), NetBarcode.Type.Code128C, false).GetBase64Image()
+            };
+            return dto;
         }
 
         // POST: api/WhsOrdersOut
