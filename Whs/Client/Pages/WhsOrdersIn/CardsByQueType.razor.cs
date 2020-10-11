@@ -13,7 +13,7 @@ using System.Timers;
 using Whs.Client.Components;
 using Whs.Shared.Models;
 
-namespace Whs.Client.Pages.WhsOrdersOut
+namespace Whs.Client.Pages.WhsOrdersIn
 {
     public partial class CardsByQueType : IDisposable
     {
@@ -33,12 +33,10 @@ namespace Whs.Client.Pages.WhsOrdersOut
         private Timer Timer;
         private string Barcode;
         private Notification Notification;
-        private WhsOrdersDtoOut OrdersDto;
+        private WhsOrdersDtoIn OrdersDto;
         private WhsOrderParameters OrderParameters;
         private Warehouse[] Warehouses;
-        private Destination[] Destinations;
         private SearchByNumber SearchByNumber;
-        private SearchByDestination SearchByDestination;
         private Dictionary<string, string> SearchStatusButtons;
         private string warehouseId;
 
@@ -50,16 +48,15 @@ namespace Whs.Client.Pages.WhsOrdersOut
             CreateSearchStatusButtons();
             await GetWarehouseKeyAsync();
             await GetWarehousesAsync();
-            await GetDestinationsAsync();
             await GetOrdersDtoAsync();
             SetTimer(double.Parse(Configuration["TimerInterval"]), true);
             Console.WriteLine($"OnInitializedAsync - duration: {DateTime.Now - beginTime}");
         }
 
-        private void CreateSearchStatusButtons(string initStatus = "Подготовлено")
+        private void CreateSearchStatusButtons(string initStatus = "К поступлению")
         {
             SearchStatusButtons = new Dictionary<string, string>
-                { { "Подготовлено", "" }, { "К отбору", ""}, { "К отгрузке", ""}, { "Отгружен", ""} };
+                { { "К поступлению", "" }, { "В работе", ""}, { "Принят", ""} };
             OrderParameters.SearchStatus = string.IsNullOrEmpty(SearchStatus) ? initStatus : SearchStatus;
             if (string.IsNullOrEmpty(SearchStatus))
                 SearchStatusButtons[initStatus] = "active";
@@ -81,12 +78,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private async Task GetWarehousesAsync()
         {
-            Warehouses = await HttpClient.GetFromJsonAsync<Warehouse[]>("api/Warehouses/ForOut");
-        }
-
-        private async Task GetDestinationsAsync()
-        {
-            Destinations = await HttpClient.GetFromJsonAsync<Destination[]>("api/Destinations");
+            Warehouses = await HttpClient.GetFromJsonAsync<Warehouse[]>("api/Warehouses/ForIn");
         }
 
         private async Task GetOrdersDtoAsync()
@@ -95,14 +87,14 @@ namespace Whs.Client.Pages.WhsOrdersOut
             {
                 DateTime beginTime = DateTime.Now;
                 Console.WriteLine("GetOrdersDtoAsync - begin");
-                string requestUri = $"api/WhsOrdersOut/DtoByQueType?" +
+                string requestUri = $"api/WhsOrdersIn/DtoByQueType?" +
                     $"SearchBarcode={OrderParameters.SearchBarcode}&" +
                     $"SearchStatus={OrderParameters.SearchStatus}&" +
                     $"SearchTerm={OrderParameters.SearchTerm}&" +
                     $"SearchWarehouseId={OrderParameters.SearchWarehouseId}&" +
                     $"SearchDestinationId={OrderParameters.SearchDestinationId}";
                 Console.WriteLine($"GetOrdersDtoAsync - requestUri: {requestUri}");
-                OrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoOut>(requestUri);
+                OrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoIn>(requestUri);
                 StateHasChanged();
                 if (OrdersDto.Items.Count == 0)
                 {
@@ -134,13 +126,6 @@ namespace Whs.Client.Pages.WhsOrdersOut
             await GetOrdersDtoAsync();
         }
 
-        private async Task SearchByDestinationsAsync(string searchDestinationId)
-        {
-            OrderParameters.SearchBarcode = null;
-            OrderParameters.SearchDestinationId = searchDestinationId;
-            await GetOrdersDtoAsync();
-        }
-
         private async Task SearchByStatus(string searchStatus)
         {
             OrderParameters.SearchBarcode = null;
@@ -158,10 +143,8 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private void SearchClear()
         {
-            SearchByDestination.Clear();
             SearchByNumber.SearchTerm = string.Empty;
             OrderParameters.SearchTerm = null;
-            OrderParameters.SearchDestinationId = null;
         }
 
         private async Task ScannedBarcodeAsync(ChangeEventArgs args)
@@ -192,7 +175,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private void OpenItem(string id)
         {
-            NavigationManager.NavigateTo($"WhsOrdersOut/Item/{id}/{OrderParameters.SearchStatus}");
+            NavigationManager.NavigateTo($"WhsOrdersIn/Item/{id}/{OrderParameters.SearchStatus}");
         }
 
         public void SetTimer(double interval, bool autoReset)
@@ -202,7 +185,6 @@ namespace Whs.Client.Pages.WhsOrdersOut
             {
                 Console.WriteLine($"Timer.Elapsed at: {DateTime.Now}");
                 await GetOrdersDtoAsync();
-                await GetDestinationsAsync();
             };
             Timer.AutoReset = autoReset;
             Timer.Enabled = true;

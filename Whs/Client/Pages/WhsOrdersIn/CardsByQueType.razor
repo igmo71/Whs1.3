@@ -1,0 +1,137 @@
+﻿@page "/WhsOrdersIn/CardsByQueType"
+@page "/WhsOrdersIn/CardsByQueType/{SearchStatus}"
+
+@using Microsoft.AspNetCore.Authorization
+@using Whs.Client.Components
+
+@attribute [Authorize]
+
+<Notification @ref="Notification" />
+
+<input type="hidden" id="Barcode" value="@Barcode" @onchange="ScannedBarcodeAsync" />
+
+<div class="row">
+    <div class="col">
+        <h3>Расходные ордера на товары</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col d-print-none">
+        <AuthorizeView Roles="Manager">
+            <Authorized>
+                @if (Warehouses != null)
+                {
+                    <SearchByWarehouseAsync Warehouses="Warehouses" OnSelect="SearchByWarehouseAsync" />
+                }
+            </Authorized>
+        </AuthorizeView>
+    </div>
+    <div class="col d-print-none">
+        <SearchByNumber @ref="SearchByNumber" OnSearchChanged="SearchByNumberAsync" />
+    </div>
+    <div class="col">
+        @if (OrdersDto != null)
+        {
+            <strong>Общ вес: @OrdersDto.TotalWeight</strong>
+        }
+    </div>
+    <div class="col mb-2 d-print-none">
+        <button class="btn btn-info" @onclick="PrintAsync"><span class="oi oi-print"></span> Печать </button>
+    </div>
+</div>
+
+<ul class="nav nav-tabs nav-fill">
+    <li class="nav-item">
+        <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["К поступлению"]" @onclick="@(() => SearchByStatus("К поступлению"))">К поступлению</button>
+    </li>
+    <li class="nav-item">
+        <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["В работе"]" @onclick="@(() => SearchByStatus("В работе"))">В работе</button>
+    </li>
+    <li class="nav-item">
+        <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["Принят"]" @onclick="@(() => SearchByStatus("Принят"))">Принят</button>
+    </li>
+</ul>
+
+@if (OrdersDto == null)
+{
+    <p><em>Загрузка...</em></p>
+}
+else
+{
+    @if (OrdersDto?.MngrOrderName != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>@OrdersDto.MngrOrderName</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close" @onclick="SearchByBarcodeClearAsync">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <div class="row mt-3">
+        <div class="col-3">
+            <div class="row h5 text-center">
+                <div class="col"><span class="oi oi-layers"></span>&nbsp;<span>Под клиента</span></div>
+            </div>
+            @if (OrdersDto.Items.ContainsKey("Под клиента"))
+            {
+                @foreach (var value in OrdersDto.Items["Под клиента"])
+                {
+                    <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
+                        <div class="col">
+                            <Card Value="value" />
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-3">
+            <div class="row h5 text-center">
+                <div class="col"><span class="oi oi-calendar"></span>&nbsp;<span>Срочно в продажу</span></div>
+            </div>
+            @if (OrdersDto.Items.ContainsKey("Срочно в продажу"))
+            {
+                @foreach (var value in OrdersDto.Items["Срочно в продажу"])
+                {
+                    <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
+                        <div class="col">
+                            <Card Value="value" />
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-3">
+            <div class="row h5 text-center">
+                <div class="col"><span class="oi oi-globe"></span>&nbsp;<span>Просрочено</span></div>
+            </div>
+            @if (OrdersDto.Items.ContainsKey("Просрочено"))
+            {
+                @foreach (var value in OrdersDto.Items["Просрочено"])
+                {
+                    <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
+                        <div class="col">
+                            <Card Value="value" />
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-3">
+            <div class="row h5 text-center">
+                <div class="col"><span class="oi oi-aperture"></span>&nbsp;<span>Очередность не указана</span></div>
+            </div>
+            @if (OrdersDto.Items.ContainsKey("Очередность не указана"))
+            {
+                @foreach (var value in OrdersDto.Items["Очередность не указана"])
+                {
+                    <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
+                        <div class="col">
+                            <Card Value="value" />
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}
