@@ -1,24 +1,32 @@
 ﻿@inherits LayoutComponentBase
-
 @*<div class="sidebar d-print-none">
-    <NavMenu />
-</div>*@
+        <NavMenu />
+    </div>*@
 
 <div class="main">
     <div class="top-row px-4 d-print-none" style="z-index:999">
-        <ul class="nav align-self-start flex">
-            <li class="nav-item px-3">
-                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                    <span class="oi oi-home" aria-hidden="true"></span> Home
-                </NavLink>
-            </li>
-            <li class="nav-item px-3">
-                <NavLink class="nav-link" href="/WhsOrdersOut/CardsByQueType">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> Отгрузка
-                </NavLink>
-            </li>
-        </ul>
-        <Whs.Client.Components.AuthLinks />
+        <div class="col-11">
+            <ul class="nav">
+                @*<li class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="oi oi-home" aria-hidden="true"></span> Home
+                    </NavLink>
+                </li>*@
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="/WhsOrdersOut/CardsByQueType">
+                        <span class="oi oi-external-link" aria-hidden="true"></span> Отгрузка
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="/WhsOrdersOut/CardsByQueType">
+                        <span class="oi oi-data-transfer-download" aria-hidden="true"></span> Приемка
+                    </NavLink>
+                </li>
+            </ul>
+        </div>
+        <div class="col-1">
+            <Whs.Client.Components.AuthLinks />
+        </div>
     </div>
 
     <div class="content px-4">
