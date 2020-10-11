@@ -28,7 +28,7 @@ namespace Whs.Shared.Models
 
 
         [NotMapped]
-        private int maxChars = 28;
+        private int maxChars = 26;
         [NotMapped]
         public string СрокВыполненияString =>
             (СрокВыполнения == null || СрокВыполнения == DateTime.Parse("01.01.0001 0:00:00")) ? string.Empty : СрокВыполнения.ToString();        
