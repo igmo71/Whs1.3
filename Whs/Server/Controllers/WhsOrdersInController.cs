@@ -19,14 +19,14 @@ namespace Whs.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class WhsOrdersOutController : ControllerBase
+    public class WhsOrdersInController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
         private readonly WhsOrderSettings _settings;
         private readonly HttpClient _clientHttpService;
-        private readonly ILogger<WhsOrdersOutController> _logger;
+        private readonly ILogger<WhsOrdersInController> _logger;
 
-        public WhsOrdersOutController(ApplicationDbContext context, IConfiguration configuration, IHttpClientFactory clientFactory, ILogger<WhsOrdersOutController> logger)
+        public WhsOrdersInController(ApplicationDbContext context, IConfiguration configuration, IHttpClientFactory clientFactory, ILogger<WhsOrdersInController> logger)
         {
             _context = context;
             _clientHttpService = clientFactory.CreateClient("ClientHttpService");
@@ -34,11 +34,11 @@ namespace Whs.Server.Controllers
             _logger = logger;
         }
 
-        // GET: api/WhsOrdersOut/
+        // GET: api/WhsOrdersIn/
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetListAsync()
+        public async Task<ActionResult<IEnumerable<WhsOrderIn>>> GetListAsync()
         {
-            return await _context.WhsOrdersOut
+            return await _context.WhsOrdersIn
                 .Include(e => e.Товары)
                 .Include(e => e.Распоряжения)
                 .AsNoTracking()
@@ -46,21 +46,21 @@ namespace Whs.Server.Controllers
                 .ToListAsync();
         }
 
-        // GET: api/WhsOrdersOut/DtoByQueType
+        // GET: api/WhsOrdersIn/DtoByQueType
         [HttpGet("DtoByQueType")]
-        public ActionResult<WhsOrdersDtoOut> GetDtoByQueType([FromQuery] WhsOrderParameters parameters)
+        public ActionResult<WhsOrdersDtoIn> GetDtoByQueType([FromQuery] WhsOrderParameters parameters)
         {
             _logger.LogInformation($"---> GetDtoByQueType: Begin");
-            WhsOrdersDtoOut dto = new WhsOrdersDtoOut();
+            WhsOrdersDtoIn dto = new WhsOrdersDtoIn();
 
-            IQueryable<WhsOrderOut> query = _context.WhsOrdersOut
+            IQueryable<WhsOrderIn> query = _context.WhsOrdersIn
                 .Where(e => e.Проведен)
                 .Include(e => e.Распоряжения)
                 .OrderByDescending(e => e.ВесовойКоэффициент)
                 .ThenBy(e => e.СрокВыполнения)
                 .AsNoTracking();
 
-            IEnumerable<WhsOrderOut> items;
+            IEnumerable<WhsOrderIn> items;
             if (parameters.SearchBarcode == null)
             {
                 items = query.Search(parameters).Take(_settings.OrdersPerPage).AsEnumerable();
@@ -83,11 +83,11 @@ namespace Whs.Server.Controllers
             return dto;
         }
 
-        // GET: api/WhsOrdersOut/5
+        // GET: api/WhsOrdersIn/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<WhsOrderOut>> GetAsync(string id)
+        public async Task<ActionResult<WhsOrderIn>> GetAsync(string id)
         {
-            WhsOrderOut item = await _context.WhsOrdersOut
+            WhsOrderIn item = await _context.WhsOrdersIn
                 .Include(e => e.Товары)
                 .Include(e => e.Распоряжения)
                 .AsNoTracking()
@@ -97,12 +97,12 @@ namespace Whs.Server.Controllers
             return item;
         }
 
-        // GET: api/WhsOrdersOut/Dto/5
+        // GET: api/WhsOrdersIn/Dto/5
         [HttpGet("Dto/{id}")]
-        public async Task<ActionResult<WhsOrderDtoOut>> GetDtoAsync(string id)
+        public async Task<ActionResult<WhsOrderDtoIn>> GetDtoAsync(string id)
         {
             _logger.LogInformation($"---> GetDtoAsync/{id}: Begin");
-            WhsOrderOut item = await _context.WhsOrdersOut
+            WhsOrderIn item = await _context.WhsOrdersIn
                 .Where(e => e.Проведен)
                 .Include(e => e.Товары)
                 .Include(e => e.Распоряжения)
@@ -116,10 +116,10 @@ namespace Whs.Server.Controllers
             }
 
 
-            WhsOrderDtoOut dto = new WhsOrderDtoOut
+            WhsOrderDtoIn dto = new WhsOrderDtoIn
             {
                 Item = item,
-                UserName = _context.WhsOrdersDataOut
+                UserName = _context.WhsOrdersDataIn
                     .Include(e => e.ApplicationUser)
                     .Where(e => e.Документ_Id == id)
                     .OrderByDescending(e => e.DateTime)
@@ -130,15 +130,15 @@ namespace Whs.Server.Controllers
             return dto;
         }
 
-        // POST: api/WhsOrdersOut
+        // POST: api/WhsOrdersIn
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<WhsOrderOut>> PostAsync(WhsOrderOut whsOrder)
+        public async Task<ActionResult<WhsOrderIn>> PostAsync(WhsOrderIn whsOrder)
         {
-            _logger.LogInformation($"---> PostAsync: Begin {whsOrder.Номер} - {whsOrder.Дата} - {whsOrder.НомерОчереди} - {whsOrder.Статус} - " +
+            _logger.LogInformation($"---> PostAsync: Begin {whsOrder.Номер} - {whsOrder.Дата} - {whsOrder.Статус} - " +
                 $"{whsOrder.ТипОчереди} - {whsOrder.СрокВыполнения} - {whsOrder.Комментарий} ");
-            _context.WhsOrdersOut.Add(whsOrder);
+            _context.WhsOrdersIn.Add(whsOrder);
             try
             {
                 await _context.SaveChangesAsync();
@@ -160,12 +160,12 @@ namespace Whs.Server.Controllers
             return CreatedAtAction("GetAsync", new { id = whsOrder.Документ_Id }, whsOrder);
         }
 
-        // PUT: api/WhsOrdersOut
+        // PUT: api/WhsOrdersIn
         [HttpPut("{id}")]
         [HttpPut("{id}/{barcode}")]
-        public async Task<IActionResult> PutAsync(string id, string barcode, WhsOrderOut whsOrder)
+        public async Task<IActionResult> PutAsync(string id, string barcode, WhsOrderIn whsOrder)
         {
-            _logger.LogInformation($"---> PutUAsync/{id}: Begin {whsOrder.Номер} - {whsOrder.Дата} - {whsOrder.НомерОчереди} - {whsOrder.Статус} - " +
+            _logger.LogInformation($"---> PutUAsync/{id}: Begin {whsOrder.Номер} - {whsOrder.Дата} - {whsOrder.Статус} - " +
                 $"{whsOrder.ТипОчереди} - {whsOrder.СрокВыполнения} - {whsOrder.Комментарий} ");
 
             if (id != whsOrder.Документ_Id)
@@ -188,16 +188,16 @@ namespace Whs.Server.Controllers
 
             await CreateWhsOrderDataAsync(barcode, whsOrder);
 
-            IQueryable<ProductOut> productsToRemove = _context.ProductsOut.Where(e => e.Документ_Id == whsOrder.Документ_Id);
-            _context.ProductsOut.RemoveRange(productsToRemove);
-            IQueryable<MngrOrderOut> mngrOrdersToRemove = _context.MngrOrdersOut.Where(e => e.Документ_Id == whsOrder.Документ_Id);
-            _context.MngrOrdersOut.RemoveRange(mngrOrdersToRemove);
+            IQueryable<ProductIn> productsToRemove = _context.ProductsIn.Where(e => e.Документ_Id == whsOrder.Документ_Id);
+            _context.ProductsIn.RemoveRange(productsToRemove);
+            IQueryable<MngrOrderIn> mngrOrdersToRemove = _context.MngrOrdersIn.Where(e => e.Документ_Id == whsOrder.Документ_Id);
+            _context.MngrOrdersIn.RemoveRange(mngrOrdersToRemove);
             await _context.SaveChangesAsync();
 
             _context.Entry(whsOrder).State = EntityState.Modified;
 
-            await _context.ProductsOut.AddRangeAsync(whsOrder.Товары);
-            await _context.MngrOrdersOut.AddRangeAsync(whsOrder.Распоряжения);
+            await _context.ProductsIn.AddRangeAsync(whsOrder.Товары);
+            await _context.MngrOrdersIn.AddRangeAsync(whsOrder.Распоряжения);
 
             try
             {
@@ -220,30 +220,30 @@ namespace Whs.Server.Controllers
             return NoContent();
         }
 
-        private async Task CreateProductsDataAsync(WhsOrderOut whsOrder)
+        private async Task CreateProductsDataAsync(WhsOrderIn whsOrder)
         {
-            List<ProductDataOut> productsData = new List<ProductDataOut>();
-            foreach (ProductOut product in whsOrder.Товары)
+            List<ProductDataIn> productsData = new List<ProductDataIn>();
+            foreach (ProductIn product in whsOrder.Товары)
                 if (product.КоличествоПлан != product.КоличествоФакт)
-                    productsData.Add(new ProductDataOut(product));
-            await _context.ProductsDataOut.AddRangeAsync(productsData);
+                    productsData.Add(new ProductDataIn((Product)product));
+            await _context.ProductsDataIn.AddRangeAsync(productsData);
             await _context.SaveChangesAsync();
         }
 
-        private async Task CreateWhsOrderDataAsync(string barcode, WhsOrderOut whsOrder)
+        private async Task CreateWhsOrderDataAsync(string barcode, WhsOrderIn whsOrder)
         {
-            WhsOrderDataOut whsOrderData = new WhsOrderDataOut
+            WhsOrderDataIn whsOrderData = new WhsOrderDataIn
             {
                 DateTime = DateTime.Now,
                 Статус = whsOrder.Статус,
                 Документ_Id = whsOrder.Документ_Id,
                 ApplicationUserId = barcode == null ? null : GuidConvert.FromNumStr(barcode)
             };
-            await _context.WhsOrdersDataOut.AddAsync(whsOrderData);
+            await _context.WhsOrdersDataIn.AddAsync(whsOrderData);
             await _context.SaveChangesAsync();
         }
 
-        private async Task<WhsOrderOut> PutTo1cAsync(WhsOrderOut whsOrder)
+        private async Task<WhsOrderIn> PutTo1cAsync(WhsOrderIn whsOrder)
         {
             _logger.LogInformation($"---> PutTo1cAsync: Begin {whsOrder.Документ_Name}");
             string responseContent = string.Empty;
@@ -256,12 +256,12 @@ namespace Whs.Server.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     _logger.LogInformation($"---> PutTo1cAsync: Ok {whsOrder.Документ_Name}");
-                    return JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
+                    return JsonSerializer.Deserialize<Response1cIn>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
                 }
                 else
                 {
                     _logger.LogError($"---> PutTo1cAsync: {whsOrder.Документ_Name}{Environment.NewLine}" +
-                        $"Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
+                        $"Ошибка: {JsonSerializer.Deserialize<Response1cIn>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
                 }
             }
             catch (Exception exception)
@@ -272,18 +272,20 @@ namespace Whs.Server.Controllers
             return null;
         }
 
-        // DELETE: api/WhsOrdersOut/5
+        // DELETE: api/WhsOrdersIn/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<WhsOrderOut>> DeleteAsync(string id)
+        public async Task<ActionResult<WhsOrderIn>> DeleteAsync(string id)
         {
-            WhsOrderOut item = await _context.WhsOrdersOut.FindAsync(id);
+            WhsOrderIn item = await _context.WhsOrdersIn.FindAsync(id);
             if (item == null)
                 return NotFound();
-            _context.WhsOrdersOut.Remove(item);
+            _context.WhsOrdersIn.Remove(item);
             await _context.SaveChangesAsync();
             return item;
         }
 
-        private bool Exists(string id) => _context.WhsOrdersOut.Any(e => e.Документ_Id == id);
+
+        private bool Exists(string id) => _context.WhsOrdersIn.Any(e => e.Документ_Id == id);
     }
+
 }

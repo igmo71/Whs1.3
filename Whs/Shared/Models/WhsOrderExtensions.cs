@@ -35,5 +35,31 @@ namespace Whs.Shared.Models
             }
             return query;
         }
+
+        public static IQueryable<WhsOrderIn> Search(this IQueryable<WhsOrderIn> query, WhsOrderParameters parameters)
+        {
+            if (!string.IsNullOrWhiteSpace(parameters.SearchStatus))
+            {
+                switch (parameters.SearchStatus)
+                {
+                    case "К поступлению": query = query.Where(e => e.Статус == "К поступлению"); break;
+                    case "В работе": query = query.Where(e => e.Статус == "В работе"); break;
+                    case "Принят": query = query.Where(e => e.Статус == "Принят"); break;
+                    default: break;
+                }
+            }
+
+            if (!(string.IsNullOrWhiteSpace(parameters.SearchWarehouseId) || parameters.SearchWarehouseId == Guid.Empty.ToString()))
+                query = query.Where(e => e.Склад_Id == parameters.SearchWarehouseId);
+
+            if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
+            {
+                var lowerCaseSearchTerm = parameters.SearchTerm.Trim().ToLower();
+                query = query.Where(e =>
+                    e.Номер.ToLower().Contains(lowerCaseSearchTerm) ||
+                    e.ОтправительПолучатель_Name.ToLower().Contains(lowerCaseSearchTerm));
+            }
+            return query;
+        }
     }
 }
