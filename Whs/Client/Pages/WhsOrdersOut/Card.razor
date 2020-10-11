@@ -2,22 +2,15 @@
 
 <div class="card border border-dark rounded w-100">
     <div class="card-header">
-        <div class="row">
-            <div class="col">
-                <AuthorizeView Roles="Manager">
-                    <Authorized>
-                        @Value.Склад_NameString
-                    </Authorized>
-                </AuthorizeView>
-            </div>
-            <div class="col h1 align-middle text-right" title="@Value.Документ_Name">
-                @Value.НомерОчереди
-            </div>
+        <div class="row  d-flex justify-content-around">
+            <span class="h3" title="@Value.Документ_Name">@Value.НомерОчереди</span>
+            <span class="h5"><span class="oi oi-list" title="Количество строк"></span>&nbsp;<span>@Value.КоличествоСтрок</span></span>
+            <span class="h5"><span class="oi oi-expand-down" title="Вес"></span>&nbsp;<span>@Value.Вес</span></span>
         </div>
     </div>
     <div class="card-body">
         <div class="row">
-            <span class="oi oi-timer" title="Срок выполнения">&nbsp;</span><span class="@ifExpired">@Value.СрокВыполнения</span>
+            <span class="oi oi-timer" title="Срок выполнения">&nbsp;</span><span class="@ifExpired" title="@Value.СрокВыполнения">@Value.TimeUpString</span>
         </div>
         <div class="row">
             <span class="oi oi-map-marker" title="Направление доставки">&nbsp;</span><span>@Value.НаправлениеДоставки_Name</span>
@@ -28,11 +21,19 @@
         <div class="row">
             <span class="oi oi-warning" title="Комментарий">&nbsp;</span><span title="@Value.Комментарий">@Value.КомментарийString</span>
         </div>
+        <AuthorizeView Roles="Manager">
+            <Authorized>
+                <div class="row">
+                    <span class="oi oi-basket"></span>&nbsp;<span>@Value.Склад_NameString</span>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
     </div>
-    <div class="card-footer">
+    @*<div class="card-footer">
         <div class="float-left">Строк: @Value.КоличествоСтрок</div>
-        <div class="float-right">Вес: @Value.Вес</div>
-    </div>
+            <div class="float-right">Вес: @Value.Вес</div>
+    </div>*@
 </div>
 
 @code {

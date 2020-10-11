@@ -27,20 +27,61 @@ namespace Whs.Shared.Models
         public string ОтправительПолучатель_Name { get; set; }
 
 
-
+        [NotMapped]
+        private int maxChars = 28;
         [NotMapped]
         public string СрокВыполненияString =>
-            (СрокВыполнения == null || СрокВыполнения == DateTime.Parse("01.01.0001 0:00:00")) ? string.Empty : СрокВыполнения.ToString();
+            (СрокВыполнения == null || СрокВыполнения == DateTime.Parse("01.01.0001 0:00:00")) ? string.Empty : СрокВыполнения.ToString();        
         [NotMapped]
         public string КомментарийString =>
-            (string.IsNullOrEmpty(Комментарий) || Комментарий.Length < 30) ? Комментарий : $"{Комментарий.Substring(0, 30)}...";
+            (string.IsNullOrEmpty(Комментарий) || Комментарий.Length < maxChars) ? Комментарий : $"{Комментарий.Substring(0, maxChars)}...";
         [NotMapped]
-        public string Склад_NameString => 
-            (string.IsNullOrEmpty(Склад_Name) || Склад_Name.Length < 30) ? Склад_Name : $"{Склад_Name.Substring(0, 30)}...";
+        public string Склад_NameString =>
+            (string.IsNullOrEmpty(Склад_Name) || Склад_Name.Length < maxChars) ? Склад_Name : $"{Склад_Name.Substring(0, maxChars)}...";
         [NotMapped]
         public string ОтправительПолучатель_NameString =>
-            (string.IsNullOrEmpty(ОтправительПолучатель_Name) || ОтправительПолучатель_Name.Length < 30) ? ОтправительПолучатель_Name : $"{ОтправительПолучатель_Name.Substring(0, 30)}...";
-       
+            (string.IsNullOrEmpty(ОтправительПолучатель_Name) || ОтправительПолучатель_Name.Length < maxChars) ? ОтправительПолучатель_Name : $"{ОтправительПолучатель_Name.Substring(0, maxChars)}...";
+        [NotMapped]
+        public string TimeUpString
+        {
+            get
+            {
+                string result = "";
+                TimeSpan timeSpan;
+                DateTime now = DateTime.Now;
+                if (СрокВыполнения > now)
+                {
+                    timeSpan = СрокВыполнения - now;
+                }
+                else
+                {
+                    timeSpan = DateTime.Now - СрокВыполнения;
+                    result = "Истек ";
+                }
+                if (timeSpan.Days > 0)
+                {
+                    int days = timeSpan.Days;
+                    result += $"{timeSpan.Days} дн. ";
+                    timeSpan -= new TimeSpan(days, 0, 0, 0);
+                }
+                if (timeSpan.Hours > 0)
+                {
+                    int hours = timeSpan.Hours;
+                    result += $"{timeSpan.Hours} ч. ";
+                    timeSpan -= new TimeSpan(0, hours, 0, 0);
+                }
+                if (timeSpan.Minutes > 0)
+                {
+                    int minutes = timeSpan.Minutes;
+                    result += $"{timeSpan.Minutes} мин.";
+                }
+                if (now >= СрокВыполнения)
+                {
+                    result += " назад";
+                }
+                return result;
+            }
+        }
     }
 
     public class WhsOrderIn : WhsOrder
