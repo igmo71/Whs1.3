@@ -52,6 +52,7 @@ namespace Whs.Shared.Models
                 if (СрокВыполнения > now)
                 {
                     timeSpan = СрокВыполнения - now;
+                    result = "Осталось ";
                 }
                 else
                 {
