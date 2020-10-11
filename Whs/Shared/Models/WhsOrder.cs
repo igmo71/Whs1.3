@@ -56,7 +56,7 @@ namespace Whs.Shared.Models
                 }
                 else
                 {
-                    timeSpan = DateTime.Now - СрокВыполнения;
+                    timeSpan = now - СрокВыполнения;
                     result = "Истек ";
                 }
                 if (timeSpan.Days > 0)
