@@ -4,6 +4,15 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>bbab1d59-ff9c-43d6-b42d-b7ae4dc8a6b0</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Data\Migrations\20201012133101_Initial.cs" />
+    <Compile Remove="Data\Migrations\20201012133101_Initial.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201012142020_WarehouseId.cs" />
+    <Compile Remove="Data\Migrations\20201012142020_WarehouseId.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201012142152_Manual_WarehouseId.cs" />
+    <Compile Remove="Data\Migrations\20201012142152_Manual_WarehouseId.Designer.cs" />
+  </ItemGroup>
 	
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.8" />
@@ -23,10 +32,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Client\Whs.Client.csproj" />
     <ProjectReference Include="..\Shared\Whs.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data\Migrations\" />
   </ItemGroup>
 
 </Project>

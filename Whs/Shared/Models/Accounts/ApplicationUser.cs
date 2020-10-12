@@ -8,12 +8,15 @@ namespace Whs.Shared.Models.Accounts
 {
     public class ApplicationUser : IdentityUser
     {
-        [NotMapped]
-        public string Barcode => GuidConvert.ToNumStr(Id);
         public string FullName { get; set; }
 
+        [ForeignKey("WarehouseId")]
         public Warehouse Warehouse { get; set; }
+        [Column("WarehouseId")]
         public string WarehouseId { get; set; }
+
+        [NotMapped]
+        public string Barcode => GuidConvert.ToNumStr(Id);
     }
     public class ApplicationUserParameters
     {
