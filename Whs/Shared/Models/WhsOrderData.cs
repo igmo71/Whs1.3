@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Whs.Shared.Models.Accounts;
@@ -7,6 +8,7 @@ namespace Whs.Shared.Models
 {
     public abstract class WhsOrderData
     {
+        [Key]
         public Guid Id { get; set; }
         public string Документ_Id { get; set; }
         public string Статус { get; set; }
@@ -17,14 +19,12 @@ namespace Whs.Shared.Models
 
     public class WhsOrderDataIn : WhsOrderData
     {
-        [JsonIgnore]
         [ForeignKey("Документ_Id")]
-        public WhsOrderIn WhsOrderIn { get; set; }
+        public WhsOrderIn WhsOrder { get; set; }
     }
     public class WhsOrderDataOut : WhsOrderData
     {
-        [JsonIgnore]
         [ForeignKey("Документ_Id")]
-        public WhsOrderOut WhsOrderOut { get; set; }
+        public WhsOrderOut WhsOrder { get; set; }
     }
 }

@@ -8,7 +8,6 @@ namespace Whs.Shared.Models.Accounts
 {
     public class ApplicationUser : IdentityUser
     {
-        //public string Barcode { get; set; }
         [NotMapped]
         public string Barcode => GuidConvert.ToNumStr(Id);
         public string FullName { get; set; }

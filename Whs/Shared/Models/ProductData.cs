@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Whs.Shared.Models
@@ -7,6 +8,7 @@ namespace Whs.Shared.Models
     public abstract class ProductData : Product
     {
         public ProductData() { }
+
         public ProductData(Product product) : this()
         {
             Документ_Id = product.Документ_Id;
@@ -22,6 +24,8 @@ namespace Whs.Shared.Models
             Упаковка_Name = product.Упаковка_Name;
             EditingCauseId = product.EditingCauseId;
         }
+
+        [Key]
         public Guid Id { get; set; }
     }
 
@@ -29,6 +33,10 @@ namespace Whs.Shared.Models
     {
         public ProductDataIn() : base() { }
         public ProductDataIn(Product product) : base(product) { }
+
+        [ForeignKey("Документ_Id")]
+        public WhsOrderOut WhsOrder { get; set; }
+
         [ForeignKey("EditingCauseId")]
         public EditingCauseIn EditingCause { get; set; }
     }
@@ -37,6 +45,10 @@ namespace Whs.Shared.Models
     {
         public ProductDataOut() : base() { }
         public ProductDataOut(Product product) : base(product) { }
+
+        [ForeignKey("Документ_Id")]
+        public WhsOrderIn WhsOrder { get; set; }
+
         [ForeignKey("EditingCauseId")]
         public EditingCauseOut EditingCause { get; set; }
     }
