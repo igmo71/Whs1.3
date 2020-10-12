@@ -46,28 +46,30 @@
     </div>
 </div>
 
-<ul class="nav nav-tabs nav-fill">
-    <li class="nav-item">
-        <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["Подготовлено"]" @onclick="@(() => SearchByStatus("Подготовлено"))">Подготовлено</button>
-    </li>
-    <li class="nav-item">
-        <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["К отбору"]" @onclick="@(() => SearchByStatus("К отбору"))">К отбору</button>
-    </li>
-    <li class="nav-item">
-        <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["К отгрузке"]" @onclick="@(() => SearchByStatus("К отгрузке"))">К отгрузке</button>
-    </li>
-    <li class="nav-item">
-        <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["Отгружен"]" @onclick="@(() => SearchByStatus("Отгружен"))">Отгружен</button>
-    </li>
-</ul>
-
 @if (OrdersDto == null)
 {
     <p><em>Загрузка...</em></p>
 }
 else
 {
-    @if (OrdersDto?.MngrOrderName != null)
+    @if (OrdersDto?.MngrOrderName == null)
+    {
+        <ul class="nav nav-tabs nav-fill">
+            <li class="nav-item">
+                <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["Подготовлено"]" @onclick="@(() => SearchByStatus("Подготовлено"))">Подготовлено</button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["К отбору"]" @onclick="@(() => SearchByStatus("К отбору"))">К отбору</button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["К отгрузке"]" @onclick="@(() => SearchByStatus("К отгрузке"))">К отгрузке</button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["Отгружен"]" @onclick="@(() => SearchByStatus("Отгружен"))">Отгружен</button>
+            </li>
+        </ul>
+    }
+    else
     {
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <strong>@OrdersDto.MngrOrderName</strong>

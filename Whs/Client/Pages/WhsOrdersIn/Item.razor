@@ -1,0 +1,131 @@
+﻿@page "/WhsOrdersIn/Item/{Id}"
+@page "/WhsOrdersIn/Item/{Id}/{SearchStatus}"
+@using Whs.Client.Components
+
+<Notification @ref="Notification" />
+
+<input type="hidden" id="Barcode" value="@Barcode" @onchange="ScannedBarcodeAsync" />
+
+@if (OrderDto == null)
+{
+    <h3>Расходный ордер на товары</h3>
+    <p><em>Загрузка...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-2 d-print-none">
+            <button class="btn btn-primary" @onclick="Return"><span class="oi oi-action-undo"></span> Назад </button>
+        </div>
+        <div class="col-6">
+            <div class="h3">
+                @OrderDto.Item?.Документ_Name
+            </div>
+            <div class="align-middle text-center border border-dark">
+                @OrderDto.Item?.Статус
+            </div>
+        </div>
+        <div class="col-4 d-none d-print-inline">
+            <div class="float-right">
+                <img src=@($"data:image/jpeg;base64,{OrderDto.BarcodeBase64}") alt="штрих код" width="300" height="80" />
+            </div>
+        </div>
+        <div class="col-2 mb-2 d-print-none">
+            <button class="btn btn-info" @onclick="PrintAsync"><span class="oi oi-print"></span> Печать </button>
+        </div>
+    </div>
+
+    <table>
+        <tr>
+            <th>Склад: </th>
+            <td>@OrderDto.Item?.Склад_Name</td>
+            <th>Тип очереди:</th>
+            <td>@OrderDto.Item?.ТипОчереди</td>
+        </tr>
+        <tr>
+            <th>Получатель: </th>
+            <td>@OrderDto.Item?.ОтправительПолучатель_Name</td>
+            <th>Выполнить до: </th>
+            <td>@OrderDto.Item?.СрокВыполненияString</td>
+        </tr>
+        <tr>
+            <th>Распоряжение: </th>
+            <td>
+                @foreach (var item in OrderDto.Item?.Распоряжения)
+                {
+                    @item.Распоряжение_Name <br />
+                }
+            </td>
+            <th>В работе: </th>
+            <td>@OrderDto.UserName</td>
+        </tr>
+        <tr>
+            <th>Ответственный: </th>
+            <td>@OrderDto.Item?.Ответственный_Name</td>
+            <th></th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Комментарий: </th>
+            <td>@OrderDto.Item?.Комментарий</td>
+            <th>Вес: </th>
+            <td>@OrderDto.Item?.Вес</td>
+        </tr>
+    </table>
+
+
+    <table class="table table-bordered border-dark table-hover table-striped table-sm">
+        <thead>
+            <tr>
+                <th class="align-middle text-center">№</th>
+                <th class="align-middle text-center">Артикул</th>
+                <th class="align-middle text-center">Товар</th>
+                <th class="align-middle text-center">Кол</th>
+                @if (OrderDto.Item?.Статус == "К отбору")
+                {
+                    <th class="align-middle text-center d-print-none">Причина изменения</th>
+                    <th class="align-middle text-center">Кол факт</th>
+                }
+                <th class="align-middle text-center">Упак</th>
+                <th class="align-middle text-center">Вес</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in OrderDto.Item.Товары)
+            {
+                <tr>
+                    <td class="align-middle">@item.НомерСтроки</td>
+                    <td class="align-middle">@item.Артикул</td>
+                    <td class="align-middle">@item.Номенклатура_Name</td>
+                    <td class="align-middle">@item.КоличествоПлан</td>
+
+                    @if (OrderDto.Item?.Статус == "В работе")
+                    {
+                        <td class="d-print-none">
+                            <select class="form-control" @bind="item.EditingCauseId">
+                                <option value="@Guid.Empty" selected></option>
+                                @foreach (var cause in EditingCauses)
+                                {
+                                    <option value="@cause.Id">@cause.Name</option>
+                                }
+                            </select>
+                        </td>
+                        <td class="d-print-none">
+                            <div class="input-group">
+                                <input class="form-control" size="4" @bind="item.КоличествоФакт" />
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" @onclick="@(() => item.КоличествоФакт = 0)">&times;</button>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="d-none d-print-table-cell">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </td>
+                    }
+                    <td class="align-middle">@item.Упаковка_Name</td>
+                    <td class="align-middle">@item.Вес</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

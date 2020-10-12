@@ -40,25 +40,27 @@
     </div>
 </div>
 
-<ul class="nav nav-tabs nav-fill">
-    <li class="nav-item">
-        <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["К поступлению"]" @onclick="@(() => SearchByStatus("К поступлению"))">К поступлению</button>
-    </li>
-    <li class="nav-item">
-        <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["В работе"]" @onclick="@(() => SearchByStatus("В работе"))">В работе</button>
-    </li>
-    <li class="nav-item">
-        <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["Принят"]" @onclick="@(() => SearchByStatus("Принят"))">Принят</button>
-    </li>
-</ul>
-
 @if (OrdersDto == null)
 {
     <p><em>Загрузка...</em></p>
 }
 else
 {
-    @if (OrdersDto?.MngrOrderName != null)
+    @if (OrdersDto?.MngrOrderName == null)
+    {
+        <ul class="nav nav-tabs nav-fill">
+            <li class="nav-item">
+                <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["К поступлению"]" @onclick="@(() => SearchByStatus("К поступлению"))">К поступлению</button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["В работе"]" @onclick="@(() => SearchByStatus("В работе"))">В работе</button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["Принят"]" @onclick="@(() => SearchByStatus("Принят"))">Принят</button>
+            </li>
+        </ul>
+    }
+    else
     {
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <strong>@OrdersDto.MngrOrderName</strong>

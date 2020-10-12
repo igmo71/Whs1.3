@@ -7,26 +7,20 @@ using System.Threading.Tasks;
 using Whs.Client.Components;
 using Whs.Shared.Models;
 
-namespace Whs.Client.Pages.WhsOrdersOut
+namespace Whs.Client.Pages.WhsOrdersIn
 {
     public partial class Item
     {
-        [Parameter]
-        public string Id { get; set; }
-        [Parameter]
-        public string SearchStatus { get; set; }
-        [Inject]
-        HttpClient HttpClient { get; set; }
-        [Inject]
-        public IJSRuntime JSRuntime { get; set; }
-        [Inject]
-        public NavigationManager NavigationManager { get; set; }
+        [Parameter] public string Id { get; set; }
+        [Parameter] public string SearchStatus { get; set; }
+        [Inject] HttpClient HttpClient { get; set; }
+        [Inject] public IJSRuntime JSRuntime { get; set; }
+        [Inject] public NavigationManager NavigationManager { get; set; }
 
         private string Barcode;
         private Notification Notification;
-        WhsOrderDtoOut OrderDto;
+        WhsOrderDtoIn OrderDto;
         public EditingCause[] EditingCauses { get; set; }
-
 
         protected override async Task OnInitializedAsync()
         {
@@ -36,7 +30,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private async Task GetEditingCausesAsync()
         {
-            EditingCauses = await HttpClient.GetFromJsonAsync<EditingCause[]>("api/EditingCauses/ForOut");
+            EditingCauses = await HttpClient.GetFromJsonAsync<EditingCause[]>("api/EditingCauses/ForIn");
         }
 
         private async Task GetOrderDtoAsync()
@@ -45,7 +39,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
             {
                 DateTime beginTime = DateTime.Now;
                 Console.WriteLine("GetOrderDtoAsync - begin");
-                OrderDto = await HttpClient.GetFromJsonAsync<WhsOrderDtoOut>($"api/WhsOrdersOut/Dto/{Id}", new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                OrderDto = await HttpClient.GetFromJsonAsync<WhsOrderDtoIn>($"api/WhsOrdersIn/Dto/{Id}", new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 Console.WriteLine($"GetOrderDtoAsync - OrderDto.Item.Статус: {OrderDto.Item.Статус}");
                 StateHasChanged();
                 Console.WriteLine($"GetOrderDtoAsync - duration: {DateTime.Now - beginTime}");
@@ -65,7 +59,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
                 DateTime beginTime = DateTime.Now;
                 Console.WriteLine("ScannedBarcodeAsync - begin");
                 Barcode = args.Value.ToString();
-                HttpResponseMessage response = await HttpClient.PutAsJsonAsync<WhsOrderOut>($"api/WhsOrdersOut/{OrderDto.Item.Документ_Id}/{Barcode}", OrderDto.Item);
+                HttpResponseMessage response = await HttpClient.PutAsJsonAsync<WhsOrderIn>($"api/WhsOrdersIn/{OrderDto.Item.Документ_Id}/{Barcode}", OrderDto.Item);
                 Console.WriteLine($"HttpResponseMessage - response: {response.StatusCode} - {response.ReasonPhrase} - {await response.Content.ReadAsStringAsync()}");
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
@@ -94,7 +88,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private void Return()
         {
-            NavigationManager.NavigateTo($"WhsOrdersOut/CardsByQueType/{SearchStatus}");
+            NavigationManager.NavigateTo($"WhsOrdersIn/CardsByQueType/{SearchStatus}");
         }
     }
 }

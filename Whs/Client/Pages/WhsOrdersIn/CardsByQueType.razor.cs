@@ -46,7 +46,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
             Console.WriteLine("OnInitializedAsync - begin");
             OrderParameters = new WhsOrderParameters();
             CreateSearchStatusButtons();
-            await GetWarehouseKeyAsync();
+            await GetWarehouseIdAsync();
             await GetWarehousesAsync();
             await GetOrdersDtoAsync();
             SetTimer(double.Parse(Configuration["TimerInterval"]), true);
@@ -64,7 +64,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
                 SearchStatusButtons[SearchStatus] = "active";
         }
 
-        private async Task GetWarehouseKeyAsync()
+        private async Task GetWarehouseIdAsync()
         {
             var authState = await AuthStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
