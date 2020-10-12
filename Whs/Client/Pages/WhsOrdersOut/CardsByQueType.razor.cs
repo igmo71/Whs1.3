@@ -86,7 +86,14 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private async Task GetDestinationsAsync()
         {
+            try { 
             Destinations = await HttpClient.GetFromJsonAsync<Destination[]>($"api/Destinations/{OrderParameters.SearchStatus}");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"GetDestinationsAsync - {ex.Message}");
+                Console.WriteLine($"GetDestinationsAsync - {ex.StackTrace}");
+            }
         }
 
         private async Task GetOrdersDtoAsync()
@@ -142,17 +149,19 @@ namespace Whs.Client.Pages.WhsOrdersOut
             await GetOrdersDtoAsync();
         }
 
-        private void SearchClear()
+        private async Task SearchClearAsync(bool isGetOrders = false)
         {
             SearchByDestination.Clear();
             SearchByNumber.SearchTerm = string.Empty;
             OrderParameters.SearchTerm = null;
             OrderParameters.SearchDestinationId = null;
+            if(isGetOrders)
+                await GetOrdersDtoAsync();
         }
 
         private async Task SearchByStatus(string searchStatus)
         {
-            SearchClear();
+            SearchClearAsync();
             OrderParameters.SearchBarcode = null;
             OrderParameters.SearchStatus = searchStatus;
             await GetOrdersDtoAsync();
@@ -174,7 +183,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private async Task SearchByBarcodeAsync()
         {
-            SearchClear();
+            SearchClearAsync();
             OrderParameters.SearchBarcode = Barcode;
             await GetOrdersDtoAsync();
 

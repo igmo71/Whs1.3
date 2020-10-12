@@ -157,7 +157,7 @@ namespace Whs.Server.Controllers
                 }
             }
             _logger.LogInformation($"---> PostAsync: Ok {whsOrder.Документ_Name}");
-            return CreatedAtAction("GetAsync", new { id = whsOrder.Документ_Id }, whsOrder);
+            return CreatedAtAction("Get", new { id = whsOrder.Документ_Id }, whsOrder);
         }
 
         // PUT: api/WhsOrdersIn
