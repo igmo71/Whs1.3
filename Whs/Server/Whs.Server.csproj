@@ -14,10 +14,24 @@
     <Compile Remove="Data\Migrations\20201005133522_Initial.Designer.cs" />
     <Compile Remove="Data\Migrations\20201005141058_Initial.cs" />
     <Compile Remove="Data\Migrations\20201005141058_Initial.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201005143009_Initial.cs" />
+    <Compile Remove="Data\Migrations\20201005143009_Initial.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201005143139_BasicModels.cs" />
+    <Compile Remove="Data\Migrations\20201005143139_BasicModels.Designer.cs" />
     <Compile Remove="Data\Migrations\20201006145237_WhsOrderData.cs" />
     <Compile Remove="Data\Migrations\20201006145237_WhsOrderData.Designer.cs" />
     <Compile Remove="Data\Migrations\20201006150723_WhsOrderData.cs" />
     <Compile Remove="Data\Migrations\20201006150723_WhsOrderData.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201007060014_WhsOrderData.cs" />
+    <Compile Remove="Data\Migrations\20201007060014_WhsOrderData.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201007081132_Nullable_WarehouseId.cs" />
+    <Compile Remove="Data\Migrations\20201007081132_Nullable_WarehouseId.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201008120946_WhsOrderData_Remake.cs" />
+    <Compile Remove="Data\Migrations\20201008120946_WhsOrderData_Remake.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201008121235_WhsOrderData_Remake_.cs" />
+    <Compile Remove="Data\Migrations\20201008121235_WhsOrderData_Remake_.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201009073727_Оплачено.cs" />
+    <Compile Remove="Data\Migrations\20201009073727_Оплачено.Designer.cs" />
     <Compile Remove="Data\Migrations\20201009084422_WhsOrderData_Remake2.cs" />
     <Compile Remove="Data\Migrations\20201009084422_WhsOrderData_Remake2.Designer.cs" />
     <Compile Remove="Data\Migrations\20201009085942_WhsOrderData_Remake2.cs" />
@@ -26,6 +40,8 @@
     <Compile Remove="Data\Migrations\20201009090156_WhsOrderData_Remake2.Designer.cs" />
     <Compile Remove="Data\Migrations\20201009091016_WhsOrderData_Remake2.cs" />
     <Compile Remove="Data\Migrations\20201009091016_WhsOrderData_Remake2.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201009091223_WhsOrderData_Remake2.cs" />
+    <Compile Remove="Data\Migrations\20201009091223_WhsOrderData_Remake2.Designer.cs" />
     <Compile Remove="Data\Migrations\20201009094128_ProductData.cs" />
     <Compile Remove="Data\Migrations\20201009094128_ProductData.Designer.cs" />
     <Compile Remove="Data\Migrations\20201009095552_ProductData.cs" />
@@ -36,6 +52,12 @@
     <Compile Remove="Data\Migrations\20201009100719_ProductData.Designer.cs" />
     <Compile Remove="Data\Migrations\20201009100931_ProductData.cs" />
     <Compile Remove="Data\Migrations\20201009100931_ProductData.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201009101345_ProductData.cs" />
+    <Compile Remove="Data\Migrations\20201009101345_ProductData.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201009174332_ProductData_Remake.cs" />
+    <Compile Remove="Data\Migrations\20201009174332_ProductData_Remake.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201012121309_BasicModels.cs" />
+    <Compile Remove="Data\Migrations\20201012121309_BasicModels.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,6 +78,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Client\Whs.Client.csproj" />
     <ProjectReference Include="..\Shared\Whs.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Migrations\" />
   </ItemGroup>
 
 
