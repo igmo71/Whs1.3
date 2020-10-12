@@ -32,8 +32,6 @@ namespace Whs.Server.Controllers
                 .Where(e => e.Статус == searchStatus)
                 .Select(e => new Destination { Id = e.НаправлениеДоставки_Id, Name = e.НаправлениеДоставки_Name })
                 .Distinct().AsNoTracking().ToArrayAsync();
-            //if (items == null || items.Count() == 0)
-            //    return NoContent();
             if (items.Count() > 0)
                 items.FirstOrDefault(e => e.Id == Guid.Empty.ToString()).Name = "- Без направления -";
             Destination[] item = { new Destination { Id = "0", Name = "- Все направления -" } };
