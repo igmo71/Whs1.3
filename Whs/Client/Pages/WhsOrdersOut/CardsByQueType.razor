@@ -35,12 +35,11 @@
             <SearchByDestination @ref="SearchByDestination" Destinations="Destinations" OnSelect="SearchByDestinationsAsync" />
         }
     </div>
-    <div class="col">
-        @if (OrdersDto != null)
-        {
-            <strong>Общ вес: @OrdersDto.TotalWeight</strong>
-        }
-    </div>
+    @if (OrdersDto != null)
+    {
+        <div class="col h4 text-right">Общ Кол: @OrdersDto.TotalCount</div>
+        <div class="col h4">Вес: @OrdersDto.TotalWeight</div>
+    }
     <div class="col mb-2 d-print-none text-right">
         <button class="btn btn-info" @onclick="Print"><span class="oi oi-print"></span> Печать </button>
     </div>

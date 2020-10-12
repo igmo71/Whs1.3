@@ -19,11 +19,13 @@ namespace Whs.Shared.Models
 
     public class WhsOrderDataIn : WhsOrderData
     {
+        [JsonIgnore]
         [ForeignKey("Документ_Id")]
         public WhsOrderIn WhsOrder { get; set; }
     }
     public class WhsOrderDataOut : WhsOrderData
     {
+        [JsonIgnore]
         [ForeignKey("Документ_Id")]
         public WhsOrderOut WhsOrder { get; set; }
     }

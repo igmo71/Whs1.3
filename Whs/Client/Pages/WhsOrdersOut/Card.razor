@@ -34,6 +34,12 @@
             </Authorized>
         </AuthorizeView>
     </div>
+    @if (Value.Data.Count > 0)
+    {
+        <div class="card-footer">
+            <span>@Value.Data[0].ApplicationUser?.FullName</span>
+        </div>
+    }
 </div>
 
 @code {

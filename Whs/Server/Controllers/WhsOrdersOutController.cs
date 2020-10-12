@@ -56,6 +56,8 @@ namespace Whs.Server.Controllers
             IQueryable<WhsOrderOut> query = _context.WhsOrdersOut
                 .Where(e => e.Проведен)
                 .Include(e => e.Распоряжения)
+                .Include(e => e.Data)
+                    .ThenInclude(e => e.ApplicationUser)
                 .OrderByDescending(e => e.ВесовойКоэффициент)
                 .ThenBy(e => e.СрокВыполнения)
                 .AsNoTracking();
@@ -63,7 +65,10 @@ namespace Whs.Server.Controllers
             IEnumerable<WhsOrderOut> items;
             if (parameters.SearchBarcode == null)
             {
-                items = query.Search(parameters).Take(_settings.OrdersPerPage).AsEnumerable();
+                query = query.Search(parameters);
+                dto.TotalWeight = query.Sum(e => e.Вес).ToString();
+                dto.TotalCount = query.Count().ToString();
+                items = query.Take(_settings.OrdersPerPage).AsEnumerable();
             }
             else
             {
@@ -77,9 +82,10 @@ namespace Whs.Server.Controllers
                 if (items.Count() == 1)
                     dto.SingleId = items.FirstOrDefault()?.Документ_Id;
             }
-            dto.TotalWeight = items.Sum(e => e.Вес).ToString();
-            dto.TotalCount = items.Count().ToString();
-            dto.Items = items.GroupBy(e => e.ТипОчереди).ToDictionary(e => string.IsNullOrEmpty(e.Key) ? "Очередность не указана" : e.Key, e => e.ToArray());
+            //dto.TotalWeight = items.Sum(e => e.Вес).ToString();
+            //dto.TotalCount = items.Count().ToString();
+            dto.Items = items.GroupBy(e => e.ТипОчереди)
+                .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? "Очередность не указана" : e.Key, e => e.ToArray());
             _logger.LogInformation($"---> GetDtoByQueType: Ok {dto.Items.Count}");
             return dto;
         }
