@@ -114,7 +114,6 @@ namespace Whs.Client.Pages.WhsOrdersOut
                 StateHasChanged();
                 if (OrdersDto.Items.Count == 0)
                 {
-                    //await Notification.ShowAsync($"Не найдено", 1);
                     if (OrderParameters.SearchBarcode != null)
                         await SearchByBarcodeClearAsync();
                 }
@@ -161,12 +160,12 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private async Task SearchByStatus(string searchStatus)
         {
-            SearchClearAsync();
+            await SearchClearAsync();
             OrderParameters.SearchBarcode = null;
             OrderParameters.SearchStatus = searchStatus;
             await GetOrdersDtoAsync();
 
-            var enumerator = SearchStatusButtons.GetEnumerator();
+            //var enumerator = SearchStatusButtons.GetEnumerator();
 
             foreach (var key in SearchStatusButtons.Keys.ToArray())
             {
@@ -183,7 +182,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private async Task SearchByBarcodeAsync()
         {
-            SearchClearAsync();
+            await SearchClearAsync();
             OrderParameters.SearchBarcode = Barcode;
             await GetOrdersDtoAsync();
 
