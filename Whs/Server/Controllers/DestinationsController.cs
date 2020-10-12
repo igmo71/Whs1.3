@@ -25,10 +25,11 @@ namespace Whs.Server.Controllers
 
         // GET: api/Destinations
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Destination>>> GetDestination()
+        [HttpGet("{searchStatus}")]
+        public async Task<ActionResult<IEnumerable<Destination>>> GetDestination(string searchStatus)
         {
             Destination[] items = await _context.WhsOrdersOut
-                //.Where(e => e.Статус == "Подготовлено")
+                .Where(e => e.Статус == searchStatus)
                 .Select(e => new Destination { Id = e.НаправлениеДоставки_Id, Name = e.НаправлениеДоставки_Name })
                 .Distinct().AsNoTracking().ToArrayAsync();
             if (items == null || items.Count() == 0)
