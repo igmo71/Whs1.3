@@ -78,6 +78,7 @@ namespace Whs.Server.Controllers
                     dto.SingleId = items.FirstOrDefault()?.Документ_Id;
             }
             dto.TotalWeight = items.Sum(e => e.Вес).ToString();
+            dto.TotalCount = items.Count().ToString();
             dto.Items = items.GroupBy(e => e.ТипОчереди).ToDictionary(e => string.IsNullOrEmpty(e.Key) ? "Очередность не указана" : e.Key, e => e.ToArray());
             _logger.LogInformation($"---> GetDtoByQueType: Ok {dto.Items.Count}");
             return dto;

@@ -7,6 +7,7 @@ namespace Whs.Shared.Models
         public string SingleId { get; set; }
         public string MngrOrderName { get; set; }
         public string TotalWeight { get; set; }
+        public string TotalCount { get; set; }
     }
 
     public class WhsOrdersDtoIn : WhsOrdersDto

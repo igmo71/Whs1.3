@@ -165,12 +165,8 @@ namespace Whs.Client.Pages.WhsOrdersOut
             OrderParameters.SearchStatus = searchStatus;
             await GetOrdersDtoAsync();
 
-            //var enumerator = SearchStatusButtons.GetEnumerator();
-
             foreach (var key in SearchStatusButtons.Keys.ToArray())
-            {
                 SearchStatusButtons[key] = string.Empty;
-            }
             SearchStatusButtons[searchStatus] = "active";
         }
 
