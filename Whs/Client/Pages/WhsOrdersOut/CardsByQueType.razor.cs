@@ -81,18 +81,29 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private async Task GetWarehousesAsync()
         {
-            Warehouses = await HttpClient.GetFromJsonAsync<Warehouse[]>("api/Warehouses/ForOut");
+            try
+            {
+                Warehouses = await HttpClient.GetFromJsonAsync<Warehouse[]>("api/Warehouses/ForOut");
+            }
+            catch (Exception ex)
+            {
+                await Notification.ShowAsync($"Ошибка загрузки cписка складов.", 1);
+                Console.WriteLine($"GetWarehousesAsync - {ex.Message}");
+                Console.WriteLine($"{ex.StackTrace}");
+            }
         }
 
         private async Task GetDestinationsAsync()
         {
-            try { 
-            Destinations = await HttpClient.GetFromJsonAsync<Destination[]>($"api/Destinations/{OrderParameters.SearchStatus}");
-            }
-            catch(Exception ex)
+            try
             {
+                Destinations = await HttpClient.GetFromJsonAsync<Destination[]>($"api/Destinations/{OrderParameters.SearchStatus}");
+            }
+            catch (Exception ex)
+            {
+                await Notification.ShowAsync($"Ошибка загрузки списка направлений.", 1);
                 Console.WriteLine($"GetDestinationsAsync - {ex.Message}");
-                Console.WriteLine($"GetDestinationsAsync - {ex.StackTrace}");
+                Console.WriteLine($"{ex.StackTrace}");
             }
         }
 
@@ -121,8 +132,8 @@ namespace Whs.Client.Pages.WhsOrdersOut
             }
             catch (Exception ex)
             {
-                await Notification.ShowAsync($"Ошибка загрузки ордеров. {Environment.NewLine}{ex.Message}", 2);
-                Console.WriteLine($"GetOrdersDtoAsync - Exception: {ex.Message}");
+                await Notification.ShowAsync($"Ошибка загрузки ордеров.", 2);
+                Console.WriteLine($"GetOrdersDtoAsync - {ex.Message}");
                 Console.WriteLine($"{ex.StackTrace}");
             }
         }
@@ -154,7 +165,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
             SearchByNumber.SearchTerm = string.Empty;
             OrderParameters.SearchTerm = null;
             OrderParameters.SearchDestinationId = null;
-            if(isGetOrders)
+            if (isGetOrders)
                 await GetOrdersDtoAsync();
         }
 
@@ -208,7 +219,6 @@ namespace Whs.Client.Pages.WhsOrdersOut
             {
                 Console.WriteLine($"Timer.Elapsed at: {DateTime.Now}");
                 await GetOrdersDtoAsync();
-                //await GetDestinationsAsync();
             };
             Timer.AutoReset = autoReset;
             Timer.Enabled = true;

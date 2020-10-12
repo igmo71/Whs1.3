@@ -78,7 +78,16 @@ namespace Whs.Client.Pages.WhsOrdersIn
 
         private async Task GetWarehousesAsync()
         {
-            Warehouses = await HttpClient.GetFromJsonAsync<Warehouse[]>("api/Warehouses/ForIn");
+            try
+            {
+                Warehouses = await HttpClient.GetFromJsonAsync<Warehouse[]>("api/Warehouses/ForIn");
+            }
+            catch (Exception ex)
+            {
+                await Notification.ShowAsync($"Ошибка загрузки cписка складов.", 1 );
+                Console.WriteLine($"GetDestinationsAsync - {ex.Message}");
+                Console.WriteLine($"{ex.StackTrace}");
+            }
         }
 
         private async Task GetOrdersDtoAsync()
@@ -105,8 +114,8 @@ namespace Whs.Client.Pages.WhsOrdersIn
             }
             catch (Exception ex)
             {
-                await Notification.ShowAsync($"Ошибка загрузки ордеров. {Environment.NewLine}{ex.Message}", 2);
-                Console.WriteLine($"GetOrdersDtoAsync - Exception: {ex.Message}");
+                await Notification.ShowAsync($"Ошибка загрузки ордеров.", 2);
+                Console.WriteLine($"GetOrdersDtoAsync - {ex.Message}");
                 Console.WriteLine($"{ex.StackTrace}");
             }
         }
@@ -130,8 +139,6 @@ namespace Whs.Client.Pages.WhsOrdersIn
             OrderParameters.SearchBarcode = null;
             OrderParameters.SearchStatus = searchStatus;
             await GetOrdersDtoAsync();
-
-            //var enumerator = SearchStatusButtons.GetEnumerator();
 
             foreach (var key in SearchStatusButtons.Keys.ToArray())
             {
