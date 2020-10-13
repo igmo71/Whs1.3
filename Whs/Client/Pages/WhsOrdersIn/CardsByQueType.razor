@@ -29,14 +29,16 @@
     <div class="col d-print-none">
         <SearchByNumber @ref="SearchByNumber" OnSearchChanged="SearchByNumberAsync" />
     </div>
-    <div class="col">
         @if (OrdersDto != null)
         {
-            <strong>Общ вес: @OrdersDto.TotalWeight</strong>
+            <div class="col h4 text-right">Общ Кол: @OrdersDto.TotalCount</div>
+            <div class="col h4">Вес: @OrdersDto.TotalWeight</div>
         }
-    </div>
     <div class="col mb-2 d-print-none text-right">
-        <button class="btn btn-info" @onclick="Print"><span class="oi oi-print"></span> Печать </button>
+        @if (OrderParameters.SearchStatus != "Принят")
+        {
+            <button class="btn btn-info" @onclick="Print"><span class="oi oi-print"></span> Печать </button>
+        }
     </div>
 </div>
 

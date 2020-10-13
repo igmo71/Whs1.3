@@ -35,6 +35,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
         private Notification Notification;
         private WhsOrdersDtoOut OrdersDto;
         private WhsOrderParameters OrderParameters;
+        private string SearchParameters;
         private Warehouse[] Warehouses;
         private Destination[] Destinations;
         private SearchByNumber SearchByNumber;
@@ -114,14 +115,13 @@ namespace Whs.Client.Pages.WhsOrdersOut
             {
                 DateTime beginTime = DateTime.Now;
                 Console.WriteLine("GetOrdersDtoAsync - begin");
-                string requestUri = $"api/WhsOrdersOut/DtoByQueType?" +
+                SearchParameters =
                     $"SearchBarcode={OrderParameters.SearchBarcode}&" +
                     $"SearchStatus={OrderParameters.SearchStatus}&" +
                     $"SearchTerm={OrderParameters.SearchTerm}&" +
                     $"SearchWarehouseId={OrderParameters.SearchWarehouseId}&" +
                     $"SearchDestinationId={OrderParameters.SearchDestinationId}";
-                Console.WriteLine($"GetOrdersDtoAsync - requestUri: {requestUri}");
-                OrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoOut>(requestUri);
+                OrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoOut>($"api/WhsOrdersOut/DtoByQueType?{SearchParameters}");
                 StateHasChanged();
                 if (OrdersDto.Items.Count == 0)
                 {
@@ -232,13 +232,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private void Print()
         {
-            string searchParameters =
-                       $"SearchBarcode={OrderParameters.SearchBarcode}&" +
-                       $"SearchStatus={OrderParameters.SearchStatus}&" +
-                       $"SearchTerm={OrderParameters.SearchTerm}&" +
-                       $"SearchWarehouseId={OrderParameters.SearchWarehouseId}&" +
-                       $"SearchDestinationId={OrderParameters.SearchDestinationId}";
-            NavigationManager.NavigateTo($"WhsOrdersOut/PrintList/{searchParameters}/{OrderParameters.SearchStatus}");
+            NavigationManager.NavigateTo($"WhsOrdersOut/PrintList/{SearchParameters}/{OrderParameters.SearchStatus}");
         }
     }
 }

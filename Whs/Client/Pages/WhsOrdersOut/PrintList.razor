@@ -8,54 +8,50 @@
         <button class="btn btn-info" @onclick="PrintAsync"><span class="oi oi-print"></span> Печать </button>
     </div>
 </div>
-@if (OrdersDto == null)
+@if (Orders == null)
 {
     <span>Загрузка...</span>
 }
 else
-{@if (OrdersDto != null && OrdersDto.Items.Count > 0)
-    {
-        <table class="table">
-            <thead>
+{
+    <table class="table table-bordered table-sm table-striped">
+        <thead>
+            <tr>
+                <th>Очередь</th>
+                <th>Номер</th>
+                <th>Дата</th>
+                <th>Позиций</th>
+                <th>Вес</th>
+                <th>Комментарий</th>
+                <th>Получатель</th>
+                <th>Направление</th>
+                <AuthorizeView Roles="Manager">
+                    <Authorized>
+                        <th class="d-print-none">Склад</th>
+                    </Authorized>
+                </AuthorizeView>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var oder in Orders)
+            {
                 <tr>
-                    <th>Очередь</th>
-                    <th>Номер</th>
-                    <th>Дата</th>
-                    <th>Позиций</th>
-                    <th>Вес</th>
-                    <th>Комментарий</th>
-                    <th>Получатель</th>
-                    <th>Направление</th>
+                    <td>@oder.НомерОчереди</td>
+                    <td>@oder.Номер</td>
+                    <td>@oder.Дата</td>
+                    <td>@oder.КоличествоСтрок</td>
+                    <td>@oder.Вес</td>
+                    <td>@oder.Комментарий</td>
+                    <td>@oder.ОтправительПолучатель_Name</td>
+                    <td>@oder.НаправлениеДоставки_Name</td>
                     <AuthorizeView Roles="Manager">
                         <Authorized>
-                            <th class="d-print-none">Склад</th>
+                            <td class="d-print-none">@oder.Склад_Name</td>
                         </Authorized>
                     </AuthorizeView>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in OrdersDto.Items)
-                {
-                    @foreach (var oder in item.Value)
-                    {
-                        <tr>
-                            <td>@oder.НомерОчереди</td>
-                            <td>@oder.Номер</td>
-                            <td>@oder.Дата</td>
-                            <td>@oder.КоличествоСтрок</td>
-                            <td>@oder.Вес</td>
-                            <td>@oder.Комментарий</td>
-                            <td>@oder.ОтправительПолучатель_Name</td>
-                            <td>@oder.НаправлениеДоставки_Name</td>
-                            <AuthorizeView Roles="Manager">
-                                <Authorized>
-                                    <td class="d-print-none">@oder.Склад_Name</td>
-                                </Authorized>
-                            </AuthorizeView>
-                        </tr>
-                    }
-                }
-            </tbody>
-        </table>
-    }
+            }
+        </tbody>
+    </table>
 }

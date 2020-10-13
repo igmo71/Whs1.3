@@ -90,6 +90,18 @@ namespace Whs.Server.Controllers
             return dto;
         }
 
+        // GET: api/WhsOrdersOut/PrintList
+        [HttpGet("PrintList")]
+        public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetPrintListAsync([FromQuery] WhsOrderParameters parameters)
+        {
+            WhsOrderOut[] items = await _context.WhsOrdersOut
+                .Search(parameters)
+                .Where(e => e.Проведен)
+                .OrderByDescending(e => e.Номер)
+                .AsNoTracking().ToArrayAsync();
+            return items;
+        }
+
         // GET: api/WhsOrdersOut/5
         [HttpGet("{id}")]
         public async Task<ActionResult<WhsOrderOut>> GetAsync(string id)

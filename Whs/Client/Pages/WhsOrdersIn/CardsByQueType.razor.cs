@@ -35,6 +35,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
         private Notification Notification;
         private WhsOrdersDtoIn OrdersDto;
         private WhsOrderParameters OrderParameters;
+        private string SearchParameters;
         private Warehouse[] Warehouses;
         private SearchByNumber SearchByNumber;
         private Dictionary<string, string> SearchStatusButtons;
@@ -84,7 +85,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
             }
             catch (Exception ex)
             {
-                await Notification.ShowAsync($"Ошибка загрузки cписка складов.", 1 );
+                await Notification.ShowAsync($"Ошибка загрузки cписка складов.", 1);
                 Console.WriteLine($"GetDestinationsAsync - {ex.Message}");
                 Console.WriteLine($"{ex.StackTrace}");
             }
@@ -96,14 +97,12 @@ namespace Whs.Client.Pages.WhsOrdersIn
             {
                 DateTime beginTime = DateTime.Now;
                 Console.WriteLine("GetOrdersDtoAsync - begin");
-                string requestUri = $"api/WhsOrdersIn/DtoByQueType?" +
+                SearchParameters =
                     $"SearchBarcode={OrderParameters.SearchBarcode}&" +
                     $"SearchStatus={OrderParameters.SearchStatus}&" +
                     $"SearchTerm={OrderParameters.SearchTerm}&" +
-                    $"SearchWarehouseId={OrderParameters.SearchWarehouseId}&" +
-                    $"SearchDestinationId={OrderParameters.SearchDestinationId}";
-                Console.WriteLine($"GetOrdersDtoAsync - requestUri: {requestUri}");
-                OrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoIn>(requestUri);
+                    $"SearchWarehouseId={OrderParameters.SearchWarehouseId}&" ;
+                OrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoIn>($"api/WhsOrdersIn/DtoByQueType?{SearchParameters}");
                 StateHasChanged();
                 if (OrdersDto.Items.Count == 0)
                 {
@@ -206,13 +205,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
 
         private void Print()
         {
-            string searchParameters =
-                       $"SearchBarcode={OrderParameters.SearchBarcode}&" +
-                       $"SearchStatus={OrderParameters.SearchStatus}&" +
-                       $"SearchTerm={OrderParameters.SearchTerm}&" +
-                       $"SearchWarehouseId={OrderParameters.SearchWarehouseId}&" +
-                       $"SearchDestinationId={OrderParameters.SearchDestinationId}";
-            NavigationManager.NavigateTo($"WhsOrdersIn/PrintList/{searchParameters}/{OrderParameters.SearchStatus}");
+            NavigationManager.NavigateTo($"WhsOrdersIn/PrintList/{SearchParameters}/{OrderParameters.SearchStatus}");
         }
     }
 }

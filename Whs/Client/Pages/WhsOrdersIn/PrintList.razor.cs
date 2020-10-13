@@ -16,7 +16,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
         [Inject] public IJSRuntime JSRuntime { get; set; }
         [Inject] public NavigationManager NavigationManager { get; set; }
 
-        private WhsOrdersDtoIn OrdersDto;
+        private WhsOrderIn[] Orders;
 
         protected override async Task OnInitializedAsync()
         {
@@ -27,8 +27,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
         {
             try
             {
-                string requestUri = $"api/WhsOrdersOut/DtoByQueType?" + SearchParameters;
-                OrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoIn>(requestUri);
+                Orders = await HttpClient.GetFromJsonAsync<WhsOrderIn[]>($"api/WhsOrdersIn/PrintList?{SearchParameters}");
             }
             catch (Exception ex)
             {

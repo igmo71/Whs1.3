@@ -56,6 +56,8 @@ namespace Whs.Server.Controllers
             IQueryable<WhsOrderIn> query = _context.WhsOrdersIn
                 .Where(e => e.Проведен)
                 .Include(e => e.Распоряжения)
+                .Include(e => e.Data)
+                    .ThenInclude(e => e.ApplicationUser)
                 .OrderByDescending(e => e.ВесовойКоэффициент)
                 .ThenBy(e => e.СрокВыполнения)
                 .AsNoTracking();
@@ -63,7 +65,10 @@ namespace Whs.Server.Controllers
             IEnumerable<WhsOrderIn> items;
             if (parameters.SearchBarcode == null)
             {
-                items = query.Search(parameters).Take(_settings.OrdersPerPage).AsEnumerable();
+                query = query.Search(parameters);
+                dto.TotalWeight = query.Sum(e => e.Вес).ToString();
+                dto.TotalCount = query.Count().ToString();
+                items = query.Take(_settings.OrdersPerPage).AsEnumerable();
             }
             else
             {
@@ -81,6 +86,18 @@ namespace Whs.Server.Controllers
             dto.Items = items.GroupBy(e => e.ТипОчереди).ToDictionary(e => string.IsNullOrEmpty(e.Key) ? "Очередность не указана" : e.Key, e => e.ToArray());
             _logger.LogInformation($"---> GetDtoByQueType: Ok {dto.Items.Count}");
             return dto;
+        }
+
+        // GET: api/WhsOrdersIn/PrintList
+        [HttpGet("PrintList")]
+        public async Task<ActionResult<IEnumerable<WhsOrderIn>>> GetPrintListAsync([FromQuery] WhsOrderParameters parameters)
+        {
+            WhsOrderIn[] items = await _context.WhsOrdersIn
+                .Search(parameters)
+                .Where(e => e.Проведен)
+                .OrderByDescending(e => e.Номер)
+                .AsNoTracking().ToArrayAsync();
+            return items;
         }
 
         // GET: api/WhsOrdersIn/5

@@ -9,9 +9,13 @@
     </div>
 </div>
 <div class="row">
-    <h3>Расходные ордера на товары</h3>
+    <h3>Приходные ордера на товары</h3>
 </div>
-@if (OrdersDto != null && OrdersDto.Items.Count > 0)
+@if (Orders == null)
+{
+    <span>Загрузка...</span>
+}
+else
 {
     <table class="table">
         <thead>
@@ -31,24 +35,21 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in OrdersDto.Items)
+            @foreach (var oder in Orders)
             {
-                @foreach (var oder in item.Value)
-                {
-                    <tr>
-                        <td>@oder.Номер</td>
-                        <td>@oder.Дата</td>
-                        <td>@oder.КоличествоСтрок</td>
-                        <td>@oder.Вес</td>
-                        <td>@oder.Комментарий</td>
-                        <td>@oder.ОтправительПолучатель_Name</td>
-                        <AuthorizeView Roles="Manager">
-                            <Authorized>
-                                <td class="d-print-none">@oder.Склад_Name</td>
-                            </Authorized>
-                        </AuthorizeView>
-                    </tr>
-                }
+                <tr>
+                    <td>@oder.Номер</td>
+                    <td>@oder.Дата</td>
+                    <td>@oder.КоличествоСтрок</td>
+                    <td>@oder.Вес</td>
+                    <td>@oder.Комментарий</td>
+                    <td>@oder.ОтправительПолучатель_Name</td>
+                    <AuthorizeView Roles="Manager">
+                        <Authorized>
+                            <td class="d-print-none">@oder.Склад_Name</td>
+                        </Authorized>
+                    </AuthorizeView>
+                </tr>
             }
         </tbody>
     </table>
