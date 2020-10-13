@@ -74,7 +74,7 @@ namespace Whs.Server.Controllers
             {
                 string id = GuidConvert.FromNumStr(parameters.SearchBarcode);
                 items = query.Where(e => e.Документ_Id == id).AsEnumerable();
-                if (items.Count() == 0)   //  Если не найдено, ищем по штрихкоду распоряжения
+                if (items.Count() == 0)
                 {
                     items = query.Where(e => e.Распоряжения.Any(o => o.Распоряжение_Id == id)).AsEnumerable();
                     dto.MngrOrderName = items.FirstOrDefault()?.Распоряжения.FirstOrDefault(e => e.Распоряжение_Id == id).Распоряжение_Name;
@@ -82,8 +82,9 @@ namespace Whs.Server.Controllers
                 if (items.Count() == 1)
                     dto.SingleId = items.FirstOrDefault()?.Документ_Id;
             }
-            dto.TotalWeight = items.Sum(e => e.Вес).ToString();
-            dto.Items = items.GroupBy(e => e.ТипОчереди).ToDictionary(e => string.IsNullOrEmpty(e.Key) ? "Очередность не указана" : e.Key, e => e.ToArray());
+            dto.Items = items
+                .GroupBy(e => e.ТипОчереди)
+                .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? "Очередность не указана" : e.Key, e => e.ToArray());
             _logger.LogInformation($"---> GetDtoByQueType: Ok {dto.Items.Count}");
             return dto;
         }
