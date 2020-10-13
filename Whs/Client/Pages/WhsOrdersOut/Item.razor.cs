@@ -55,6 +55,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
                 await Notification.ShowAsync($"Ошибка загрузки ордера. {Environment.NewLine}{ex.Message}", 2);
                 Console.WriteLine($"GetOrderDtoAsync - Excepton: {ex.Message}");
                 Console.WriteLine($"{ex.StackTrace}");
+                await ToBitrixErrors($"GetOrderDtoAsync - Ошибка загрузки ордера {Id}: {ex.Message}");
             }
         }
 
@@ -75,10 +76,12 @@ namespace Whs.Client.Pages.WhsOrdersOut
                         await PrintAsync();
                     }
                     Return();
+                    await ToBitrixErrors($"ScannedBarcodeAsync - Изменение статуса {OrderDto.Item.Документ_Name}: {OrderDto.Item.Статус}");
                 }
                 else
                 {
                     await Notification.ShowAsync($"Cтатус изменить не удалось. {Environment.NewLine}{response.ReasonPhrase}", 2);
+                    await ToBitrixErrors($"Cтатус изменить не удалось {OrderDto.Item.Документ_Name}");
                 }
                 Console.WriteLine($"ScannedBarcodeAsync - duration: {DateTime.Now - beginTime}");
             }
@@ -87,6 +90,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
                 await Notification.ShowAsync($"Ошибка изменения статуса. {Environment.NewLine}{ex.Message}", 2);
                 Console.WriteLine($"ScannedBarcodeAsync - Exception: {ex.Message}");
                 Console.WriteLine($"{ex.StackTrace}");
+                await ToBitrixErrors($"Ошибка изменения статуса {OrderDto.Item.Документ_Name}: {ex.Message}");
             }
         }
 
@@ -95,6 +99,11 @@ namespace Whs.Client.Pages.WhsOrdersOut
         private void Return()
         {
             NavigationManager.NavigateTo($"WhsOrdersOut/CardsByQueType/{SearchStatus}");
+        }
+
+        private async Task ToBitrixErrors(string message)
+        {
+            await HttpClient.PostAsync($"api/ToBitrixErrors/{message}", null);
         }
     }
 }

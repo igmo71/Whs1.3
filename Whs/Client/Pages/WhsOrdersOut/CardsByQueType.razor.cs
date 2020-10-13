@@ -91,6 +91,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
                 await Notification.ShowAsync($"Ошибка загрузки cписка складов.", 1);
                 Console.WriteLine($"GetWarehousesAsync - {ex.Message}");
                 Console.WriteLine($"{ex.StackTrace}");
+                await ToBitrixErrors($"Ошибка загрузки cписка складов - {ex.Message}");
             }
         }
 
@@ -105,6 +106,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
                 await Notification.ShowAsync($"Ошибка загрузки списка направлений.", 1);
                 Console.WriteLine($"GetDestinationsAsync - {ex.Message}");
                 Console.WriteLine($"{ex.StackTrace}");
+                await ToBitrixErrors($"Ошибка загрузки списка направлений - {ex.Message}");
             }
         }
 
@@ -135,6 +137,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
                 await Notification.ShowAsync($"Ошибка загрузки ордеров.", 2);
                 Console.WriteLine($"GetOrdersDtoAsync - {ex.Message}");
                 Console.WriteLine($"{ex.StackTrace}");
+                await ToBitrixErrors($"Ошибка загрузки расходных ордеров - {ex.Message}");
             }
         }
 
@@ -233,6 +236,11 @@ namespace Whs.Client.Pages.WhsOrdersOut
         private void Print()
         {
             NavigationManager.NavigateTo($"WhsOrdersOut/PrintList/{SearchParameters}/{OrderParameters.SearchStatus}");
+        }
+
+        private async Task ToBitrixErrors(string message)
+        {
+            await HttpClient.PostAsync($"api/ToBitrixErrors/{message}", null);
         }
     }
 }
