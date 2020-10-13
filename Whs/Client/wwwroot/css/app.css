@@ -26,6 +26,16 @@ app {
     align-items: center;
 }
 
+
+.notfound {
+    text-align: center;
+    display: inherit;
+}
+.notfound img{
+    width: 50%;
+    margin: auto;
+}
+
 .main {
     flex: 1;
 }
@@ -136,6 +146,10 @@ app {
     top: 0.5rem;
 }
 
+.col-3 {
+    overflow-x: hidden!important; /* Hide horizontal scrollbar */
+}
+
 @media (max-width: 767.98px) {
     .main .top-row:not(.auth) {
         display: none;
@@ -148,16 +162,19 @@ app {
     .main .top-row a, .main .top-row .btn-link {
         margin-left: 0;
     }
-    .col-3 {
+    .order-items {
         overflow: auto;
         max-height: 78vh;
+        overflow-x: hidden !important;
     }
+
 }
 
 @media (min-width: 768px) {
-    .col-3 {
+    .order-items {
         overflow: auto;
         max-height: 71vh;
+        overflow-x: hidden !important;
     }
 
     app {
@@ -191,11 +208,24 @@ app {
     }
 }
 
+
+.thqueue {
+    width: 100%;
+    background: white;
+    margin: 0px !important;
+}
+
+
+
 html {
 /*    font-family: 'Roboto', sans-serif;
     /*font-family: 'Noto Sans HK', sans-serif;*/
     color: #667
 }
+
+
+
+
 
 /*text-colors*/
 .text-gray {
@@ -544,6 +574,9 @@ html {
 .order {
     opacity: 0;
     animation: new-item-animation .3s linear forwards;
+    margin: auto;
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
 }
 
 @keyframes new-item-animation {
@@ -559,13 +592,42 @@ html {
 }
 
 
+.row {
+    margin-right: 5px!important;
+    margin-left: 5px!important;
+}
+
+.order-items .row .col{
+    padding:0px!important;
+}
+
+
+
 @media (max-width: 1681.98px) {
     .col-3 {
-        padding-right: 10px!important;
-        padding-left: 10px!important;
+        padding-right: 0px!important;
+        padding-left: 0px!important;
     }
     .order {
-        width: 100%!important;
-        height: 240px!important;
+        width: 100% !important;
+        height: 210px !important;
+        font-size: 0.9rem;
     }
+    .thqueue {
+        font-size: 1.1rem !important;
+        padding-bottom: 10px;
+    }
+
+    .leftpart span::after {
+        scale: 40%;
+    }
+
+    .leftpart {
+        font-size: 0.9rem;
+    }
+
+    .btn-lg, h3 {
+        font-size: 0.9rem !important;
+    }
+
 }

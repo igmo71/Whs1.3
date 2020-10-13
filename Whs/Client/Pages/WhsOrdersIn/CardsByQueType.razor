@@ -67,7 +67,7 @@ else
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>*@
-        <span>
+        <span class="notfound">
             <img src="/img/NotFound.svg" />
         </span>
     }
@@ -85,68 +85,80 @@ else
 
         <div class="row mt-3">
             <div class="col-3">
-                <div class="row h5 text-center">
+                <div class="row h5 text-center thqueue">
                     <div class="col"><span class="oi oi-layers"></span>&nbsp;<span>Под клиента</span></div>
                 </div>
-                @if (OrdersDto.Items.ContainsKey("Под клиента"))
-                {
-                    @foreach (var value in OrdersDto.Items["Под клиента"])
+                <div class="order-items">
+
+                   @if (OrdersDto.Items.ContainsKey("Под клиента"))
                     {
-                        <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
-                            <div class="col">
-                                <Card Value="value" />
+                        @foreach (var value in OrdersDto.Items["Под клиента"])
+                        {
+                            <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
+                                <div class="col">
+                                    <Card Value="value" />
+                                </div>
                             </div>
-                        </div>
+                        }
                     }
-                }
-            </div>
+                </div>
+                </div>
             <div class="col-3">
-                <div class="row h5 text-center">
+                <div class="row h5 text-center thqueue">
                     <div class="col"><span class="oi oi-calendar"></span>&nbsp;<span>Срочно в продажу</span></div>
                 </div>
-                @if (OrdersDto.Items.ContainsKey("Срочно в продажу"))
-                {
-                    @foreach (var value in OrdersDto.Items["Срочно в продажу"])
+                    <div class="order-items">
+
+                    @if (OrdersDto.Items.ContainsKey("Срочно в продажу"))
                     {
-                        <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
-                            <div class="col">
-                                <Card Value="value" />
+                        @foreach (var value in OrdersDto.Items["Срочно в продажу"])
+                        {
+                            <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
+                                <div class="col">
+                                    <Card Value="value" />
+                                </div>
                             </div>
-                        </div>
+                        }
                     }
-                }
-            </div>
+                </div>
+                </div>
             <div class="col-3">
-                <div class="row h5 text-center">
+                <div class="row h5 text-center thqueue">
                     <div class="col"><span class="oi oi-globe"></span>&nbsp;<span>Просрочено</span></div>
                 </div>
-                @if (OrdersDto.Items.ContainsKey("Просрочено"))
-                {
-                    @foreach (var value in OrdersDto.Items["Просрочено"])
+                <div class="order-items">
+
+                    @if (OrdersDto.Items.ContainsKey("Просрочено"))
                     {
-                        <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
-                            <div class="col">
-                                <Card Value="value" />
+                        @foreach (var value in OrdersDto.Items["Просрочено"])
+                        {
+                            <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
+                                <div class="col">
+                                    <Card Value="value" />
+                                </div>
                             </div>
-                        </div>
+                        }
                     }
-                }
-            </div>
+                </div>
+                </div>
             <div class="col-3">
-                <div class="row h5 text-center">
+                <div class="row h5 text-center thqueue">
                     <div class="col"><span class="oi oi-aperture"></span>&nbsp;<span>Очередность не указана</span></div>
                 </div>
-                @if (OrdersDto.Items.ContainsKey("Очередность не указана"))
-                {
-                    @foreach (var value in OrdersDto.Items["Очередность не указана"])
+                <div class="order-items">
+
+                    @if (OrdersDto.Items.ContainsKey("Очередность не указана"))
                     {
-                        <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
-                            <div class="col">
-                                <Card Value="value" />
+                        @foreach (var value in OrdersDto.Items["Очередность не указана"])
+                        {
+                            <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
+                                <div class="col">
+                                    <Card Value="value" />
+                                </div>
                             </div>
-                        </div>
+                        }
                     }
-                }
-            </div>
-        </div>  }
+                </div>
+                </div>
+            </div>  }
 }
