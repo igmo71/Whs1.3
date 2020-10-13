@@ -1,5 +1,5 @@
 ﻿@using Whs.Shared.Models
-
+<!--
 <div class="card border border-dark rounded w-100">
     <div class="card-header">
         <div class="row  d-flex justify-content-around">
@@ -24,6 +24,7 @@
         <div class="row">
             <span class="oi oi-comment-square" title="Комментарий"></span>&nbsp;
             <span title="@Value.Комментарий">&nbsp;@Value.КомментарийString&nbsp;</span>
+
         </div>
         <AuthorizeView Roles="Manager">
             <Authorized>
@@ -34,33 +35,80 @@
             </Authorized>
         </AuthorizeView>
     </div>
-    @if (Value.Data.Count > 0)
-    {
-        <div class="card-footer">
-            <span>@Value.Data[0].ApplicationUser?.FullName</span>
-        </div>
-    }
 </div>
+    -->
+<span class="order shadow_my d_blk @queueType @ifExpired @ifMoving @departed">
+    <span class="leftpart d_blk flt_left">
+        <span>@Value.НомерОчереди</span>
+    </span>
+    <span class="rightpart d_blk flt_right">
+        <span class="receiver flt_left w_100">@Value.ОтправительПолучатель_NameString</span>
+        <span class="destin flt_left w_100">@Value.НаправлениеДоставки_Name</span>
+        <span class="comment flt_left w_100">@Value.КомментарийString</span>
+
+        <span class="date d_blk">@Value.TimeUpString</span>
+        <div class="foot d_blk flt_left w_100">
+            <span class="skus flt_left"><label class="val birbox">@Value.КоличествоСтрок</label></span>
+            <span class="responsible @responsible">
+                <label class="val birbox">
+                    @resp_value
+                </label>
+            </span>
+            <span class="weight flt_right"><label class="val birbox">@Value.Вес</label></span>
+        </div>
+    </span>
+</span>
+
+
 
 @code {
     [Parameter]
     public WhsOrderOut Value { get; set; }
     string ifExpired;
+    string queueType;
     //string ifAtwork;
     string ifMoving;
+    string departed;
+    string responsible;
+    string resp_value;
     protected override void OnParametersSet()
     {
         if (Value.СрокВыполнения != DateTime.Parse("01.01.0001 0:00:00"))
         {
             if (Value.СрокВыполнения > DateTime.Now)
-                ifExpired = "bg-success text-white";
+                ifExpired = "";
             else
-                ifExpired = "bg-danger text-white";
+                ifExpired = "timeout";
         }
 
+        ifMoving = "";
         if (Value.ЭтоПеремещение)
-            ifMoving = "bg-warning text-white";
+            ifMoving = "transfer";
+        queueType = "";
+        if (Value.ТипОчереди == "Живая очередь")
+        { queueType = "liveq"; }
+        if (Value.ТипОчереди == "Собрать к дате")
+        { queueType = "schedule"; }
+        if (Value.ТипОчереди == "Собственная доставка")
+        { queueType = "selfdelivery"; }
+
+        departed = "";
+        if (Value.Статус == "Отгружен") { departed = "departed"; ifExpired = ""; }
+
+        responsible = "d_none";
+        resp_value = "";
+        if (Value.Data.Count > 0)
+        {
+            resp_value = Value.Data.OrderByDescending(e => e.DateTime).FirstOrDefault().ApplicationUser.Surname;
+            responsible = "";
+        }
+
+
+
         //if (Value.ApplicationUser != null)
+        //Живая очередь
+        //Собрать к дате
+        //Собственная доставка
         //    ifAtwork = "bg-primary text-white";
 
     }
