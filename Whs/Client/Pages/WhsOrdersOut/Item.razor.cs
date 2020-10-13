@@ -23,7 +23,6 @@ namespace Whs.Client.Pages.WhsOrdersOut
         public NavigationManager NavigationManager { get; set; }
 
         private string Barcode;
-        private Notification Notification;
         WhsOrderDtoOut OrderDto;
         public EditingCause[] EditingCauses { get; set; }
 
@@ -46,16 +45,15 @@ namespace Whs.Client.Pages.WhsOrdersOut
                 DateTime beginTime = DateTime.Now;
                 Console.WriteLine("GetOrderDtoAsync - begin");
                 OrderDto = await HttpClient.GetFromJsonAsync<WhsOrderDtoOut>($"api/WhsOrdersOut/Dto/{Id}", new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                Console.WriteLine($"GetOrderDtoAsync - OrderDto.Item.Статус: {OrderDto.Item.Статус}");
                 StateHasChanged();
                 Console.WriteLine($"GetOrderDtoAsync - duration: {DateTime.Now - beginTime}");
             }
             catch (Exception ex)
             {
-                await Notification.ShowAsync($"Ошибка загрузки ордера. {Environment.NewLine}{ex.Message}", 2);
+                await Notification.ShowAsync($"Ошибка загрузки ордера.", 1);
                 Console.WriteLine($"GetOrderDtoAsync - Excepton: {ex.Message}");
                 Console.WriteLine($"{ex.StackTrace}");
-                await ToBitrixErrors($"GetOrderDtoAsync - Ошибка загрузки ордера {Id}: {ex.Message}");
+                await ToBitrixErrors($"Ошибка загрузки ордера {Id}: {ex.Message}");
             }
         }
 
@@ -65,6 +63,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
             {
                 DateTime beginTime = DateTime.Now;
                 Console.WriteLine("ScannedBarcodeAsync - begin");
+                Notification.Show($"Запрос на изменение статуса...");
                 Barcode = args.Value.ToString();
                 HttpResponseMessage response = await HttpClient.PutAsJsonAsync<WhsOrderOut>($"api/WhsOrdersOut/{OrderDto.Item.Документ_Id}/{Barcode}", OrderDto.Item);
                 Console.WriteLine($"HttpResponseMessage - response: {response.StatusCode} - {response.ReasonPhrase} - {await response.Content.ReadAsStringAsync()}");
@@ -75,22 +74,23 @@ namespace Whs.Client.Pages.WhsOrdersOut
                         await GetOrderDtoAsync();
                         await PrintAsync();
                     }
+                    await Notification.HideAsync("Ok", 1);
+                    await ToBitrixErrors($"Cтатус изменен: {OrderDto.Item.Документ_Name} - {OrderDto.Item.Статус}");
                     Return();
-                    await ToBitrixErrors($"ScannedBarcodeAsync - Изменение статуса {OrderDto.Item.Документ_Name}: {OrderDto.Item.Статус}");
                 }
                 else
                 {
-                    await Notification.ShowAsync($"Cтатус изменить не удалось. {Environment.NewLine}{response.ReasonPhrase}", 2);
-                    await ToBitrixErrors($"Cтатус изменить не удалось {OrderDto.Item.Документ_Name}");
+                    await Notification.HideAsync("Cтатус изменить не удалось", 1);
+                    await ToBitrixErrors($"Cтатус изменить не удалось: {OrderDto.Item.Документ_Name} - {OrderDto.Item.Статус}");
                 }
                 Console.WriteLine($"ScannedBarcodeAsync - duration: {DateTime.Now - beginTime}");
             }
             catch (Exception ex)
             {
-                await Notification.ShowAsync($"Ошибка изменения статуса. {Environment.NewLine}{ex.Message}", 2);
+                await Notification.ShowAsync($"Ошибка изменения статуса.", 1);
                 Console.WriteLine($"ScannedBarcodeAsync - Exception: {ex.Message}");
                 Console.WriteLine($"{ex.StackTrace}");
-                await ToBitrixErrors($"Ошибка изменения статуса {OrderDto.Item.Документ_Name}: {ex.Message}");
+                await ToBitrixErrors($"Ошибка изменения статуса: {OrderDto.Item.Документ_Name} - {ex.Message}");
             }
         }
 
