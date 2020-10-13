@@ -97,7 +97,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
             try
             {
                 DateTime beginTime = DateTime.Now;
-                Console.WriteLine("GetOrdersDtoAsync - begin");
+                //Console.WriteLine("GetOrdersDtoAsync - begin");
                 SearchParameters =
                     $"SearchBarcode={OrderParameters.SearchBarcode}&" +
                     $"SearchStatus={OrderParameters.SearchStatus}&" +

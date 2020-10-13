@@ -50,7 +50,7 @@ namespace Whs.Server.Controllers
         [HttpGet("DtoByQueType")]
         public ActionResult<WhsOrdersDtoIn> GetDtoByQueType([FromQuery] WhsOrderParameters parameters)
         {
-            _logger.LogInformation($"---> GetDtoByQueType: Begin");
+            //_logger.LogInformation($"---> GetDtoByQueType: Begin");
             WhsOrdersDtoIn dto = new WhsOrdersDtoIn();
 
             IQueryable<WhsOrderIn> query = _context.WhsOrdersIn
@@ -85,7 +85,7 @@ namespace Whs.Server.Controllers
             dto.Items = items
                 .GroupBy(e => e.ТипОчереди)
                 .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? "Очередность не указана" : e.Key, e => e.ToArray());
-            _logger.LogInformation($"---> GetDtoByQueType: Ok {dto.Items.Count}");
+            //_logger.LogInformation($"---> GetDtoByQueType: Ok {dto.Items.Count}");
             return dto;
         }
 
@@ -119,7 +119,7 @@ namespace Whs.Server.Controllers
         [HttpGet("Dto/{id}")]
         public async Task<ActionResult<WhsOrderDtoIn>> GetDtoAsync(string id)
         {
-            _logger.LogInformation($"---> GetDtoAsync/{id}: Begin");
+            //_logger.LogInformation($"---> GetDtoAsync/{id}: Begin");
             WhsOrderIn item = await _context.WhsOrdersIn
                 .Where(e => e.Проведен)
                 .Include(e => e.Товары)
@@ -144,7 +144,7 @@ namespace Whs.Server.Controllers
                     .FirstOrDefault()?.ApplicationUser?.FullName,
                 BarcodeBase64 = new NetBarcode.Barcode(GuidConvert.ToNumStr(id), NetBarcode.Type.Code128C, false).GetBase64Image()
             };
-            _logger.LogInformation($"---> GetDtoAsync/{id}: Ok {dto.Item.Документ_Name}");
+            //_logger.LogInformation($"---> GetDtoAsync/{id}: Ok {dto.Item.Документ_Name}");
             return dto;
         }
 
@@ -154,8 +154,8 @@ namespace Whs.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<WhsOrderIn>> PostAsync(WhsOrderIn whsOrder)
         {
-            _logger.LogInformation($"---> PostAsync: Begin {whsOrder.Номер} - {whsOrder.Дата} - {whsOrder.Статус} - " +
-                $"{whsOrder.ТипОчереди} - {whsOrder.СрокВыполнения} - {whsOrder.Комментарий} ");
+            //_logger.LogInformation($"---> PostAsync: Begin {whsOrder.Номер} - {whsOrder.Дата} - {whsOrder.Статус} - " +
+            //    $"{whsOrder.ТипОчереди} - {whsOrder.СрокВыполнения} - {whsOrder.Комментарий} ");
             _context.WhsOrdersIn.Add(whsOrder);
             try
             {
@@ -174,7 +174,7 @@ namespace Whs.Server.Controllers
                     throw;
                 }
             }
-            _logger.LogInformation($"---> PostAsync: Ok {whsOrder.Документ_Name}");
+            //_logger.LogInformation($"---> PostAsync: Ok {whsOrder.Документ_Name}");
             return CreatedAtAction("Get", new { id = whsOrder.Документ_Id }, whsOrder);
         }
 
@@ -183,12 +183,12 @@ namespace Whs.Server.Controllers
         [HttpPut("{id}/{barcode}")]
         public async Task<IActionResult> PutAsync(string id, string barcode, WhsOrderIn whsOrder)
         {
-            _logger.LogInformation($"---> PutUAsync/{id}: Begin {whsOrder.Номер} - {whsOrder.Дата} - {whsOrder.Статус} - " +
-                $"{whsOrder.ТипОчереди} - {whsOrder.СрокВыполнения} - {whsOrder.Комментарий} ");
+            //_logger.LogInformation($"---> PutUAsync/{id}: Begin {whsOrder.Номер} - {whsOrder.Дата} - {whsOrder.Статус} - " +
+            //    $"{whsOrder.ТипОчереди} - {whsOrder.СрокВыполнения} - {whsOrder.Комментарий} ");
 
             if (id != whsOrder.Документ_Id)
             {
-                _logger.LogError($"---> PutUAsync/{id}: BadRequest {whsOrder.Номер}");
+                _logger.LogError($"---> PutUAsync/{id}: BadRequest {whsOrder.Документ_Name}");
                 return BadRequest();
             }
 
@@ -263,7 +263,7 @@ namespace Whs.Server.Controllers
 
         private async Task<WhsOrderIn> PutTo1cAsync(WhsOrderIn whsOrder)
         {
-            _logger.LogInformation($"---> PutTo1cAsync: Begin {whsOrder.Документ_Name}");
+            //_logger.LogInformation($"---> PutTo1cAsync: Begin {whsOrder.Документ_Name}");
             string responseContent = string.Empty;
             try
             {
@@ -301,7 +301,6 @@ namespace Whs.Server.Controllers
             await _context.SaveChangesAsync();
             return item;
         }
-
 
         private bool Exists(string id) => _context.WhsOrdersIn.Any(e => e.Документ_Id == id);
     }

@@ -116,7 +116,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
             try
             {
                 DateTime beginTime = DateTime.Now;
-                Console.WriteLine("GetOrdersDtoAsync - begin");
+                //Console.WriteLine("GetOrdersDtoAsync - begin");
                 SearchParameters =
                     $"SearchBarcode={OrderParameters.SearchBarcode}&" +
                     $"SearchStatus={OrderParameters.SearchStatus}&" +
@@ -174,7 +174,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private async Task SearchByStatus(string searchStatus)
         {
-            await SearchClearAsync();
+            //await SearchClearAsync();
             OrderParameters.SearchBarcode = null;
             OrderParameters.SearchStatus = searchStatus;
             await GetOrdersDtoAsync();

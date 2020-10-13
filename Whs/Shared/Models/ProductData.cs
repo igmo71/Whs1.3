@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Whs.Shared.Models
 {
@@ -34,9 +35,11 @@ namespace Whs.Shared.Models
         public ProductDataIn() : base() { }
         public ProductDataIn(Product product) : base(product) { }
 
+        [JsonIgnore]
         [ForeignKey("Документ_Id")]
-        public WhsOrderOut WhsOrder { get; set; }
+        public WhsOrderIn WhsOrder { get; set; }
 
+        [JsonIgnore]
         [ForeignKey("EditingCauseId")]
         public EditingCauseIn EditingCause { get; set; }
     }
@@ -46,9 +49,11 @@ namespace Whs.Shared.Models
         public ProductDataOut() : base() { }
         public ProductDataOut(Product product) : base(product) { }
 
+        [JsonIgnore]
         [ForeignKey("Документ_Id")]
-        public WhsOrderIn WhsOrder { get; set; }
+        public WhsOrderOut WhsOrder { get; set; }
 
+        [JsonIgnore]
         [ForeignKey("EditingCauseId")]
         public EditingCauseOut EditingCause { get; set; }
     }

@@ -43,6 +43,9 @@ namespace Whs.Server.Data
             builder.Entity<ProductIn>().HasIndex(e => new { e.Документ_Id, e.НомерСтроки }).HasName("IX_ProductsIn_ДокументIdНомерСтроки");
             builder.Entity<ProductIn>().HasOne(e => e.WhsOrder).WithMany(e => e.Товары).HasForeignKey(e => e.Документ_Id).OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<ProductDataIn>().HasOne(e => e.WhsOrder).WithMany(e => e.ProductsData).HasForeignKey(e => e.Документ_Id).OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<ProductDataIn>().HasOne(e => e.EditingCause).WithMany(e => e.ProductsData).HasForeignKey(e => e.EditingCauseId).OnDelete(DeleteBehavior.SetNull);
+
             builder.Entity<MngrOrderIn>().HasKey(e => new { e.Документ_Id, e.Распоряжение_Id });
             builder.Entity<MngrOrderIn>().HasIndex(e => new { e.Документ_Id, e.Распоряжение_Id }).HasName("IX_MngOrdersIn_ДокументIdРаспоряжениеId");
             builder.Entity<MngrOrderIn>().HasOne(e => e.WhsOrder).WithMany(e => e.Распоряжения).HasForeignKey(e => e.Документ_Id).OnDelete(DeleteBehavior.Cascade);
@@ -57,6 +60,9 @@ namespace Whs.Server.Data
             builder.Entity<ProductOut>().HasKey(e => new { e.Документ_Id, e.НомерСтроки });
             builder.Entity<ProductOut>().HasIndex(e => new { e.Документ_Id, e.НомерСтроки }).HasName("IX_ProductsOut_ДокументIdНомерСтроки");
             builder.Entity<ProductOut>().HasOne(e => e.WhsOrder).WithMany(e => e.Товары).HasForeignKey(e => e.Документ_Id).OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ProductDataOut>().HasOne(e => e.WhsOrder).WithMany(e => e.ProductsData).HasForeignKey(e => e.Документ_Id).OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<ProductDataOut>().HasOne(e => e.EditingCause).WithMany(e => e.ProductsData).HasForeignKey(e => e.EditingCauseId).OnDelete(DeleteBehavior.SetNull);
 
             builder.Entity<MngrOrderOut>().HasKey(e => new { e.Документ_Id, e.Распоряжение_Id });
             builder.Entity<MngrOrderOut>().HasIndex(e => new { e.Документ_Id, e.Распоряжение_Id }).HasName("IX_MngOrdersOut_ДокументIdРаспоряжениеId");

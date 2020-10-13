@@ -19,7 +19,7 @@ namespace Whs.Shared.Models
         public string Упаковка_Id { get; set; }
         public string Упаковка_Name { get; set; }
         [NotMapped]
-        public Guid EditingCauseId { get; set; }
+        public Guid? EditingCauseId { get; set; }
     }
 
     public class ProductIn : Product

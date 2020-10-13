@@ -90,6 +90,7 @@ namespace Whs.Shared.Models
         public List<MngrOrderIn> Распоряжения { get; set; }
         public List<ProductIn> Товары { get; set; }
         public List<WhsOrderDataIn> Data { get; set; }
+        public List<ProductDataIn> ProductsData { get; set; }
     }
 
     public class WhsOrderOut : WhsOrder
@@ -97,6 +98,7 @@ namespace Whs.Shared.Models
         public List<MngrOrderOut> Распоряжения { get; set; }
         public List<ProductOut> Товары { get; set; }
         public List<WhsOrderDataOut> Data { get; set; }
+        public List<ProductDataOut> ProductsData { get; set; }
 
         public string НомерОчереди { get; set; }
         public string НаправлениеДоставки_Id { get; set; }
