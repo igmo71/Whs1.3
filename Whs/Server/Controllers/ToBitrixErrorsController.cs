@@ -12,7 +12,6 @@ namespace Whs.Server.Controllers
     [ApiController]
     public class ToBitrixErrorsController : ControllerBase
     {
-        private readonly string auth = "6c79855f0000071b0012a8e600000801000003a0ebaaed56832207fc9739fddb43d7ac";
         private readonly string[] to = { "318", "2844" };
         // api/ToBitrixErrors/message
         [HttpPost("{message}")]
