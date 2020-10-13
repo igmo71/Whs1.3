@@ -1,6 +1,10 @@
-﻿@page "/WhsOrdersIn/Item/{Id}"
+﻿@using Whs.Client.Components
+@page "/WhsOrdersIn/Item/{Id}"
 @page "/WhsOrdersIn/Item/{Id}/{SearchStatus}"
-@using Whs.Client.Components
+@code
+{
+    private Notification Notification;
+}
 
 <Notification @ref="Notification" />
 
@@ -129,6 +133,3 @@ else
         </tbody>
     </table>
 }
-@code{
-    private Notification Notification;
-    }

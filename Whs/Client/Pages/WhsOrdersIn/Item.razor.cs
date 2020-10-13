@@ -57,19 +57,19 @@ namespace Whs.Client.Pages.WhsOrdersIn
             {
                 DateTime beginTime = DateTime.Now;
                 Console.WriteLine("ScannedBarcodeAsync - begin");
-                Notification.Show($"Запрос на изменение статуса...");
+                Notification.Show($"Запрос изменения статуса...");
                 Barcode = args.Value.ToString();
                 HttpResponseMessage response = await HttpClient.PutAsJsonAsync<WhsOrderIn>($"api/WhsOrdersIn/{OrderDto.Item.Документ_Id}/{Barcode}", OrderDto.Item);
                 Console.WriteLine($"HttpResponseMessage - response: {response.StatusCode} - {response.ReasonPhrase} - {await response.Content.ReadAsStringAsync()}");
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
+                    await ToBitrixErrors($"{OrderDto.Item.Документ_Name} - {OrderDto.Item.Статус}");
                     if (OrderDto.Item.Статус == "Подготовлено")
                     {
                         await GetOrderDtoAsync();
                         await PrintAsync();
                     }
-                    await Notification.HideAsync( "{OrderDto.Item.Документ_Name} - {OrderDto.Item.Статус}", 1);
-                    await ToBitrixErrors($"Cтатус изменен: {OrderDto.Item.Документ_Name} - {OrderDto.Item.Статус}");
+                    await Notification.HideAsync( $"{OrderDto.Item.Документ_Name} - {OrderDto.Item.Статус}", 1);
                     Return();
                 }
                 else

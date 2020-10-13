@@ -101,11 +101,11 @@
         responsible = "d_none";
         resp_value = "";
 
-        //if (Value.Data!=null && Value.Data.Count > 0)
-        //{
-        //    resp_value = Value.Data.OrderByDescending(e => e.DateTime).FirstOrDefault().ApplicationUser.Surname;
-        //    responsible = "";
-        //}
+        if (Value.Data != null && Value.Data.Count > 0)
+        {
+            resp_value = Value.Data.OrderByDescending(e => e.DateTime).FirstOrDefault()?.ApplicationUser?.Surname;
+            responsible = "";
+        }
         responsible = "";
 
         //if (Value.ApplicationUser != null)
@@ -114,5 +114,5 @@
         //Собственная доставка
         //    ifAtwork = "bg-primary text-white";
 
-        }
+    }
 }

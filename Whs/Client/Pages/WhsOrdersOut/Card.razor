@@ -99,7 +99,7 @@
         resp_value = "";
         if (Value.Data.Count > 0)
         {
-            resp_value = Value.Data.OrderByDescending(e => e.DateTime).FirstOrDefault().ApplicationUser.Surname;
+            resp_value = Value.Data.OrderByDescending(e => e.DateTime).FirstOrDefault()?.ApplicationUser?.Surname;
             responsible = "";
         }
 

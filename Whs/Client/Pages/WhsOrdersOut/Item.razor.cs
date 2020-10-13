@@ -69,12 +69,12 @@ namespace Whs.Client.Pages.WhsOrdersOut
                 Console.WriteLine($"HttpResponseMessage - response: {response.StatusCode} - {response.ReasonPhrase} - {await response.Content.ReadAsStringAsync()}");
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
+                    await Notification.HideAsync($"{OrderDto.Item.Документ_Name} - {OrderDto.Item.Статус}", 1);
                     if (OrderDto.Item.Статус == "Подготовлено")
                     {
                         await GetOrderDtoAsync();
                         await PrintAsync();
                     }
-                    await Notification.HideAsync("Ok", 1);
                     await ToBitrixErrors($"Cтатус изменен: {OrderDto.Item.Документ_Name} - {OrderDto.Item.Статус}");
                     Return();
                 }

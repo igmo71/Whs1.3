@@ -37,6 +37,8 @@ namespace Whs.Server.Data
             builder.Entity<WhsOrderIn>().HasIndex(e => e.Документ_Id).HasName("IX_WhsOrdersIn_ДокументId");
             //builder.Entity<WhsOrderIn>().HasIndex(e => e.Статус).HasName("IX_WhsOrdersIn_Статус");
 
+            builder.Entity<WhsOrderDataIn>().HasOne(e => e.WhsOrder).WithMany(e => e.Data).HasForeignKey(e => e.Документ_Id).OnDelete(DeleteBehavior.Cascade);
+
             builder.Entity<ProductIn>().HasKey(e => new { e.Документ_Id, e.НомерСтроки });
             builder.Entity<ProductIn>().HasIndex(e => new { e.Документ_Id, e.НомерСтроки }).HasName("IX_ProductsIn_ДокументIdНомерСтроки");
             builder.Entity<ProductIn>().HasOne(e => e.WhsOrder).WithMany(e => e.Товары).HasForeignKey(e => e.Документ_Id).OnDelete(DeleteBehavior.Cascade);
@@ -50,15 +52,14 @@ namespace Whs.Server.Data
             builder.Entity<WhsOrderOut>().HasIndex(e => e.Документ_Id).HasName("IX_WhsOrdersOut_ДокументId");
             //builder.Entity<WhsOrderOut>().HasIndex(e => e.Статус).HasName("IX_WhsOrdersOut_Статус");
 
+            builder.Entity<WhsOrderDataOut>().HasOne(e => e.WhsOrder).WithMany(e => e.Data).HasForeignKey(e => e.Документ_Id).OnDelete(DeleteBehavior.Cascade);
+
             builder.Entity<ProductOut>().HasKey(e => new { e.Документ_Id, e.НомерСтроки });
             builder.Entity<ProductOut>().HasIndex(e => new { e.Документ_Id, e.НомерСтроки }).HasName("IX_ProductsOut_ДокументIdНомерСтроки");
             builder.Entity<ProductOut>().HasOne(e => e.WhsOrder).WithMany(e => e.Товары).HasForeignKey(e => e.Документ_Id).OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<MngrOrderOut>().HasKey(e => new { e.Документ_Id, e.Распоряжение_Id });
             builder.Entity<MngrOrderOut>().HasIndex(e => new { e.Документ_Id, e.Распоряжение_Id }).HasName("IX_MngOrdersOut_ДокументIdРаспоряжениеId");
-            builder.Entity<MngrOrderOut>().HasOne(e => e.WhsOrder).WithMany(e => e.Распоряжения).HasForeignKey(e => e.Документ_Id).OnDelete(DeleteBehavior.Cascade);
-
-            //builder.Entity<Warehouse>().HasMany(e => e.Users).WithOne(e => e.Warehouse).HasForeignKey(e => e.WarehouseId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.SetNull);
-        }
+            builder.Entity<MngrOrderOut>().HasOne(e => e.WhsOrder).WithMany(e => e.Распоряжения).HasForeignKey(e => e.Документ_Id).OnDelete(DeleteBehavior.Cascade);}
     }
 }
