@@ -311,6 +311,34 @@ html {
     /*padding-top: 28px;padding-left: 12px;*/
 }
 
+.toolate .leftpart span::after {
+    content: url("/icons/toolate.png");
+    width: 80px;
+    height: 80px;
+    margin: auto;
+    /*padding-top: 28px;padding-left: 12px;*/
+}
+
+
+
+.emergency .leftpart span::after {
+    content: url("/icons/emergency.png");
+    width: 80px;
+    height: 80px;
+    margin: auto;
+    /*padding-top: 28px;padding-left: 12px;*/
+}
+
+.noorder .leftpart span::after {
+    content: url("/icons/noorder.png");
+    width: 80px;
+    height: 80px;
+    margin: auto;
+    /*padding-top: 28px;padding-left: 12px;*/
+}
+
+
+
 .transfer .leftpart span {
     /*	background: url("/icons/dobroga.png") no-repeat;	
 	background-size: 50px;
