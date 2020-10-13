@@ -24,7 +24,7 @@
         <div class="row">
             <span class="oi oi-comment-square" title="Комментарий"></span>&nbsp;
             <span title="@Value.Комментарий">&nbsp;@Value.КомментарийString&nbsp;</span>
-    
+
         </div>
         <AuthorizeView Roles="Manager">
             <Authorized>
@@ -45,11 +45,17 @@
         <span class="receiver flt_left w_100">@Value.ОтправительПолучатель_NameString</span>
         <span class="destin flt_left w_100">@Value.НаправлениеДоставки_Name</span>
         <span class="comment flt_left w_100">@Value.КомментарийString</span>
-       
+
         <span class="date d_blk">@Value.TimeUpString</span>
         <div class="foot d_blk flt_left w_100">
             <span class="skus flt_left"><label class="val birbox">@Value.КоличествоСтрок</label></span>
-            <span class="responsible"><label class="val birbox"></label></span>
+            <span class="responsible">
+                <label class="val birbox">
+                    @if (Value.Data.Count > 0)
+                    {
+                        @Value.Data.OrderByDescending(e => e.DateTime).FirstOrDefault().ApplicationUser.FullName}
+                </label>
+            </span>
             <span class="weight flt_right"><label class="val birbox">@Value.Вес</label></span>
         </div>
     </span>
