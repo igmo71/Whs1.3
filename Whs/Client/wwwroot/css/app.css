@@ -148,9 +148,18 @@ app {
     .main .top-row a, .main .top-row .btn-link {
         margin-left: 0;
     }
+    .col-3 {
+        overflow: auto;
+        max-height: 78vh;
+    }
 }
 
 @media (min-width: 768px) {
+    .col-3 {
+        overflow: auto;
+        max-height: 71vh;
+    }
+
     app {
         flex-direction: row;
     }
@@ -500,10 +509,7 @@ html {
 
 
 
-.col-3 {
-    overflow: auto;
-    max-height: 82vh;
-}
+
 
 /*ANIMATION
 */
