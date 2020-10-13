@@ -148,9 +148,18 @@ app {
     .main .top-row a, .main .top-row .btn-link {
         margin-left: 0;
     }
+    .col-3 {
+        overflow: auto;
+        max-height: 78vh;
+    }
 }
 
 @media (min-width: 768px) {
+    .col-3 {
+        overflow: auto;
+        max-height: 71vh;
+    }
+
     app {
         flex-direction: row;
     }
@@ -301,6 +310,34 @@ html {
     margin: auto;
     /*padding-top: 28px;padding-left: 12px;*/
 }
+
+.toolate .leftpart span::after {
+    content: url("/icons/toolate.png");
+    width: 80px;
+    height: 80px;
+    margin: auto;
+    /*padding-top: 28px;padding-left: 12px;*/
+}
+
+
+
+.emergency .leftpart span::after {
+    content: url("/icons/emergency.png");
+    width: 80px;
+    height: 80px;
+    margin: auto;
+    /*padding-top: 28px;padding-left: 12px;*/
+}
+
+.noorder .leftpart span::after {
+    content: url("/icons/noorder.png");
+    width: 80px;
+    height: 80px;
+    margin: auto;
+    /*padding-top: 28px;padding-left: 12px;*/
+}
+
+
 
 .transfer .leftpart span {
     /*	background: url("/icons/dobroga.png") no-repeat;	
@@ -500,10 +537,7 @@ html {
 
 
 
-.col-3 {
-    overflow: auto;
-    max-height: 82vh;
-}
+
 
 /*ANIMATION
 */
