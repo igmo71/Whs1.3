@@ -18,12 +18,12 @@ namespace Whs.Server.Controllers
         [HttpPost("{message}")]
         public async Task PostAsync(string message = "Hello, World!")
         {
-            HttpClient _clientBitrix = new HttpClient { BaseAddress = new Uri("https://portal.dobroga.ru/rest/") };
+            HttpClient _clientBitrix = new HttpClient { BaseAddress = new Uri("https://portal.dobroga.ru/rest/2049/yyvnhvfv64px921o/im.notify.json") };
             string requestUri;
             HttpResponseMessage response;
             foreach (var item in to)
             {
-                requestUri = $"im.notify.json?auth={auth}&message={message}&to={item}";
+                requestUri = $"?message={message}&to={item}";
                 response = await _clientBitrix.PostAsync(requestUri, null);
             }
         }
