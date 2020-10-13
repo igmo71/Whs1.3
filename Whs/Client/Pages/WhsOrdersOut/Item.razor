@@ -1,6 +1,10 @@
-﻿@page "/WhsOrdersOut/Item/{Id}"
+﻿@using Whs.Client.Components
+@page "/WhsOrdersOut/Item/{Id}"
 @page "/WhsOrdersOut/Item/{Id}/{SearchStatus}"
-@using Whs.Client.Components
+@code
+{
+    private Notification Notification;
+}
 
 <Notification @ref="Notification" />
 
