@@ -46,7 +46,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
         protected override async Task OnInitializedAsync()
         {
             DateTime beginTime = DateTime.Now;
-            Console.WriteLine("OnInitializedAsync - begin");
+            //Console.WriteLine("OnInitializedAsync - begin");
             OrderParameters = new WhsOrderParameters();
             CreateSearchStatusButtons();
             await GetWarehouseIdAsync();
@@ -220,7 +220,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
             Timer = new Timer(interval * 1000);
             Timer.Elapsed += async delegate
             {
-                Console.WriteLine($"Timer.Elapsed at: {DateTime.Now}");
+                //Console.WriteLine($"Timer.Elapsed at: {DateTime.Now}");
                 await GetOrdersDtoAsync();
             };
             Timer.AutoReset = autoReset;
