@@ -17,6 +17,9 @@ namespace Whs.Shared.Models.Accounts
 
         [NotMapped]
         public string Barcode => GuidConvert.ToNumStr(Id);
+
+        [NotMapped]
+        public string Surname => FullName.Substring(0, FullName.IndexOf(' '));
     }
     public class ApplicationUserParameters
     {
