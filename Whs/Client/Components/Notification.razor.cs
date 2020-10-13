@@ -24,18 +24,27 @@ namespace Whs.Client.Components
             StateHasChanged();
         }
 
-        public async Task ShowAsync(string message, int delay)
-        {
-            Show(message);
-            await Task.Delay(1000 * delay);
-            Hide();
-        }
         public void Hide()
         {
             _modalDisplay = "none;";
             _modalClass = "";
             _showBackdrop = false;
             StateHasChanged();
+        }
+
+        public async Task ShowAsync(string message, int delay)
+        {
+            Show(message);
+            await Task.Delay(1000 * delay);
+            Hide();
+        }
+
+        public async Task HideAsync(string message, int delay)
+        {
+            Message = message;
+            StateHasChanged();
+            await Task.Delay(1000 * delay);
+            Hide();
         }
     }
 }
