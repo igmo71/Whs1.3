@@ -49,17 +49,16 @@
         <span class="date d_blk">@Value.TimeUpString</span>
         <div class="foot d_blk flt_left w_100">
             <span class="skus flt_left"><label class="val birbox">@Value.КоличествоСтрок</label></span>
-            <span class="responsible">
+            <span class="responsible @responsible">
                 <label class="val birbox">
-                    @if (Value.Data.Count > 0)
-                    {
-                        @Value.Data.OrderByDescending(e => e.DateTime).FirstOrDefault().ApplicationUser.FullName}
+                    @resp_value
                 </label>
             </span>
             <span class="weight flt_right"><label class="val birbox">@Value.Вес</label></span>
         </div>
     </span>
 </span>
+
 
 
 @code {
@@ -70,6 +69,8 @@
     //string ifAtwork;
     string ifMoving;
     string departed;
+    string responsible;
+    string resp_value;
     protected override void OnParametersSet()
     {
         if (Value.СрокВыполнения != DateTime.Parse("01.01.0001 0:00:00"))
@@ -93,6 +94,17 @@
 
         departed = "";
         if (Value.Статус == "Отгружен") { departed = "departed"; ifExpired = ""; }
+
+        responsible = "d_none";
+        resp_value = "";
+        if (Value.Data.Count > 0)
+        {
+            resp_value = Value.Data.OrderByDescending(e => e.DateTime).FirstOrDefault().ApplicationUser.Surname;
+            responsible = "";
+        }
+
+
+
         //if (Value.ApplicationUser != null)
         //Живая очередь
         //Собрать к дате

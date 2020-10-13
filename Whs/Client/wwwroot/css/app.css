@@ -332,7 +332,11 @@ html {
 
 /*switch responsible visibility*/
 .order .rightpart .responsible {
-    display: none;
+/*    display: none; */
+}
+
+.d_none{
+    display:none;
 }
 
 .inprocess .rightpart .responsible {
