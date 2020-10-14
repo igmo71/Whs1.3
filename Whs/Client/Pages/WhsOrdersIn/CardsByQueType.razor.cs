@@ -17,34 +17,25 @@ namespace Whs.Client.Pages.WhsOrdersIn
 {
     public partial class CardsByQueType : IDisposable
     {
-        [Parameter]
-        public string SearchStatus { get; set; }
-        [Inject]
-        public HttpClient HttpClient { get; set; }
-        [Inject]
-        public IJSRuntime JSRuntime { get; set; }
-        [Inject]
-        public NavigationManager NavigationManager { get; set; }
-        [Inject]
-        public IConfiguration Configuration { get; set; }
-        [Inject]
-        public AuthenticationStateProvider AuthStateProvider { get; set; }
+        [Parameter] public string SearchStatus { get; set; }
+        [Inject] public HttpClient HttpClient { get; set; }
+        [Inject] public IJSRuntime JSRuntime { get; set; }
+        [Inject] public NavigationManager NavigationManager { get; set; }
+        [Inject] public IConfiguration Configuration { get; set; }
+        [Inject] public AuthenticationStateProvider AuthStateProvider { get; set; }
 
         private Timer Timer;
         private string Barcode;
-        private Notification Notification;
         private WhsOrdersDtoIn OrdersDto;
         private WhsOrderParameters OrderParameters;
         private string SearchParameters;
         private Warehouse[] Warehouses;
-        private SearchByNumber SearchByNumber;
         private Dictionary<string, string> SearchStatusButtons;
         private string warehouseId;
 
         protected override async Task OnInitializedAsync()
         {
             DateTime beginTime = DateTime.Now;
-            //Console.WriteLine("OnInitializedAsync - begin");
             OrderParameters = new WhsOrderParameters();
             CreateSearchStatusButtons();
             await GetWarehouseIdAsync();
@@ -102,7 +93,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
                     $"SearchBarcode={OrderParameters.SearchBarcode}&" +
                     $"SearchStatus={OrderParameters.SearchStatus}&" +
                     $"SearchTerm={OrderParameters.SearchTerm}&" +
-                    $"SearchWarehouseId={OrderParameters.SearchWarehouseId}&" ;
+                    $"SearchWarehouseId={OrderParameters.SearchWarehouseId}&";
                 OrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoIn>($"api/WhsOrdersIn/DtoByQueType?{SearchParameters}");
                 StateHasChanged();
                 if (OrdersDto.Items.Count == 0)

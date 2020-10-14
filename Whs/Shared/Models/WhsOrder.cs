@@ -30,7 +30,7 @@ namespace Whs.Shared.Models
         private readonly int maxChars = 26;
         [NotMapped]
         public string СрокВыполненияString =>
-            (СрокВыполнения == null || СрокВыполнения == DateTime.Parse("01.01.0001 0:00:00")) ? string.Empty : СрокВыполнения.ToString();        
+            (СрокВыполнения == null || СрокВыполнения == DateTime.Parse("01.01.0001 0:00:00")) ? string.Empty : СрокВыполнения.ToString();
         [NotMapped]
         public string КомментарийString =>
             (string.IsNullOrEmpty(Комментарий) || Комментарий.Length < maxChars) ? Комментарий : $"{Комментарий.Substring(0, maxChars)}...";
@@ -40,7 +40,7 @@ namespace Whs.Shared.Models
         [NotMapped]
         public string ОтправительПолучатель_NameString =>
             (string.IsNullOrEmpty(ОтправительПолучатель_Name) || ОтправительПолучатель_Name.Length < maxChars) ? ОтправительПолучатель_Name : $"{ОтправительПолучатель_Name.Substring(0, maxChars)}...";
-        
+
         [NotMapped]
         public string TimeUpString
         {

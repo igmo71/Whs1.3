@@ -17,41 +17,30 @@ namespace Whs.Client.Pages.WhsOrdersOut
 {
     public partial class CardsByQueType : IDisposable
     {
-        [Parameter]
-        public string SearchStatus { get; set; }
-        [Inject]
-        public HttpClient HttpClient { get; set; }
-        [Inject]
-        public IJSRuntime JSRuntime { get; set; }
-        [Inject]
-        public NavigationManager NavigationManager { get; set; }
-        [Inject]
-        public IConfiguration Configuration { get; set; }
-        [Inject]
-        public AuthenticationStateProvider AuthStateProvider { get; set; }
+        [Parameter] public string SearchStatus { get; set; }
+        [Inject] public HttpClient HttpClient { get; set; }
+        [Inject] public IJSRuntime JSRuntime { get; set; }
+        [Inject] public NavigationManager NavigationManager { get; set; }
+        [Inject] public IConfiguration Configuration { get; set; }
+        [Inject] public AuthenticationStateProvider AuthStateProvider { get; set; }
 
         private Timer Timer;
         private string Barcode;
-        private Notification Notification;
         private WhsOrdersDtoOut OrdersDto;
         private WhsOrderParameters OrderParameters;
         private string SearchParameters;
         private Warehouse[] Warehouses;
         private Destination[] Destinations;
-        private SearchByNumber SearchByNumber;
-        private SearchByDestination SearchByDestination;
         private Dictionary<string, string> SearchStatusButtons;
         private string warehouseId;
 
         protected override async Task OnInitializedAsync()
         {
             DateTime beginTime = DateTime.Now;
-            //Console.WriteLine("OnInitializedAsync - begin");
             OrderParameters = new WhsOrderParameters();
             CreateSearchStatusButtons();
             await GetWarehouseIdAsync();
             await GetWarehousesAsync();
-            //await GetDestinationsAsync();
             await GetOrdersDtoAsync();
             SetTimer(double.Parse(Configuration["TimerInterval"]), true);
             Console.WriteLine($"OnInitializedAsync - duration: {DateTime.Now - beginTime}");
@@ -116,7 +105,6 @@ namespace Whs.Client.Pages.WhsOrdersOut
             try
             {
                 DateTime beginTime = DateTime.Now;
-                //Console.WriteLine("GetOrdersDtoAsync - begin");
                 SearchParameters =
                     $"SearchBarcode={OrderParameters.SearchBarcode}&" +
                     $"SearchStatus={OrderParameters.SearchStatus}&" +
@@ -174,7 +162,6 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private async Task SearchByStatus(string searchStatus)
         {
-            //await SearchClearAsync();
             OrderParameters.SearchBarcode = null;
             OrderParameters.SearchStatus = searchStatus;
             await GetOrdersDtoAsync();
@@ -220,7 +207,6 @@ namespace Whs.Client.Pages.WhsOrdersOut
             Timer = new Timer(interval * 1000);
             Timer.Elapsed += async delegate
             {
-                //Console.WriteLine($"Timer.Elapsed at: {DateTime.Now}");
                 await GetOrdersDtoAsync();
             };
             Timer.AutoReset = autoReset;

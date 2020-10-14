@@ -1,10 +1,13 @@
-﻿@page "/WhsOrdersIn/CardsByQueType"
-@page "/WhsOrdersIn/CardsByQueType/{SearchStatus}"
-
-@using Microsoft.AspNetCore.Authorization
+﻿@using Microsoft.AspNetCore.Authorization
 @using Whs.Client.Components
-
+@page "/WhsOrdersIn/CardsByQueType"
+@page "/WhsOrdersIn/CardsByQueType/{SearchStatus}"
 @attribute [Authorize]
+@code
+{
+    private Notification Notification;
+    private SearchByNumber SearchByNumber;
+}
 
 <Notification @ref="Notification" />
 
@@ -61,15 +64,15 @@ else
     </ul>
     if (OrdersDto.Items.Count == 0)
     {
-        @*<div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <strong>Ничего не найдено!</strong>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close" @onclick="@(() => SearchClearAsync(true))">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>*@
         <span class="notfound">
             <img src="/img/NotFound.svg" />
         </span>
+        @*<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Ничего не найдено!</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close" @onclick="@(() => SearchClearAsync(true))">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>*@
     }
     else
     {
@@ -90,7 +93,7 @@ else
                 </div>
                 <div class="order-items">
 
-                   @if (OrdersDto.Items.ContainsKey("Под клиента"))
+                    @if (OrdersDto.Items.ContainsKey("Под клиента"))
                     {
                         @foreach (var value in OrdersDto.Items["Под клиента"])
                         {
@@ -102,12 +105,12 @@ else
                         }
                     }
                 </div>
-                </div>
+            </div>
             <div class="col-3">
                 <div class="row h5 text-center thqueue">
                     <div class="col"><span class="oi oi-calendar"></span>&nbsp;<span>Срочно в продажу</span></div>
                 </div>
-                    <div class="order-items">
+                <div class="order-items">
 
                     @if (OrdersDto.Items.ContainsKey("Срочно в продажу"))
                     {
@@ -121,7 +124,7 @@ else
                         }
                     }
                 </div>
-                </div>
+            </div>
             <div class="col-3">
                 <div class="row h5 text-center thqueue">
                     <div class="col"><span class="oi oi-globe"></span>&nbsp;<span>Просрочено</span></div>
@@ -140,7 +143,7 @@ else
                         }
                     }
                 </div>
-                </div>
+            </div>
             <div class="col-3">
                 <div class="row h5 text-center thqueue">
                     <div class="col"><span class="oi oi-aperture"></span>&nbsp;<span>Очередность не указана</span></div>
@@ -159,6 +162,7 @@ else
                         }
                     }
                 </div>
-                </div>
-            </div>  }
+            </div>
+        </div>
+    }
 }

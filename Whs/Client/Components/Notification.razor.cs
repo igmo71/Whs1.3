@@ -11,9 +11,6 @@ namespace Whs.Client.Components
         [Parameter]
         public RenderFragment RenderFragment { get; set; }
 
-        private string _modalDisplay;
-        private string _modalClass;
-        private bool _showBackdrop;
 
         public void Show(string message)
         {
