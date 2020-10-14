@@ -47,7 +47,8 @@
 
         <span class="comment flt_left w_100">@Value.КомментарийString</span>
 
-        <span class="date d_blk">@Value.TimeUpString</span>
+        <span class="date d_blk @nodisplay_timeleft">@Value.TimeUpString</span>
+        <span class="date d_blk @nodisplay_timedep">@lastStatusDate</span>
         <div class="foot d_blk flt_left w_100">
             <span class="skus flt_left"><label class="val birbox">@Value.КоличествоСтрок</label></span>
             <span class="responsible @responsible">
@@ -74,6 +75,9 @@
     string departed;
     string responsible;
     string resp_value;
+    string lastStatusDate;
+    string nodisplay_timeleft;
+    string nodisplay_timedep;
     protected override void OnParametersSet()
     {
         if (Value.СрокВыполнения != DateTime.Parse("01.01.0001 0:00:00"))
@@ -96,14 +100,24 @@
         { queueType = "toolate"; }
 
         departed = "";
-        if (Value.Статус == "Принят") { departed = "departed"; ifExpired = ""; }
+        nodisplay_timeleft = "";
+        nodisplay_timedep = "d-none";
+        if (Value.Статус == "Принят")
+        {
+            nodisplay_timeleft = "d-none";
+            nodisplay_timedep = "";
+            departed = "departed";
+            ifExpired = "";
+        }
 
         responsible = "d_none";
         resp_value = "";
 
         if (Value.Data != null && Value.Data.Count > 0)
         {
-            resp_value = Value.Data.OrderByDescending(e => e.DateTime).FirstOrDefault()?.ApplicationUser?.Surname;
+            WhsOrderDataIn lastData = Value.Data.OrderByDescending(e => e.DateTime).FirstOrDefault();
+            lastStatusDate = lastData?.DateTimeString;
+            resp_value = lastData?.ApplicationUser?.Surname;
             responsible = "";
         }
         responsible = "";

@@ -51,10 +51,16 @@ namespace Whs.Shared.Models
             {
                 switch (parameters.SearchStatus)
                 {
-                    case "К поступлению": query = query.Where(e => e.Статус == "К поступлению"); break;
-                    case "В работе": query = query.Where(e => e.Статус == "В работе"); break;
-                    case "Принят": query = query.Where(e => e.Статус == "Принят"); break;
-                    default: break;
+                    case "К поступлению": query = query.Where(e => e.Статус == "К поступлению")
+                            .OrderByDescending(e => e.ВесовойКоэффициент).ThenBy(e => e.СрокВыполнения); 
+                        break;
+                    case "В работе": query = query.Where(e => e.Статус == "В работе")
+                            .OrderByDescending(e => e.ВесовойКоэффициент).ThenBy(e => e.СрокВыполнения);
+                        break;
+                    case "Принят": query = query.Where(e => e.Статус == "Принят").Where(e => e.Data.Count > 0)
+                            .OrderBy(e => e.Data.Where(e => e.Статус == "Принят").OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime); ; break;
+                    default: 
+                        break;
                 }
             }
 

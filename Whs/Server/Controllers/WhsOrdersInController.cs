@@ -58,8 +58,6 @@ namespace Whs.Server.Controllers
                 .Include(e => e.Распоряжения)
                 .Include(e => e.Data)
                     .ThenInclude(e => e.ApplicationUser)
-                .OrderByDescending(e => e.ВесовойКоэффициент)
-                .ThenBy(e => e.СрокВыполнения)
                 .AsNoTracking();
 
             IEnumerable<WhsOrderIn> items;
