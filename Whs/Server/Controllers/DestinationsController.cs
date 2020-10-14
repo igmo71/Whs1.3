@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +14,10 @@ namespace Whs.Server.Controllers
     public class DestinationsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly WhsOrderSettings _settings;
 
-        public DestinationsController(ApplicationDbContext context, IConfiguration configuration)
+        public DestinationsController(ApplicationDbContext context)
         {
             _context = context;
-            _settings = configuration.GetSection(WhsOrderSettings.WhsOrder).Get<WhsOrderSettings>();
         }
 
         // GET: api/Destinations
@@ -28,10 +25,10 @@ namespace Whs.Server.Controllers
         [HttpGet("{searchStatus}")]
         public async Task<ActionResult<IEnumerable<Destination>>> GetDestination(string searchStatus)
         {
-            Destination[] items = await _context.WhsOrdersOut
+            Destination[] items = await _context.WhsOrdersOut.AsNoTracking()
                 .Where(e => e.Статус == searchStatus)
                 .Select(e => new Destination { Id = e.НаправлениеДоставки_Id, Name = e.НаправлениеДоставки_Name })
-                .Distinct().AsNoTracking().ToArrayAsync();
+                .Distinct().ToArrayAsync();
             if (items.Count() > 0)
                 items.FirstOrDefault(e => e.Id == Guid.Empty.ToString()).Name = "- Без направления -";
             Destination[] item = { new Destination { Id = "0", Name = "- Все направления -" } };
