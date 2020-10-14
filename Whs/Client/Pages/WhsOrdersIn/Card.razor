@@ -30,7 +30,6 @@
         </AuthorizeView>
     </div>
 </div>
-
 -->
 
 <span class="order shadow_my d_blk @queueType @ifExpired @ifMoving @departed">
@@ -61,16 +60,11 @@
     </span>
 </span>
 
-
-
-
-
 @code {
     [Parameter]
     public WhsOrderIn Value { get; set; }
     string ifExpired;
     string queueType;
-    //string ifAtwork;
     string ifMoving;
     string departed;
     string responsible;
@@ -78,7 +72,7 @@
     string lastStatusDate;
     string nodisplay_timeleft;
     string nodisplay_timedep;
-    protected override void OnParametersSet()
+    protected override void OnInitialized()
     {
         if (Value.СрокВыполнения != DateTime.Parse("01.01.0001 0:00:00"))
         {
@@ -91,6 +85,7 @@
         ifMoving = "";
         if (Value.ЭтоПеремещение)
             ifMoving = "transfer";
+
         queueType = "noorder";
         if (Value.ТипОчереди == "Под клиента")
         { queueType = "liveq"; }
@@ -104,15 +99,14 @@
         nodisplay_timedep = "d-none";
         if (Value.Статус == "Принят")
         {
+            departed = "departed";
             nodisplay_timeleft = "d-none";
             nodisplay_timedep = "";
-            departed = "departed";
             ifExpired = "";
         }
 
-        responsible = "d_none";
         resp_value = "";
-
+        responsible = "d_none";
         if (Value.Data != null && Value.Data.Count > 0)
         {
             WhsOrderDataIn lastData = Value.Data.OrderByDescending(e => e.DateTime).FirstOrDefault();
@@ -121,12 +115,5 @@
             responsible = "";
         }
         responsible = "";
-
-        //if (Value.ApplicationUser != null)
-        //Живая очередь
-        //Собрать к дате
-        //Собственная доставка
-        //    ifAtwork = "bg-primary text-white";
-
     }
 }

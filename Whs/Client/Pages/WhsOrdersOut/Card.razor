@@ -60,14 +60,10 @@
     </span>
 </span>
 
-
-
 @code {
-    [Parameter]
-    public WhsOrderOut Value { get; set; }
+    [Parameter] public WhsOrderOut Value { get; set; }
     string ifExpired;
     string queueType;
-    //string ifAtwork;
     string ifMoving;
     string departed;
     string responsible;
@@ -75,7 +71,8 @@
     string lastStatusDate;
     string nodisplay_timeleft;
     string nodisplay_timedep;
-    protected override void OnParametersSet()
+
+    protected override void OnInitialized()
     {
         if (Value.СрокВыполнения != DateTime.Parse("01.01.0001 0:00:00"))
         {
@@ -87,7 +84,8 @@
 
         ifMoving = "";
         if (Value.ЭтоПеремещение)
-            ifMoving = "transfer";
+            ifMoving = "transfer";  
+
         queueType = "noorder";
         if (Value.ТипОчереди == "Живая очередь")
         { queueType = "liveq"; }
@@ -99,33 +97,22 @@
         departed = "";
         nodisplay_timeleft = "";
         nodisplay_timedep = "d-none";
-
-        //if (Value.Статус == "Отгружен") { departed = "departed"; ifExpired = ""; }
         if (Value.Статус == "К отгрузке" || Value.Статус == "Отгружен")
         {
+            departed = "departed";
             nodisplay_timeleft = "d-none";
             nodisplay_timedep = "";
-            departed = "departed";
             ifExpired = "";
         }
 
-        responsible = "d_none";
         resp_value = "";
+        responsible = "d_none";
         if (Value.Data.Count > 0)
         {
             WhsOrderDataOut lastData = Value.Data.OrderByDescending(e => e.DateTime).FirstOrDefault();
-            resp_value = lastData?.ApplicationUser?.Surname;
             lastStatusDate = lastData?.DateTimeString;
+            resp_value = lastData?.ApplicationUser?.Surname;
             responsible = "";
         }
-
-
-
-        //if (Value.ApplicationUser != null)
-        //Живая очередь
-        //Собрать к дате
-        //Собственная доставка
-        //    ifAtwork = "bg-primary text-white";
-
     }
 }
