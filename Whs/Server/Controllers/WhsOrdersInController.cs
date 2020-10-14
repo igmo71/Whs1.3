@@ -269,7 +269,7 @@ namespace Whs.Server.Controllers
             {
                 string content = JsonSerializer.Serialize(whsOrder);
                 StringContent stringContent = new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json);
-                HttpResponseMessage response = await _clientHttpService.PutAsync($"РасходныйОрдерНаТовары/{whsOrder.Документ_Id}", stringContent);
+                HttpResponseMessage response = await _clientHttpService.PutAsync($"ПриходныйОрдерНаТовары/{whsOrder.Документ_Id}", stringContent);
                 responseContent = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
                 {

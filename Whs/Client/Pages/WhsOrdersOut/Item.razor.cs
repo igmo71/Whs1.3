@@ -71,7 +71,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
                     await GetOrderDtoAsync();
                     await Notification.HideAsync($"{OrderDto.Item.Документ_Name} - {OrderDto.Item.Статус}", 1);
                     await ToBitrixErrors($"{OrderDto.Item.Документ_Name} - {OrderDto.Item.Статус}");
-                    if (OrderDto.Item.Статус == "Подготовлено")
+                    if (OrderDto.Item.Статус == "К отбору")
                     {
                         await PrintAsync();
                     }

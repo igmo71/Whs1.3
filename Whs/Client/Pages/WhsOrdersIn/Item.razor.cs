@@ -65,7 +65,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
                     await GetOrderDtoAsync();
                     await Notification.HideAsync($"{OrderDto.Item.Документ_Name} - {OrderDto.Item.Статус}", 1);
                     await ToBitrixErrors($"{OrderDto.Item.Документ_Name} - {OrderDto.Item.Статус}");
-                    if (OrderDto.Item.Статус == "Подготовлено")
+                    if (OrderDto.Item.Статус == "В работе")
                     {
                         await PrintAsync();
                     }
