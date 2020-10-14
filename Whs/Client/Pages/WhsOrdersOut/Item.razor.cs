@@ -11,21 +11,15 @@ namespace Whs.Client.Pages.WhsOrdersOut
 {
     public partial class Item
     {
-        [Parameter]
-        public string Id { get; set; }
-        [Parameter]
-        public string SearchStatus { get; set; }
-        [Inject]
-        HttpClient HttpClient { get; set; }
-        [Inject]
-        public IJSRuntime JSRuntime { get; set; }
-        [Inject]
-        public NavigationManager NavigationManager { get; set; }
+        [Parameter] public string Id { get; set; }
+        [Parameter] public string SearchStatus { get; set; }
+        [Inject] HttpClient HttpClient { get; set; }
+        [Inject] public IJSRuntime JSRuntime { get; set; }
+        [Inject] public NavigationManager NavigationManager { get; set; }
 
         private string Barcode;
         WhsOrderDtoOut OrderDto;
         public EditingCause[] EditingCauses { get; set; }
-
 
         protected override async Task OnInitializedAsync()
         {
@@ -43,7 +37,6 @@ namespace Whs.Client.Pages.WhsOrdersOut
             try
             {
                 DateTime beginTime = DateTime.Now;
-                //Console.WriteLine("GetOrderDtoAsync - begin");
                 OrderDto = await HttpClient.GetFromJsonAsync<WhsOrderDtoOut>($"api/WhsOrdersOut/Dto/{Id}", new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 StateHasChanged();
                 Console.WriteLine($"GetOrderDtoAsync - duration: {DateTime.Now - beginTime}");
@@ -62,7 +55,6 @@ namespace Whs.Client.Pages.WhsOrdersOut
             try
             {
                 DateTime beginTime = DateTime.Now;
-                //Console.WriteLine("ScannedBarcodeAsync - begin");
                 Notification.Show($"Запрос на изменение статуса...");
                 Barcode = args.Value.ToString();
                 HttpResponseMessage response = await HttpClient.PutAsJsonAsync<WhsOrderOut>($"api/WhsOrdersOut/{OrderDto.Item.Документ_Id}/{Barcode}", OrderDto.Item);

@@ -37,7 +37,6 @@ namespace Whs.Client.Pages.WhsOrdersIn
             try
             {
                 DateTime beginTime = DateTime.Now;
-                //Console.WriteLine("GetOrderDtoAsync - begin");
                 OrderDto = await HttpClient.GetFromJsonAsync<WhsOrderDtoIn>($"api/WhsOrdersIn/Dto/{Id}", new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 StateHasChanged();
                 Console.WriteLine($"GetOrderDtoAsync - duration: {DateTime.Now - beginTime}");
@@ -56,7 +55,6 @@ namespace Whs.Client.Pages.WhsOrdersIn
             try
             {
                 DateTime beginTime = DateTime.Now;
-                //Console.WriteLine("ScannedBarcodeAsync - begin");
                 Notification.Show($"Запрос изменения статуса...");
                 Barcode = args.Value.ToString();
                 HttpResponseMessage response = await HttpClient.PutAsJsonAsync<WhsOrderIn>($"api/WhsOrdersIn/{OrderDto.Item.Документ_Id}/{Barcode}", OrderDto.Item);
