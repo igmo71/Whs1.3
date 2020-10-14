@@ -52,15 +52,22 @@ namespace Whs.Server.Controllers
         {
             //_logger.LogInformation($"---> GetDtoByQueType: Begin");
             WhsOrdersDtoOut dto = new WhsOrdersDtoOut();
-
             IQueryable<WhsOrderOut> query = _context.WhsOrdersOut
                 .Where(e => e.Проведен)
                 .Include(e => e.Распоряжения)
                 .Include(e => e.Data)
-                    .ThenInclude(e => e.ApplicationUser)
-                .OrderByDescending(e => e.ВесовойКоэффициент)
+                    .ThenInclude(e => e.ApplicationUser);
+
+            if (parameters.SearchStatus != "К отгрузке" || parameters.SearchStatus != "Отгружен")
+            {
+                query = query.OrderByDescending(e => e.ВесовойКоэффициент)
                 .ThenBy(e => e.СрокВыполнения)
                 .AsNoTracking();
+            }
+            else{
+                query = query.OrderBy(e => e.Data.Where(e => e.Статус == "К отгрузке" || e.Статус == "Отгружен").OrderByDescending(d => d.DateTime).FirstOrDefault())
+                .AsNoTracking();
+            }
 
             IEnumerable<WhsOrderOut> items;
             if (parameters.SearchBarcode == null)
