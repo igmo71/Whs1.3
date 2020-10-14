@@ -46,7 +46,8 @@
         <span class="destin flt_left w_100">@Value.НаправлениеДоставки_Name</span>
         <span class="comment flt_left w_100">@Value.КомментарийString</span>
 
-        <span class="date d_blk">@Value.TimeUpString</span>
+        <span class="date d_blk @nodisplay_timeleft">@Value.TimeUpString</span><br>
+        <span class="date d_blk @nodisplay_timedep">@lastStatusDate</span>
         <div class="foot d_blk flt_left w_100">
             <span class="skus flt_left"><label class="val birbox">@Value.КоличествоСтрок</label></span>
             <span class="responsible @responsible">
@@ -71,6 +72,10 @@
     string departed;
     string responsible;
     string resp_value;
+    string lastStatusDate;
+    string nodisplay_timeleft;
+    string nodisplay_timedep;
+
     protected override void OnParametersSet()
     {
         if (Value.СрокВыполнения != DateTime.Parse("01.01.0001 0:00:00"))
@@ -93,7 +98,16 @@
         { queueType = "selfdelivery"; }
 
         departed = "";
-        if (Value.Статус == "Отгружен") { departed = "departed"; ifExpired = ""; }
+        nodisplay_timeleft = "";
+        nodisplay_timedep = "d-none";
+
+        //if (Value.Статус == "Отгружен") { departed = "departed"; ifExpired = ""; }
+        if (Value.Статус == "К отгрузке" || Value.Статус == "Отгружен") {
+            nodisplay_timeleft = "d-none";
+            nodisplay_timedep = "";
+            departed = "departed";
+            ifExpired = "";
+        }
 
         responsible = "d_none";
         resp_value = "";
@@ -101,6 +115,7 @@
         {
             resp_value = Value.Data.OrderByDescending(e => e.DateTime).FirstOrDefault()?.ApplicationUser?.Surname;
             responsible = "";
+            lastStatusDate = Value.Data.OrderByDescending(e => e.DateTime).FirstOrDefault()?.DateTimeString;
         }
 
 

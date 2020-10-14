@@ -56,18 +56,8 @@ namespace Whs.Server.Controllers
                 .Where(e => e.Проведен)
                 .Include(e => e.Распоряжения)
                 .Include(e => e.Data)
-                    .ThenInclude(e => e.ApplicationUser);
-
-            if (parameters.SearchStatus != "К отгрузке" || parameters.SearchStatus != "Отгружен")
-            {
-                query = query.OrderByDescending(e => e.ВесовойКоэффициент)
-                .ThenBy(e => e.СрокВыполнения)
+                    .ThenInclude(e => e.ApplicationUser)
                 .AsNoTracking();
-            }
-            else{
-                query = query.OrderBy(e => e.Data.Where(e => e.Статус == "К отгрузке" || e.Статус == "Отгружен").OrderByDescending(d => d.DateTime).FirstOrDefault())
-                .AsNoTracking();
-            }
 
             IEnumerable<WhsOrderOut> items;
             if (parameters.SearchBarcode == null)

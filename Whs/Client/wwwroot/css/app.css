@@ -488,7 +488,7 @@ html {
     bottom: 54px;
 }
 
-.departed .date {display:none!important;}
+.departed .date {}
 
 
 .shadow_my {

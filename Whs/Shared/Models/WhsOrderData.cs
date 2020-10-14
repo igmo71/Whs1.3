@@ -15,6 +15,9 @@ namespace Whs.Shared.Models
         public DateTime DateTime { get; set; }
         public string ApplicationUserId { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
+
+        [NotMapped]
+        public string DateTimeString => DateTime.ToString();
     }
 
     public class WhsOrderDataIn : WhsOrderData
