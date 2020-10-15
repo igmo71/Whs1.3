@@ -84,6 +84,20 @@ namespace Whs.Server.Controllers
             return dto;
         }
 
+        //GET: api/WhsOrdersOut/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<WhsOrderOut>> GetAsync(string id)
+        {
+            WhsOrderOut item = await _context.WhsOrdersOut
+                .Include(e => e.Товары)
+                .Include(e => e.Распоряжения)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Документ_Id == id);
+            if (item == null)
+                return NotFound();
+            return item;
+        }
+
         // GET: api/WhsOrdersOut/Dto/5
         [HttpGet("Dto/{id}")]
         public async Task<ActionResult<WhsOrderDtoOut>> GetDtoAsync(string id)
@@ -261,20 +275,6 @@ namespace Whs.Server.Controllers
         //        .Include(e => e.Распоряжения)
         //        .AsNoTracking()
         //        .ToListAsync();
-        //}
-
-        // GET: api/WhsOrdersOut/5
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<WhsOrderOut>> GetAsync(string id)
-        //{
-        //    WhsOrderOut item = await _context.WhsOrdersOut
-        //        .Include(e => e.Товары)
-        //        .Include(e => e.Распоряжения)
-        //        .AsNoTracking()
-        //        .FirstOrDefaultAsync(e => e.Документ_Id == id);
-        //    if (item == null)
-        //        return NotFound();
-        //    return item;
         //}
 
         // DELETE: api/WhsOrdersOut/5
