@@ -88,17 +88,6 @@ namespace Whs.Server.Controllers
             return items;
         }
 
-        // GET: api/WhsOrdersOut/ForShipment
-        [HttpGet("ForShipment/{warehouseId}")]
-        public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetForShipmentAsync(string warehouseId)
-        {
-            WhsOrderOut[] items = await _context.WhsOrdersOut
-                .Where(e => e.Проведен && e.Статус == WhsOrderStatus.Out.ToShipment && e.Склад_Id == warehouseId)
-                .OrderBy(e => e.Data.Where(e => e.Статус == WhsOrderStatus.Out.ToShipment).OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime)
-                .AsNoTracking().ToArrayAsync();
-            return items;
-        }
-
         private async Task<Destination[]> GetDestinationsAsync(WhsOrderParameters parameters)
         {
             Destination[] items = await _context.WhsOrdersOut.AsNoTracking()
@@ -204,8 +193,8 @@ namespace Whs.Server.Controllers
                 whsOrder = await PutTo1cAsync(whsOrder);
                 if (whsOrder == null)
                 {
-                    _logger.LogError($"---> PutAsync/{id}: Problem - 1C");
-                    return Problem(detail: "Problem - 1C");
+                    _logger.LogError($"---> PutAsync/{id}: Problem 1C");
+                    return Problem(detail: "Problem 1C");
                 }
             }
 
@@ -295,6 +284,67 @@ namespace Whs.Server.Controllers
         }
 
         private bool Exists(string id) => _context.WhsOrdersOut.Any(e => e.Документ_Id == id);
+
+        // GET: api/WhsOrdersOut/ForShipment
+        [HttpGet("Shipping/{warehouseId}")]
+        public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetShippingAsync(string warehouseId)
+        {
+            WhsOrderOut[] items = await _context.WhsOrdersOut
+                .Where(e => e.Проведен && e.Статус == WhsOrderStatus.Out.ToShipment && e.Склад_Id == warehouseId)
+                .OrderBy(e => e.Data.Where(e => e.Статус == WhsOrderStatus.Out.ToShipment).OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime)
+                .AsNoTracking().ToArrayAsync();
+            return items;
+        }
+
+        // PUT: api/WhsOrdersOut/Shipping/5
+        [HttpPut("Shipping/{barcode}")]
+        public async Task<IActionResult> PutShippingAsync(string barcode)
+        {
+            string id = GuidConvert.FromNumStr(barcode);
+            WhsOrderOut whsOrder = await _context.WhsOrdersOut
+                .Include(e => e.Товары)
+                .Include(e => e.Распоряжения)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Документ_Id == id);
+
+            if (whsOrder == null || !(whsOrder.Статус == WhsOrderStatus.Out.ToCollect || whsOrder.Статус == WhsOrderStatus.Out.ToShipment))
+            {
+                _logger.LogError($"---> PutShippingAsync/{id}: NotFound");
+                return NotFound();
+            }
+
+            whsOrder = await PutTo1cAsync(whsOrder);
+            if (whsOrder.Статус == WhsOrderStatus.Out.ToShipment)
+                whsOrder = await PutTo1cAsync(whsOrder);
+            if (whsOrder == null)
+            {
+                _logger.LogError($"---> PutShippingAsync/{id}: Problem 1C");
+                return Problem(detail: "Problem 1C");
+            }
+            _context.WhsOrdersOut.Update(whsOrder);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                if (!Exists(id))
+                {
+                    _logger.LogError($"---> PutShippingAsync/{id}: DbUpdateConcurrencyException NotFound {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogError($"---> PutShippingAsync/{id}: DbUpdateConcurrencyException {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    throw;
+                }
+            }
+
+            await CreateWhsOrderDataAsync(null, whsOrder);
+            _logger.LogInformation($"---> PutShippingAsync: Ok {whsOrder.Документ_Name}");
+            return Ok($"{whsOrder.НомерОчереди} \r\n {whsOrder.Документ_Name}");
+        }
 
         // GET: api/WhsOrdersOut/
         //[HttpGet]

@@ -1,20 +1,40 @@
-﻿@page "/ShippingWorkplace"
-<h3>ShippingWorkplace</h3>
+﻿@using Microsoft.AspNetCore.Authorization
+@using Whs.Client.Components
+@page "/ShippingWorkplace"
+@attribute [Authorize]
+@code
+{
+    private Notification Notification;
+    private SearchByNumber SearchByNumber;
+    private SearchByDestination SearchByDestination;
+}
 
-@if(Orders == null)
+<Notification @ref="Notification" />
+
+<input type="hidden" id="Barcode" value="@Barcode" @onchange="ScannedBarcodeAsync" />
+
+<h3>К Отгрузке</h3>
+
+@if (Orders == null)
 {
     <span>Загрузка...</span>
 }
 else
 {
-<table>
-    @foreach (var item in Orders)
-    {
-        <tr>
-            <td>
-                @item.Документ_Name
-            </td>
-        </tr>
-    }
-</table>
+    <table class="table table-striped table-hover">
+        @foreach (var item in Orders)
+        {
+            <tr>
+                <td>
+                    @item.НомерОчереди
+                </td>
+                <td>
+                    @item.ОтправительПолучатель_Name
+                </td>
+                <td>
+                    @item.Документ_Name
+                </td>
+            </tr>
+        }
+    </table>
 }
