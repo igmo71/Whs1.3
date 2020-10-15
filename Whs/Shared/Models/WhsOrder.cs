@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace Whs.Shared.Models
 {
@@ -91,6 +92,9 @@ namespace Whs.Shared.Models
         public List<ProductIn> Товары { get; set; }
         public List<WhsOrderDataIn> Data { get; set; }
         public List<ProductDataIn> ProductsData { get; set; }
+
+        [NotMapped]
+        public WhsOrderDataIn LastData => Data?.OrderByDescending(e => e.DateTime).FirstOrDefault();
     }
 
     public class WhsOrderOut : WhsOrder
@@ -104,5 +108,8 @@ namespace Whs.Shared.Models
         public string НаправлениеДоставки_Id { get; set; }
         public string НаправлениеДоставки_Name { get; set; }
         public bool Оплачено { get; set; }
+
+        [NotMapped]
+        public WhsOrderDataOut LastData => Data?.OrderByDescending(e => e.DateTime).FirstOrDefault();
     }
 }

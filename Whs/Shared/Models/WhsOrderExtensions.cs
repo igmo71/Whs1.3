@@ -12,20 +12,20 @@ namespace Whs.Shared.Models
                 switch (parameters.SearchStatus)
                 {
                     case "Подготовлено":
-                        query = query.Where(e => e.Статус == "Подготовлено")
-           .OrderByDescending(e => e.ВесовойКоэффициент).ThenBy(e => e.СрокВыполнения);
+                        query = query.Where(e => e.Статус == WhsOrderStatus.Out.Prepared)
+                            .OrderByDescending(e => e.ВесовойКоэффициент).ThenBy(e => e.СрокВыполнения);
                         break;
                     case "К отбору":
-                        query = query.Where(e => e.Статус == "К отбору")
-               .OrderByDescending(e => e.ВесовойКоэффициент).ThenBy(e => e.СрокВыполнения);
+                        query = query.Where(e => e.Статус == WhsOrderStatus.Out.ToCollect)
+                            .OrderByDescending(e => e.ВесовойКоэффициент).ThenBy(e => e.СрокВыполнения);
                         break;
                     case "К отгрузке":
-                        query = query.Where(e => e.Статус == "К отгрузке").Where(e => e.Data.Count > 0)
-             .OrderBy(e => e.Data.Where(e => e.Статус == "К отгрузке").OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime);
+                        query = query.Where(e => e.Статус == WhsOrderStatus.Out.ToShipment)
+                            .OrderBy(e => e.Data.Where(e => e.Статус == "К отгрузке").OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime);
                         break;
                     case "Отгружен":
-                        query = query.Where(e => e.Статус == "Отгружен").Where(e => e.Data.Count > 0)
-               .OrderBy(e => e.Data.Where(e => e.Статус == "Отгружен").OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime);
+                        query = query.Where(e => e.Статус == WhsOrderStatus.Out.Shipped)
+                            .OrderBy(e => e.Data.Where(e => e.Статус == "Отгружен").OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime);
                         break;
                     default:
                         break;
@@ -56,16 +56,17 @@ namespace Whs.Shared.Models
                 switch (parameters.SearchStatus)
                 {
                     case "К поступлению":
-                        query = query.Where(e => e.Статус == "К поступлению")
-          .OrderByDescending(e => e.ВесовойКоэффициент).ThenBy(e => e.СрокВыполнения);
+                        query = query.Where(e => e.Статус == WhsOrderStatus.In.ToReceive)
+                            .OrderByDescending(e => e.ВесовойКоэффициент).ThenBy(e => e.СрокВыполнения);
                         break;
                     case "В работе":
-                        query = query.Where(e => e.Статус == "В работе")
-               .OrderByDescending(e => e.ВесовойКоэффициент).ThenBy(e => e.СрокВыполнения);
+                        query = query.Where(e => e.Статус == WhsOrderStatus.In.AtWork)
+                            .OrderByDescending(e => e.ВесовойКоэффициент).ThenBy(e => e.СрокВыполнения);
                         break;
                     case "Принят":
-                        query = query.Where(e => e.Статус == "Принят").Where(e => e.Data.Count > 0)
-                 .OrderBy(e => e.Data.Where(e => e.Статус == "Принят").OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime); ; break;
+                        query = query.Where(e => e.Статус == WhsOrderStatus.In.Received)
+                            .OrderBy(e => e.Data.Where(e => e.Статус == "Принят").OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime); 
+                        break;
                     default:
                         break;
                 }

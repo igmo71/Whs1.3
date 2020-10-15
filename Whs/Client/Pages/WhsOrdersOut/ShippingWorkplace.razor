@@ -1,0 +1,20 @@
+﻿@page "/ShippingWorkplace"
+<h3>ShippingWorkplace</h3>
+
+@if(Orders == null)
+{
+    <span>Загрузка...</span>
+}
+else
+{
+<table>
+    @foreach (var item in Orders)
+    {
+        <tr>
+            <td>
+                @item.Документ_Name
+            </td>
+        </tr>
+    }
+</table>
+}

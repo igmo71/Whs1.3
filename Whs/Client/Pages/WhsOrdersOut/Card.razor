@@ -38,7 +38,7 @@
 </div>
     -->
 <span class="order shadow_my d_blk @queueType @ifExpired @ifMoving @departed">
-    <span class="leftpart d_blk flt_left">
+    <span class="leftpart d_blk flt_left" title="@Value.Документ_Name">
         <span>@Value.НомерОчереди</span>
     </span>
     <span class="rightpart d_blk flt_right">
@@ -108,9 +108,8 @@
         responsible = "d_none";
         if (Value.Data.Count > 0)
         {
-            WhsOrderDataOut lastData = Value.Data.OrderByDescending(e => e.DateTime).FirstOrDefault();
-            lastStatusDate = lastData?.DateTimeString;
-            resp_value = lastData?.ApplicationUser?.Surname;
+            lastStatusDate = Value.LastData?.DateTimeString;
+            resp_value = Value.LastData?.ApplicationUser?.Surname;
             responsible = "";
         }
     }
