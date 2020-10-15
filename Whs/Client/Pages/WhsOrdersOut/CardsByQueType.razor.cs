@@ -30,7 +30,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
         private WhsOrderParameters OrderParameters;
         private string SearchParameters;
         private Warehouse[] Warehouses;
-        private Destination[] Destinations;
+        //private Destination[] Destinations;
         private Dictionary<string, string> SearchStatusButtons;
         private string warehouseId;
 
@@ -84,24 +84,24 @@ namespace Whs.Client.Pages.WhsOrdersOut
             }
         }
 
-        private async Task GetDestinationsAsync()
-        {
-            try
-            {
-                Destinations = await HttpClient.GetFromJsonAsync<Destination[]>($"api/Destinations/{OrderParameters.SearchStatus}");
-            }
-            catch (Exception ex)
-            {
-                await Notification.ShowAsync($"Ошибка загрузки списка направлений.", 1);
-                Console.WriteLine($"GetDestinationsAsync - {ex.Message}");
-                Console.WriteLine($"{ex.StackTrace}");
-                await ToBitrixErrors($"Ошибка загрузки списка направлений - {ex.Message}");
-            }
-        }
+        //private async Task GetDestinationsAsync()
+        //{
+        //    try
+        //    {
+        //        Destinations = await HttpClient.GetFromJsonAsync<Destination[]>($"api/Destinations/{OrderParameters.SearchStatus}");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await Notification.ShowAsync($"Ошибка загрузки списка направлений.", 1);
+        //        Console.WriteLine($"GetDestinationsAsync - {ex.Message}");
+        //        Console.WriteLine($"{ex.StackTrace}");
+        //        await ToBitrixErrors($"Ошибка загрузки списка направлений - {ex.Message}");
+        //    }
+        //}
 
         private async Task GetOrdersDtoAsync()
         {
-            await GetDestinationsAsync();
+            //await GetDestinationsAsync();
             try
             {
                 DateTime beginTime = DateTime.Now;

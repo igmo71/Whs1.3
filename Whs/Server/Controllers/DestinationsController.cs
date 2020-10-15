@@ -26,7 +26,7 @@ namespace Whs.Server.Controllers
         public async Task<ActionResult<IEnumerable<Destination>>> GetDestination(string searchStatus)
         {
             Destination[] items = await _context.WhsOrdersOut.AsNoTracking()
-                .Where(e => e.Статус == searchStatus)
+                .Where(e => e.Статус == searchStatus && e.Проведен == true)
                 .Select(e => new Destination { Id = e.НаправлениеДоставки_Id, Name = e.НаправлениеДоставки_Name })
                 .Distinct().ToArrayAsync();
             if (items.Count() > 0)

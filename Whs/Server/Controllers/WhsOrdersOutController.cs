@@ -48,7 +48,7 @@ namespace Whs.Server.Controllers
 
         // GET: api/WhsOrdersOut/DtoByQueType
         [HttpGet("DtoByQueType")]
-        public ActionResult<WhsOrdersDtoOut> GetDtoByQueType([FromQuery] WhsOrderParameters parameters)
+        public async Task<ActionResult<WhsOrdersDtoOut>> GetDtoByQueTypeAsync([FromQuery] WhsOrderParameters parameters)
         {
             WhsOrdersDtoOut dto = new WhsOrdersDtoOut();
             IQueryable<WhsOrderOut> query = _context.WhsOrdersOut
@@ -75,13 +75,31 @@ namespace Whs.Server.Controllers
                     items = query.Where(e => e.Распоряжения.Any(o => o.Распоряжение_Id == id)).AsEnumerable();
                     dto.MngrOrderName = items.FirstOrDefault()?.Распоряжения.FirstOrDefault(e => e.Распоряжение_Id == id).Распоряжение_Name;
                 }
+                dto.TotalCount = query.Count().ToString();
+                dto.TotalWeight = query.Sum(e => e.Вес).ToString();
                 if (items.Count() == 1)
                     dto.SingleId = items.FirstOrDefault()?.Документ_Id;
             }
             dto.Items = items
                 .GroupBy(e => e.ТипОчереди)
                 .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? "Очередность не указана" : e.Key, e => e.ToArray());
+            dto.Destinations = await GetDestinationsAsync(parameters);
             return dto;
+        }
+
+        private async Task<Destination[]> GetDestinationsAsync(WhsOrderParameters parameters)
+        {
+            Destination[] items = await _context.WhsOrdersOut.AsNoTracking()
+                .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus)
+                .Select(e => new Destination { Id = e.НаправлениеДоставки_Id, Name = e.НаправлениеДоставки_Name })
+                .Distinct().OrderBy(e => e.Name).ToArrayAsync();
+            if (items.Count() > 0)
+                items.FirstOrDefault(e => e.Id == Guid.Empty.ToString()).Name = "- Без направления -";
+            Destination[] item = { new Destination { Id = "0", Name = "- Все направления -" } };
+            Destination[] result = new Destination[items.Length + 1];
+            Array.Copy(item, result, 1);
+            Array.Copy(items, 0, result, 1, items.Length);
+            return result;
         }
 
         //GET: api/WhsOrdersOut/5

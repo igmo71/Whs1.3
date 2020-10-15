@@ -34,9 +34,9 @@
         <SearchByNumber @ref="SearchByNumber" OnSearchChanged="SearchByNumberAsync" />
     </div>
     <div class="col">
-        @if (Destinations != null)
+        @if (OrdersDto != null && OrdersDto.Destinations != null)
         {
-            <SearchByDestination @ref="SearchByDestination" Destinations="Destinations" OnSelect="SearchByDestinationsAsync" />
+            <SearchByDestination @ref="SearchByDestination" Destinations="OrdersDto.Destinations" OnSelect="SearchByDestinationsAsync" />
         }
     </div>
     @if (OrdersDto != null)
