@@ -78,13 +78,13 @@ namespace Whs.Client.Pages.WhsOrdersIn
             catch (Exception ex)
             {
                 await Notification.ShowAsync($"Ошибка загрузки cписка складов.", 1);
-                Console.WriteLine($"GetDestinationsAsync - {ex.Message}");
+                Console.WriteLine($"GetWarehousesAsync - {ex.Message}");
                 Console.WriteLine($"{ex.StackTrace}");
                 await ToBitrixErrors($"Ошибка загрузки cписка складов - {ex.Message}");
             }
         }
 
-        private async Task GetOrdersDtoAsync()
+        private async Task GetOrdersDtoAsync()  
         {
             try
             {
@@ -126,25 +126,24 @@ namespace Whs.Client.Pages.WhsOrdersIn
             await GetOrdersDtoAsync();
         }
 
-        private async Task SearchByStatus(string searchStatus)
-        {
-            OrderParameters.SearchBarcode = null;
-            OrderParameters.SearchStatus = searchStatus;
-            await GetOrdersDtoAsync();
-
-            foreach (var key in SearchStatusButtons.Keys.ToArray())
-            {
-                SearchStatusButtons[key] = string.Empty;
-            }
-            SearchStatusButtons[searchStatus] = "active";
-        }
-
         private async Task SearchClearAsync(bool isGetOrders = false)
         {
             SearchByNumber.SearchTerm = string.Empty;
             OrderParameters.SearchTerm = null;
             if (isGetOrders)
                 await GetOrdersDtoAsync();
+        }
+
+        private async Task SearchByStatus(string searchStatus)
+        {
+            await SearchClearAsync();
+            OrderParameters.SearchBarcode = null;
+            OrderParameters.SearchStatus = searchStatus;
+            await GetOrdersDtoAsync();
+
+            foreach (var key in SearchStatusButtons.Keys.ToArray())
+                SearchStatusButtons[key] = string.Empty;
+            SearchStatusButtons[searchStatus] = "active";
         }
 
         private async Task ScannedBarcodeAsync(ChangeEventArgs args)
