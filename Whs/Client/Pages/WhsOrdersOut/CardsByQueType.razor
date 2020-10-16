@@ -63,25 +63,25 @@ else
         <li class="nav-item">
             <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.Prepared]"
                     @onclick="@(() => SearchByStatus(WhsOrderStatus.Out.Prepared))">
-                WhsOrderStatus.Out.Prepared
+                @WhsOrderStatus.Out.Prepared
             </button>
         </li>
         <li class="nav-item">
             <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.ToCollect]"
                     @onclick="@(() => SearchByStatus(WhsOrderStatus.Out.ToCollect))">
-                WhsOrderStatus.Out.ToCollect
+                @WhsOrderStatus.Out.ToCollect
             </button>
         </li>
         <li class="nav-item">
             <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.ToShipment]"
                     @onclick="@(() => SearchByStatus(WhsOrderStatus.Out.ToShipment))">
-                WhsOrderStatus.Out.ToShipment
+                @WhsOrderStatus.Out.ToShipment
             </button>
         </li>
         <li class="nav-item">
             <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.Shipped]"
                     @onclick="@(() => SearchByStatus(WhsOrderStatus.Out.Shipped))">
-                WhsOrderStatus.Out.Shipped
+                @WhsOrderStatus.Out.Shipped
             </button>
         </li>
     </ul>

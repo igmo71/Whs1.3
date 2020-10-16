@@ -45,7 +45,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
             Console.WriteLine($"OnInitializedAsync - duration: {DateTime.Now - beginTime}");
         }
 
-        private void CreateSearchStatusButtons(string initStatus = WhsOrderStatus.Out.Prepared)
+        private void CreateSearchStatusButtons()
         {
             SearchStatusButtons = new Dictionary<string, string>
                 {
@@ -54,11 +54,8 @@ namespace Whs.Client.Pages.WhsOrdersOut
                 { WhsOrderStatus.Out.ToShipment, ""},
                 { WhsOrderStatus.Out.Shipped, ""}
             };
-            OrderParameters.SearchStatus = string.IsNullOrEmpty(SearchStatus) ? initStatus : SearchStatus;
-            if (string.IsNullOrEmpty(SearchStatus))
-                SearchStatusButtons[initStatus] = "active";
-            else
-                SearchStatusButtons[SearchStatus] = "active";
+            OrderParameters.SearchStatus = string.IsNullOrEmpty(SearchStatus) ? WhsOrderStatus.Out.Prepared : SearchStatus;
+            SearchStatusButtons[OrderParameters.SearchStatus] = "active";
         }
 
         private async Task GetWarehouseIdAsync()
@@ -150,6 +147,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private async Task SearchByStatus(string searchStatus)
         {
+            await SearchClearAsync();
             OrderParameters.SearchBarcode = null;
             OrderParameters.SearchStatus = searchStatus;
             await GetOrdersDtoAsync();

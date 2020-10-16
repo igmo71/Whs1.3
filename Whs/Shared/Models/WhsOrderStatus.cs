@@ -13,7 +13,7 @@
             public static string Prepared = "Подготовлено";
             public static string ToCollect = "К отбору";
             public static string ToShipment = "К отгрузке";
-            public static string Shipped = "К отгрузке";
+            public static string Shipped = "Отгружен";
         }
     }
 }

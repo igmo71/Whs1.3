@@ -94,8 +94,10 @@ namespace Whs.Server.Controllers
                 .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus)
                 .Select(e => new Destination { Id = e.НаправлениеДоставки_Id, Name = e.НаправлениеДоставки_Name })
                 .Distinct().OrderBy(e => e.Name).ToArrayAsync();
-            if (items.Count() > 0)
-                items.FirstOrDefault(e => e.Id == Guid.Empty.ToString()).Name = "- Без направления -";
+
+            Destination noDestination = items.FirstOrDefault(e => e.Id == Guid.Empty.ToString());
+            if (noDestination != null)
+                noDestination.Name = "- Без направления -";
             Destination[] item = { new Destination { Id = "0", Name = "- Все направления -" } };
             Destination[] result = new Destination[items.Length + 1];
             Array.Copy(item, result, 1);
@@ -269,7 +271,7 @@ namespace Whs.Server.Controllers
                     _logger.LogInformation($"---> PutTo1cAsync: Ok {whsOrder.Документ_Name}");
                     return JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
                 }
-                else if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
                     _logger.LogError($"---> PutTo1cAsync: Документ не найден {whsOrder.Документ_Name} {Environment.NewLine}" +
                         $"Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
@@ -300,7 +302,7 @@ namespace Whs.Server.Controllers
         public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetShipmentAsync(string warehouseId)
         {
             WhsOrderOut[] items = await _context.WhsOrdersOut
-                .Where(e => e.Проведен && e.Статус == WhsOrderStatus.Out.ToShipment && e.Склад_Id == warehouseId)
+                .Where(e => e.Проведен && e.Статус == WhsOrderStatus.Out.ToShipment && e.Склад_Id == warehouseId && !e.ЭтоПеремещение)
                 .OrderBy(e => e.Data.Where(e => e.Статус == WhsOrderStatus.Out.ToShipment).OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime)
                 .AsNoTracking().ToArrayAsync();
             return items;
