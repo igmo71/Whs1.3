@@ -83,7 +83,7 @@ else
     {
         @if (OrdersDto?.MngrOrderName != null)
         {
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
                 <strong>@OrdersDto.MngrOrderName</strong>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close" @onclick="SearchByBarcodeClearAsync">
                     <span aria-hidden="true">&times;</span>
@@ -97,7 +97,6 @@ else
                     <div class="col"><span class="oi oi-layers"></span>&nbsp;<span>@QueType.In.ForCustomer</span></div>
                 </div>
                 <div class="order-items">
-
                     @if (OrdersDto.Items.ContainsKey(QueType.In.ForCustomer))
                     {
                         @foreach (var value in OrdersDto.Items[QueType.In.ForCustomer])
@@ -116,7 +115,6 @@ else
                     <div class="col"><span class="oi oi-calendar"></span>&nbsp;<span>@QueType.In.QuicklyForSale</span></div>
                 </div>
                 <div class="order-items">
-
                     @if (OrdersDto.Items.ContainsKey(QueType.In.QuicklyForSale))
                     {
                         @foreach (var value in OrdersDto.Items[QueType.In.QuicklyForSale])
@@ -135,7 +133,6 @@ else
                     <div class="col"><span class="oi oi-globe"></span>&nbsp;<span>@QueType.In.Expired</span></div>
                 </div>
                 <div class="order-items">
-
                     @if (OrdersDto.Items.ContainsKey(QueType.In.Expired))
                     {
                         @foreach (var value in OrdersDto.Items[QueType.In.Expired])
@@ -154,7 +151,6 @@ else
                     <div class="col"><span class="oi oi-aperture"></span>&nbsp;<span>QueType.In.NoQue</span></div>
                 </div>
                 <div class="order-items">
-
                     @if (OrdersDto.Items.ContainsKey(QueType.In.NoQue))
                     {
                         @foreach (var value in OrdersDto.Items[QueType.In.NoQue])
