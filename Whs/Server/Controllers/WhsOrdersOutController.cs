@@ -34,6 +34,19 @@ namespace Whs.Server.Controllers
             _logger = logger;
         }
 
+        // GET: api/WhsOrdersOut/PrintList
+        [HttpGet("PrintList")]
+        public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetPrintListAsync([FromQuery] WhsOrderParameters parameters)
+        {
+            WhsOrderOut[] items = await _context.WhsOrdersOut                
+                .Where(e => e.Проведен)
+                .Search(parameters)
+                .OrderBy(e => e.Номер)
+                .AsNoTracking()
+                .ToArrayAsync();
+            return items;
+        }
+
         // GET: api/WhsOrdersOut/DtoByQueType
         [HttpGet("DtoByQueType")]
         public async Task<ActionResult<WhsOrdersDtoOut>> GetDtoByQueTypeAsync([FromQuery] WhsOrderParameters parameters)
@@ -73,19 +86,6 @@ namespace Whs.Server.Controllers
                 .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? QueType.Out.NoQue : e.Key, e => e.ToArray());
             dto.Destinations = await GetDestinationsAsync(parameters);
             return dto;
-        }
-
-        // GET: api/WhsOrdersOut/PrintList
-        [HttpGet("PrintList")]
-        public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetPrintListAsync([FromQuery] WhsOrderParameters parameters)
-        {
-            WhsOrderOut[] items = await _context.WhsOrdersOut
-                .Search(parameters)
-                .Where(e => e.Проведен)
-                .OrderBy(e => e.Номер)
-                .AsNoTracking()
-                .ToArrayAsync();
-            return items;
         }
 
         private async Task<Destination[]> GetDestinationsAsync(WhsOrderParameters parameters)

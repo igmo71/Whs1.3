@@ -36,13 +36,14 @@ namespace Whs.Server.Controllers
 
         // GET: api/WhsOrdersIn/PrintList
         [HttpGet("PrintList")]
-        public async Task<ActionResult<IEnumerable<WhsOrderIn>>> GetPrintListAsync([FromQuery] WhsOrderParameters parameters)
+        public async Task<ActionResult<IEnumerable<WhsOrderIn>>> GetPrintListAsync([FromQuery] WhsOrderParameters parameters)   
         {
             WhsOrderIn[] items = await _context.WhsOrdersIn
                 .Where(e => e.Проведен)
                 .Search(parameters)
-                .OrderByDescending(e => e.Номер)
-                .AsNoTracking().ToArrayAsync();
+                .OrderBy(e => e.Номер)
+                .AsNoTracking()
+                .ToArrayAsync();
             return items;
         }
 
@@ -51,7 +52,6 @@ namespace Whs.Server.Controllers
         public ActionResult<WhsOrdersDtoIn> GetDtoByQueType([FromQuery] WhsOrderParameters parameters)
         {
             WhsOrdersDtoIn dto = new WhsOrdersDtoIn();
-
             IQueryable<WhsOrderIn> query = _context.WhsOrdersIn
                 .Where(e => e.Проведен)
                 .Include(e => e.Распоряжения)
@@ -76,6 +76,8 @@ namespace Whs.Server.Controllers
                     items = query.Where(e => e.Распоряжения.Any(o => o.Распоряжение_Id == id)).AsEnumerable();
                     dto.MngrOrderName = items.FirstOrDefault()?.Распоряжения.FirstOrDefault(e => e.Распоряжение_Id == id).Распоряжение_Name;
                 }
+                dto.TotalCount = query.Count().ToString();
+                dto.TotalWeight = query.Sum(e => e.Вес).ToString();
                 if (items.Count() == 1)
                     dto.SingleId = items.FirstOrDefault()?.Документ_Id;
             }
@@ -175,8 +177,8 @@ namespace Whs.Server.Controllers
                 whsOrder = await PutTo1cAsync(whsOrder);
                 if (whsOrder == null)
                 {
-                    _logger.LogError($"---> PutAsync/{id}: Problem - 1C");
-                    return Problem(detail: "Problem - 1C");
+                    _logger.LogError($"---> PutAsync/{id}: Problem 1C");
+                    return Problem(detail: "Problem 1C");
                 }
             }
 
