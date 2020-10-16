@@ -2,10 +2,6 @@
 @using Whs.Shared.Models
 @page "/WhsOrdersIn/Item/{Id}"
 @page "/WhsOrdersIn/Item/{Id}/{SearchStatus}"
-@code
-{
-    private Notification Notification;
-}
 
 <Notification @ref="Notification" />
 
@@ -40,7 +36,7 @@ else
         </div>
     </div>
 
-    <table class="table table-borderless table-sm">
+    <table class="table table-sm table-borderless">
         <tr>
             <th>Отправитель: </th>
             <td class="h5">@OrderDto.Item?.ОтправительПолучатель_Name</td>
@@ -122,4 +118,9 @@ else
             }
         </tbody>
     </table>
+}
+
+@code
+{
+    private Notification Notification;
 }

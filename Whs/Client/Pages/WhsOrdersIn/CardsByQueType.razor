@@ -4,11 +4,6 @@
 @page "/WhsOrdersIn/CardsByQueType"
 @page "/WhsOrdersIn/CardsByQueType/{SearchStatus}"
 @attribute [Authorize]
-@code
-{
-    private Notification Notification;
-    private SearchByNumber SearchByNumber;
-}
 
 <Notification @ref="Notification" />
 
@@ -175,4 +170,10 @@ else
             </div>
         </div>
     }
+}
+
+@code
+{
+    private Notification Notification;
+    private SearchByNumber SearchByNumber;
 }

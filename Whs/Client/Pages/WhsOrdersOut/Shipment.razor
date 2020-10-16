@@ -2,10 +2,6 @@
 @using Whs.Client.Components
 @page "/WhsOrdersOut/Shipment"
 @attribute [Authorize]
-@code
-{
-    private Notification Notification;
-}
 
 <Notification @ref="Notification" />
 
@@ -19,10 +15,16 @@
     <p><em>Загрузка...</em></p>
 }
 else
-{<div class="card-deck">
+{
+    <div class="card-deck">
         @foreach (var item in Orders)
         {
             <Card Value="item" />
         }
     </div>
+}
+
+@code
+{
+    private Notification Notification;
 }
