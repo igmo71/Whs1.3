@@ -11,21 +11,21 @@ namespace Whs.Shared.Models
             {
                 switch (parameters.SearchStatus)
                 {
-                    case "Подготовлено":
+                    case WhsOrderStatus.Out.Prepared:
                         query = query.Where(e => e.Статус == WhsOrderStatus.Out.Prepared)
                             .OrderByDescending(e => e.ВесовойКоэффициент).ThenBy(e => e.СрокВыполнения);
                         break;
-                    case "К отбору":
+                    case WhsOrderStatus.Out.ToCollect:
                         query = query.Where(e => e.Статус == WhsOrderStatus.Out.ToCollect)
                             .OrderByDescending(e => e.ВесовойКоэффициент).ThenBy(e => e.СрокВыполнения);
                         break;
-                    case "К отгрузке":
+                    case WhsOrderStatus.Out.ToShipment:
                         query = query.Where(e => e.Статус == WhsOrderStatus.Out.ToShipment)
-                            .OrderBy(e => e.Data.Where(e => e.Статус == "К отгрузке").OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime);
+                            .OrderBy(e => e.Data.Where(e => e.Статус == WhsOrderStatus.Out.ToShipment).OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime);
                         break;
-                    case "Отгружен":
+                    case WhsOrderStatus.Out.Shipped:
                         query = query.Where(e => e.Статус == WhsOrderStatus.Out.Shipped)
-                            .OrderBy(e => e.Data.Where(e => e.Статус == "Отгружен").OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime);
+                            .OrderBy(e => e.Data.Where(d => d.Статус == WhsOrderStatus.Out.Shipped).OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime);
                         break;
                     default:
                         break;
@@ -55,17 +55,17 @@ namespace Whs.Shared.Models
             {
                 switch (parameters.SearchStatus)
                 {
-                    case "К поступлению":
+                    case WhsOrderStatus.In.ToReceive:
                         query = query.Where(e => e.Статус == WhsOrderStatus.In.ToReceive)
                             .OrderByDescending(e => e.ВесовойКоэффициент).ThenBy(e => e.СрокВыполнения);
                         break;
-                    case "В работе":
+                    case WhsOrderStatus.In.AtWork:
                         query = query.Where(e => e.Статус == WhsOrderStatus.In.AtWork)
                             .OrderByDescending(e => e.ВесовойКоэффициент).ThenBy(e => e.СрокВыполнения);
                         break;
-                    case "Принят":
+                    case WhsOrderStatus.In.Received:
                         query = query.Where(e => e.Статус == WhsOrderStatus.In.Received)
-                            .OrderBy(e => e.Data.Where(e => e.Статус == "Принят").OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime); 
+                            .OrderBy(e => e.Data.Where(e => e.Статус == WhsOrderStatus.In.Received).OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime);
                         break;
                     default:
                         break;

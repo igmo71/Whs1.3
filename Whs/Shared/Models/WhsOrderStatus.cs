@@ -4,16 +4,16 @@
     {
         public static class In
         {
-            public static string ToReceive = "К поступлению";
-            public static string AtWork = "В работе";
-            public static string Received = "Принят";
+            public const string ToReceive = "К поступлению";
+            public const string AtWork = "В работе";
+            public const string Received = "Принят";
         }
         public static class Out
         {
-            public static string Prepared = "Подготовлено";
-            public static string ToCollect = "К отбору";
-            public static string ToShipment = "К отгрузке";
-            public static string Shipped = "Отгружен";
+            public const string Prepared = "Подготовлено";
+            public const string ToCollect = "К отбору";
+            public const string ToShipment = "К отгрузке";
+            public const string Shipped = "Отгружен";
         }
     }
 }

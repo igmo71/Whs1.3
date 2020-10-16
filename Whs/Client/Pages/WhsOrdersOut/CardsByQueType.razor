@@ -46,7 +46,7 @@
         <div class="col h4">Вес: @OrdersDto.TotalWeight</div>
     }
     <div class="col mb-2 d-print-none text-right">
-        @if (OrderParameters.SearchStatus != "Отгружен")
+        @if (OrderParameters.SearchStatus != WhsOrderStatus.Out.Shipped)
         {
             <button class="btn btn-info" @onclick="Print"><span class="oi oi-print"></span> Печать </button>
         }

@@ -1,4 +1,5 @@
 ﻿@using Whs.Client.Components
+@using Whs.Shared.Models
 @page "/WhsOrdersOut/Item/{Id}"
 @page "/WhsOrdersOut/Item/{Id}/{SearchStatus}"
 @code
@@ -93,7 +94,7 @@ else
                 <th class="align-middle text-center">Артикул</th>
                 <th class="align-middle text-center">Товар</th>
                 <th class="align-middle text-center">Кол</th>
-                @if (OrderDto.Item?.Статус == "К отбору")
+                @if (OrderDto.Item?.Статус == WhsOrderStatus.Out.ToCollect)
                 {
                     <th class="align-middle text-center d-print-none">Причина изменения</th>
                     <th class="align-middle text-center">Кол факт</th>
@@ -111,7 +112,7 @@ else
                     <td class="align-middle">@item.Номенклатура_Name</td>
                     <td class="align-middle">@item.КоличествоПлан</td>
 
-                    @if (OrderDto.Item?.Статус == "К отбору")
+                    @if (OrderDto.Item?.Статус == WhsOrderStatus.Out.ToCollect)
                     {
                         <td class="d-print-none">
                             <select class="form-control" @bind="item.EditingCauseId">

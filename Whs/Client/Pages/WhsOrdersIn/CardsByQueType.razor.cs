@@ -45,15 +45,16 @@ namespace Whs.Client.Pages.WhsOrdersIn
             Console.WriteLine($"OnInitializedAsync - duration: {DateTime.Now - beginTime}");
         }
 
-        private void CreateSearchStatusButtons(string initStatus = "К поступлению")
+        private void CreateSearchStatusButtons()
         {
             SearchStatusButtons = new Dictionary<string, string>
-                { { "К поступлению", "" }, { "В работе", ""}, { "Принят", ""} };
-            OrderParameters.SearchStatus = string.IsNullOrEmpty(SearchStatus) ? initStatus : SearchStatus;
-            if (string.IsNullOrEmpty(SearchStatus))
-                SearchStatusButtons[initStatus] = "active";
-            else
-                SearchStatusButtons[SearchStatus] = "active";
+            {
+                { WhsOrderStatus.In.ToReceive, "" },
+                { WhsOrderStatus.In.AtWork, ""},
+                { WhsOrderStatus.In.Received, ""}
+            };
+            OrderParameters.SearchStatus = string.IsNullOrEmpty(SearchStatus) ? WhsOrderStatus.In.ToReceive : SearchStatus;
+            SearchStatusButtons[OrderParameters.SearchStatus] = "active";
         }
 
         private async Task GetWarehouseIdAsync()
@@ -88,7 +89,6 @@ namespace Whs.Client.Pages.WhsOrdersIn
             try
             {
                 DateTime beginTime = DateTime.Now;
-                //Console.WriteLine("GetOrdersDtoAsync - begin");
                 SearchParameters =
                     $"SearchBarcode={OrderParameters.SearchBarcode}&" +
                     $"SearchStatus={OrderParameters.SearchStatus}&" +
@@ -183,7 +183,6 @@ namespace Whs.Client.Pages.WhsOrdersIn
             Timer = new Timer(interval * 1000);
             Timer.Elapsed += async delegate
             {
-                //Console.WriteLine($"Timer.Elapsed at: {DateTime.Now}");
                 await GetOrdersDtoAsync();
             };
             Timer.AutoReset = autoReset;

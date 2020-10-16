@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -14,6 +15,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
     {
         [Inject] HttpClient HttpClient { get; set; }
         [Inject] public AuthenticationStateProvider AuthStateProvider { get; set; }
+        [Inject] public IConfiguration Configuration { get; set; }
 
         private Timer Timer;
         private string Barcode;
@@ -23,7 +25,8 @@ namespace Whs.Client.Pages.WhsOrdersOut
         protected override async Task OnInitializedAsync()
         {
             await GetWarehouseIdAsync();
-            await GetOrdersAsync();
+            await GetOrdersAsync(); 
+            SetTimer(double.Parse(Configuration["TimerInterval"]), true);
         }
 
         private async Task GetWarehouseIdAsync()
@@ -65,6 +68,17 @@ namespace Whs.Client.Pages.WhsOrdersOut
                 Console.WriteLine($"ScannedBarcodeAsync - Exception: {ex.Message}");
                 Console.WriteLine($"{ex.StackTrace}");
             }
+        }
+
+        public void SetTimer(double interval, bool autoReset)
+        {
+            Timer = new Timer(interval * 1000);
+            Timer.Elapsed += async delegate
+            {
+                await GetOrdersAsync();
+            };
+            Timer.AutoReset = autoReset;
+            Timer.Enabled = true;
         }
     }
 }

@@ -70,7 +70,7 @@ namespace Whs.Server.Controllers
             }
             dto.Items = items
                 .GroupBy(e => e.ТипОчереди)
-                .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? "Очередность не указана" : e.Key, e => e.ToArray());
+                .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? QueType.Out.NoQue : e.Key, e => e.ToArray());
             dto.Destinations = await GetDestinationsAsync(parameters);
             return dto;
         }
@@ -94,7 +94,6 @@ namespace Whs.Server.Controllers
                 .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus)
                 .Select(e => new Destination { Id = e.НаправлениеДоставки_Id, Name = e.НаправлениеДоставки_Name })
                 .Distinct().OrderBy(e => e.Name).ToArrayAsync();
-
             Destination noDestination = items.FirstOrDefault(e => e.Id == Guid.Empty.ToString());
             if (noDestination != null)
                 noDestination.Name = "- Без направления -";
@@ -289,7 +288,7 @@ namespace Whs.Server.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"---> PutTo1cAsync: {whsOrder.Документ_Name}{Environment.NewLine}{exception.Message}{Environment.NewLine}{responseContent} ");
+                _logger.LogError($"---> PutTo1cAsync: {whsOrder.Документ_Name}{Environment.NewLine}{exception.Message}{Environment.NewLine}{exception.StackTrace} ");
             }
             _logger.LogWarning($"---> PutTo1cAsync: NULL {whsOrder.Документ_Name}");
             return null;

@@ -81,7 +81,7 @@ namespace Whs.Server.Controllers
             }
             dto.Items = items
                 .GroupBy(e => e.ТипОчереди)
-                .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? "Очередность не указана" : e.Key, e => e.ToArray());
+                .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? QueType.In.NoQue : e.Key, e => e.ToArray());
             return dto;
         }
 
@@ -269,7 +269,7 @@ namespace Whs.Server.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"---> PutTo1cAsync: {whsOrder.Документ_Name}{Environment.NewLine}{exception.Message}{Environment.NewLine}{responseContent} ");
+                _logger.LogError($"---> PutTo1cAsync: {whsOrder.Документ_Name}{Environment.NewLine}{exception.Message}{Environment.NewLine}{exception.StackTrace} ");
             }
             _logger.LogWarning($"---> PutTo1cAsync: NULL {whsOrder.Документ_Name}");
             return null;

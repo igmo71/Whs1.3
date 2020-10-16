@@ -84,17 +84,17 @@
             ifMoving = "transfer";
 
         queueType = "noorder";
-        if (Value.ТипОчереди == "Под клиента")
+        if (Value.ТипОчереди == QueType.In.ForCustomer)
         { queueType = "liveq"; }
-        if (Value.ТипОчереди == "Срочно в продажу")
+        if (Value.ТипОчереди == QueType.In.QuicklyForSale)
         { queueType = "emergency"; }
-        if (Value.ТипОчереди == "Просрочено")
+        if (Value.ТипОчереди == QueType.In.Expired)
         { queueType = "toolate"; }
 
         departed = "";
         nodisplay_timeleft = "";
         nodisplay_timedep = "d-none";
-        if (Value.Статус == "Принят")
+        if (Value.Статус == WhsOrderStatus.In.Received)
         {
             departed = "departed";
             nodisplay_timeleft = "d-none";

@@ -48,7 +48,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
         private void CreateSearchStatusButtons()
         {
             SearchStatusButtons = new Dictionary<string, string>
-                {
+            {
                 { WhsOrderStatus.Out.Prepared, "" },
                 { WhsOrderStatus.Out.ToCollect, ""},
                 { WhsOrderStatus.Out.ToShipment, ""},

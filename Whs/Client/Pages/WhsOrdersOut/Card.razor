@@ -86,17 +86,17 @@
             ifMoving = "transfer";  
 
         queueType = "noorder";
-        if (Value.ТипОчереди == "Живая очередь")
+        if (Value.ТипОчереди == QueType.Out.LiveQue)
         { queueType = "liveq"; }
-        if (Value.ТипОчереди == "Собрать к дате")
+        if (Value.ТипОчереди == QueType.Out.Schedule)
         { queueType = "schedule"; }
-        if (Value.ТипОчереди == "Собственная доставка")
+        if (Value.ТипОчереди == QueType.Out.SelfDelivery)
         { queueType = "selfdelivery"; }
 
         departed = "";
         nodisplay_timeleft = "";
         nodisplay_timedep = "d-none";
-        if (Value.Статус == "К отгрузке" || Value.Статус == "Отгружен")
+        if (Value.Статус == WhsOrderStatus.Out.ToShipment || Value.Статус == WhsOrderStatus.Out.Shipped)
         {
             departed = "departed";
             nodisplay_timeleft = "d-none";

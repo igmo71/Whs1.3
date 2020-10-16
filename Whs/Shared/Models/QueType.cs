@@ -4,18 +4,18 @@
     {
         public static class In
         {
-            public static string ForCustomer = "Под клиента";
-            public static string QuicklyForSale = "Срочно в продажу";
-            public static string Expired = "Просрочено";
-            public static string NoQue = "Очередность не указана";
+            public const string ForCustomer = "Под клиента";
+            public const string QuicklyForSale = "Срочно в продажу";
+            public const string Expired = "Просрочено";
+            public const string NoQue = "Очередность не указана";
         }
 
         public static class Out
         {
-            public static string LiveQue = "Живая очередь";
-            public static string Schedule = "Собрать к дате";
-            public static string SelfDelivery = "Собственная доставка";
-            public static string NoQue = "Очередность не указана";
+            public const string LiveQue = "Живая очередь";
+            public const string Schedule = "Собрать к дате";
+            public const string SelfDelivery = "Собственная доставка";
+            public const string NoQue = "Очередность не указана";
         }
     }
 }
