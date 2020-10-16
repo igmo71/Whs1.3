@@ -46,7 +46,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
                 await Notification.ShowAsync($"Ошибка загрузки ордера.", 1);
                 Console.WriteLine($"GetOrderDtoAsync - Excepton: {ex.Message}");
                 Console.WriteLine($"{ex.StackTrace}");
-                await ToBitrixErrors($"Ошибка загрузки ордера: {Id}: {ex.Message}");
+                await ToBitrixErrors($"Ошибка загрузки ордера {Id}: {ex.Message}");
             }
         }
 

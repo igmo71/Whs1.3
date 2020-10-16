@@ -55,7 +55,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
             try
             {
                 DateTime beginTime = DateTime.Now;
-                Notification.Show($"Запрос на изменение статуса...");
+                Notification.Show($"Запрос изменения статуса...");
                 Barcode = args.Value.ToString();
                 HttpResponseMessage response = await HttpClient.PutAsJsonAsync<WhsOrderOut>($"api/WhsOrdersOut/{OrderDto.Item.Документ_Id}/{Barcode}", OrderDto.Item);
                 if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
