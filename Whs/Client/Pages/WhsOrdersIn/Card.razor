@@ -58,8 +58,7 @@
 </span>
 
 @code {
-    [Parameter]
-    public WhsOrderIn Value { get; set; }
+    [Parameter] public WhsOrderIn Value { get; set; }
     string ifExpired;
     string queueType;
     string ifMoving;
@@ -69,6 +68,7 @@
     string lastStatusDate;
     string nodisplay_timeleft;
     string nodisplay_timedep;
+
     protected override void OnInitialized()
     {
         if (Value.СрокВыполнения != DateTime.Parse("01.01.0001 0:00:00"))
@@ -110,6 +110,5 @@
             resp_value = Value.LastData?.ApplicationUser?.Surname;
             responsible = "";
         }
-        responsible = "";
     }
 }
