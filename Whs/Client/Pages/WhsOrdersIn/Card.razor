@@ -31,81 +31,62 @@
     </div>
 </div>
 -->
-<span class="order shadow_my d_blk @queueType @ifExpired @ifMoving @departed">
+<div class="order shadow_my d_blk @queueType @ifExpired @ifMoving @departed">
     <span class="leftpart d_blk flt_left" title="@Value.Документ_Name">
         <span></span>
     </span>
-    <span class="rightpart d_blk flt_right">
+    <div class="rightpart d_blk flt_right">
         <span class="receiver flt_left w_100">@Value.ОтправительПолучатель_NameString</span>
-        @*<AuthorizeView Roles="Manager">
-                <Authorized>
-                    <span class="destin flt_left w_100">@Value.Склад_NameString</span>
-                </Authorized>
-            </AuthorizeView>*@
         <span class="comment flt_left w_100">@Value.КомментарийString</span>
-        <span class="date d_blk @nodisplay_timeleft">@Value.TimeUpString</span>
-        <span class="date d_blk @nodisplay_timedep">@Value.LastData?.DateTimeString</span>
+        <span class="date d_blk">@showDate</span>
         <div class="foot d_blk flt_left w_100">
             <span class="skus flt_left">
                 <label class="val birbox">@Value.КоличествоСтрок</label>
             </span>
-            <span class="responsible @responsible">
+            <span class="responsible">
                 <label class="val birbox">@Value.LastData?.ApplicationUser?.Surname</label>
             </span>
             <span class="weight flt_right">
                 <label class="val birbox">@Value.Вес</label>
             </span>
         </div>
-    </span>
-</span>
+    </div>
+</div>
 
 @code {
     [Parameter] public WhsOrderIn Value { get; set; }
-    string ifExpired;
-    string queueType;
-    string ifMoving;
-    string departed;
-    string responsible;
-    string nodisplay_timeleft;
-    string nodisplay_timedep;
+    private string queueType;
+    private string ifExpired;
+    private string ifMoving;
+    private string departed;
+    private string showDate;
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        if (Value.СрокВыполнения != DateTime.Parse("01.01.0001 0:00:00"))
+        switch (Value.Статус)
         {
-            if (Value.СрокВыполнения > DateTime.Now)
+            case WhsOrderStatus.In.ToReceive:
+            case WhsOrderStatus.In.AtWork:
+                departed = "";
+                ifExpired = Value.СрокВыполнения < DateTime.Now ? "timeout" : "";
+                showDate = Value.TimeUpString;
+                break;
+            case WhsOrderStatus.In.Received:
+                departed = "departed";
                 ifExpired = "";
-            else
-                ifExpired = "timeout";
+                showDate = Value.LastData?.DateTimeString;
+                break;
         }
 
-        ifMoving = "";
-        if (Value.ЭтоПеремещение)
-            ifMoving = "transfer";
-
-        queueType = "noorder";
-        if (Value.ТипОчереди == QueType.In.ForCustomer)
-        { queueType = "liveq"; }
-        if (Value.ТипОчереди == QueType.In.QuicklyForSale)
-        { queueType = "emergency"; }
-        if (Value.ТипОчереди == QueType.In.Expired)
-        { queueType = "toolate"; }
-
-        departed = "";
-        nodisplay_timeleft = "";
-        nodisplay_timedep = "d-none";
-        if (Value.Статус == WhsOrderStatus.In.Received)
+        switch (Value.ТипОчереди)
         {
-            departed = "departed";
-            nodisplay_timeleft = "d-none";
-            nodisplay_timedep = "";
-            ifExpired = "";
+            case QueType.In.ForCustomer: queueType = "liveq"; break;
+            case QueType.In.QuicklyForSale: queueType = "emergency"; break;
+            case QueType.In.Expired: queueType = "toolate"; break;
+            case QueType.In.NoQue: queueType = "noorder"; break;
+            default: queueType = "noorder"; break;
         }
 
-        responsible = "d_none";
-        if (Value.Data != null && Value.Data.Count > 0)
-        {
-            responsible = "";
-        }
+        ifMoving = Value.ЭтоПеремещение ? "transfer" : "";
     }
 }
