@@ -37,19 +37,19 @@
     </span>
     <span class="rightpart d_blk flt_right">
         <span class="receiver flt_left w_100">@Value.ОтправительПолучатель_NameString</span>
-        <AuthorizeView Roles="Manager">
+        @*<AuthorizeView Roles="Manager">
             <Authorized>
                 <span class="destin flt_left w_100">@Value.Склад_NameString</span>
             </Authorized>
-        </AuthorizeView>
+        </AuthorizeView>*@
         <span class="comment flt_left w_100">@Value.КомментарийString</span>
         <span class="date d_blk @nodisplay_timeleft">@Value.TimeUpString</span>
-        <span class="date d_blk @nodisplay_timedep">@lastStatusDate</span>
+        <span class="date d_blk @nodisplay_timedep">@Value.LastData?.DateTimeString</span>
         <div class="foot d_blk flt_left w_100">
             <span class="skus flt_left"><label class="val birbox">@Value.КоличествоСтрок</label></span>
             <span class="responsible @responsible">
                 <label class="val birbox">
-                    @resp_value
+                    @Value.LastData?.ApplicationUser?.Surname
                 </label>
             </span>
             <span class="weight flt_right"><label class="val birbox">@Value.Вес</label></span>
@@ -64,8 +64,6 @@
     string ifMoving;
     string departed;
     string responsible;
-    string resp_value;
-    string lastStatusDate;
     string nodisplay_timeleft;
     string nodisplay_timedep;
 
@@ -102,12 +100,9 @@
             ifExpired = "";
         }
 
-        resp_value = "";
         responsible = "d_none";
         if (Value.Data != null && Value.Data.Count > 0)
         {
-            lastStatusDate = Value.LastData?.DateTimeString;
-            resp_value = Value.LastData?.ApplicationUser?.Surname;
             responsible = "";
         }
     }
