@@ -31,8 +31,9 @@
     private string departed;
     private string showDate;
 
-    protected override void OnParametersSet()
+    public override async Task SetParametersAsync(ParameterView parameters)
     {
+        await base.SetParametersAsync(parameters);
         switch (Value.Статус)
         {
             case WhsOrderStatus.Out.Prepared:
