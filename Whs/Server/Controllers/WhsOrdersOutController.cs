@@ -38,7 +38,7 @@ namespace Whs.Server.Controllers
         [HttpGet("PrintList")]
         public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetPrintListAsync([FromQuery] WhsOrderParameters parameters)
         {
-            WhsOrderOut[] items = await _context.WhsOrdersOut                
+            WhsOrderOut[] items = await _context.WhsOrdersOut
                 .Where(e => e.Проведен)
                 .Search(parameters)
                 .OrderBy(e => e.Номер)
@@ -320,7 +320,7 @@ namespace Whs.Server.Controllers
 
             if (whsOrder == null || !(whsOrder.Статус == WhsOrderStatus.Out.ToCollect || whsOrder.Статус == WhsOrderStatus.Out.ToShipment))
             {
-                _logger.LogError($"---> PutShippingAsync/{id}: NotFound");
+                _logger.LogError($"---> PutShipmentAsync/{id}: NotFound");
                 return NotFound();
             }
 
@@ -329,7 +329,7 @@ namespace Whs.Server.Controllers
                 whsOrder = await PutTo1cAsync(whsOrder);
             if (whsOrder == null)
             {
-                _logger.LogError($"---> PutShippingAsync/{id}: Problem 1C");
+                _logger.LogError($"---> PutShipmentAsync/{id}: Problem 1C");
                 return Problem(detail: "Problem 1C");
             }
             _context.WhsOrdersOut.Update(whsOrder);
@@ -342,19 +342,19 @@ namespace Whs.Server.Controllers
             {
                 if (!Exists(id))
                 {
-                    _logger.LogError($"---> PutShippingAsync/{id}: DbUpdateConcurrencyException NotFound {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PutShipmentAsync/{id}: DbUpdateConcurrencyException NotFound {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
                     return NotFound();
                 }
                 else
                 {
-                    _logger.LogError($"---> PutShippingAsync/{id}: DbUpdateConcurrencyException {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PutShipmentAsync/{id}: DbUpdateConcurrencyException {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
                     throw;
                 }
             }
 
             await CreateWhsOrderDataAsync(null, whsOrder);
-            _logger.LogInformation($"---> PutShippingAsync: Ok {whsOrder.Документ_Name}");
-            return Ok($"{whsOrder.НомерОчереди} \r\n {whsOrder.Документ_Name}");
+            _logger.LogInformation($"---> PutShipmentAsync: Ok {whsOrder.Документ_Name}");
+            return Ok($"{whsOrder.НомерОчереди}  {whsOrder.Документ_Name}");
         }
 
         // GET: api/WhsOrdersOut/

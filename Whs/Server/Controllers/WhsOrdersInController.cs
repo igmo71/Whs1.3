@@ -36,7 +36,7 @@ namespace Whs.Server.Controllers
 
         // GET: api/WhsOrdersIn/PrintList
         [HttpGet("PrintList")]
-        public async Task<ActionResult<IEnumerable<WhsOrderIn>>> GetPrintListAsync([FromQuery] WhsOrderParameters parameters)   
+        public async Task<ActionResult<IEnumerable<WhsOrderIn>>> GetPrintListAsync([FromQuery] WhsOrderParameters parameters)
         {
             WhsOrderIn[] items = await _context.WhsOrdersIn
                 .Where(e => e.Проведен)

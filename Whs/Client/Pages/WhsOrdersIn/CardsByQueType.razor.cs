@@ -84,7 +84,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
             }
         }
 
-        private async Task GetOrdersDtoAsync()  
+        private async Task GetOrdersDtoAsync()
         {
             try
             {

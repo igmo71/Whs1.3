@@ -25,7 +25,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
         protected override async Task OnInitializedAsync()
         {
             await GetWarehouseIdAsync();
-            await GetOrdersAsync(); 
+            await GetOrdersAsync();
             SetTimer(double.Parse(Configuration["TimerInterval"]), true);
         }
 
