@@ -1,4 +1,4 @@
-﻿@using Whs.Client.Components
+﻿    @using Whs.Client.Components
 @using Whs.Shared.Models
 @page "/WhsOrdersIn/Item/{Id}"
 @page "/WhsOrdersIn/Item/{Id}/{SearchStatus}"
@@ -42,39 +42,28 @@ else
 
     <table>
         <tr>
-            <th>Склад: </th>
-            <td>@OrderDto.Item?.Склад_Name</td>
+            <th>Отправитель: </th>
+            <td class="h5">@OrderDto.Item?.ОтправительПолучатель_Name</td>
             <th>Тип очереди:</th>
             <td>@OrderDto.Item?.ТипОчереди</td>
         </tr>
         <tr>
-            <th>Отправитель: </th>
-            <td>@OrderDto.Item?.ОтправительПолучатель_Name</td>
+            <th></th>
+            <td></td>
             <th>Выполнить до: </th>
             <td>@OrderDto.Item?.СрокВыполненияString</td>
         </tr>
         <tr>
-            <th>Распоряжение: </th>
-            <td>
-                @foreach (var item in OrderDto.Item?.Распоряжения)
-                {
-                    @item.Распоряжение_Name <br />
-                }
-            </td>
+            <th>Комментарий: </th>
+            <td class="h5">@OrderDto.Item?.Комментарий</td>
             <th>В работе: </th>
             <td>@OrderDto.UserName</td>
         </tr>
         <tr>
+            <th>Вес: </th>
+            <td class="h5">@OrderDto.Item?.Вес</td>
             <th>Ответственный: </th>
             <td>@OrderDto.Item?.Ответственный_Name</td>
-            <th></th>
-            <td></td>
-        </tr>
-        <tr>
-            <th>Комментарий: </th>
-            <td>@OrderDto.Item?.Комментарий</td>
-            <th>Вес: </th>
-            <td>@OrderDto.Item?.Вес</td>
         </tr>
     </table>
 

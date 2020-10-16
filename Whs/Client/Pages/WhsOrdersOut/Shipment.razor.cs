@@ -11,7 +11,7 @@ using Whs.Shared.Models;
 
 namespace Whs.Client.Pages.WhsOrdersOut
 {
-    public partial class Shipment
+    public partial class Shipment : IDisposable
     {
         [Inject] HttpClient HttpClient { get; set; }
         [Inject] public AuthenticationStateProvider AuthStateProvider { get; set; }
@@ -42,6 +42,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
         private async Task GetOrdersAsync()
         {
             Orders = await HttpClient.GetFromJsonAsync<WhsOrderOut[]>($"api/WhsOrdersOut/Shipment/{warehouseId}");
+            StateHasChanged();
         }
 
         private async Task ScannedBarcodeAsync(ChangeEventArgs args)
@@ -79,6 +80,12 @@ namespace Whs.Client.Pages.WhsOrdersOut
             };
             Timer.AutoReset = autoReset;
             Timer.Enabled = true;
+        }
+
+        public void Dispose()
+        {
+            if (Timer != null)
+                Timer.Dispose();
         }
     }
 }

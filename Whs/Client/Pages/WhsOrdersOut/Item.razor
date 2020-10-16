@@ -48,41 +48,30 @@ else
         </div>
     </div>
 
-    <table>
+    <table class="table table-borderless table-sm">
         <tr>
-            <th>Склад: </th>
-            <td>@OrderDto.Item?.Склад_Name</td>
+            <th>Получатель: </th>
+            <td class="h5">@OrderDto.Item?.ОтправительПолучатель_Name</td>
             <th>Тип очереди:</th>
             <td>@OrderDto.Item?.ТипОчереди</td>
         </tr>
         <tr>
-            <th>Получатель: </th>
-            <td>@OrderDto.Item?.ОтправительПолучатель_Name</td>
+            <th>Направление: </th>
+            <td class="h5">@OrderDto.Item?.НаправлениеДоставки_Name</td>
             <th>Выполнить до: </th>
             <td>@OrderDto.Item?.СрокВыполненияString</td>
         </tr>
         <tr>
-            <th>Распоряжение: </th>
-            <td>
-                @foreach (var item in OrderDto.Item?.Распоряжения)
-                {
-                    @item.Распоряжение_Name <br />
-                }
-            </td>
+            <th>Комментарий: </th>
+            <td class="h5">@OrderDto.Item?.Комментарий</td>
             <th>В работе: </th>
             <td>@OrderDto.UserName</td>
         </tr>
         <tr>
+            <th>Вес: </th>
+            <td class="h5">@OrderDto.Item?.Вес</td>
             <th>Ответственный: </th>
             <td>@OrderDto.Item?.Ответственный_Name</td>
-            <th>Направление: </th>
-            <td>@OrderDto.Item?.НаправлениеДоставки_Name</td>
-        </tr>
-        <tr>
-            <th>Комментарий: </th>
-            <td>@OrderDto.Item?.Комментарий</td>
-            <th>Вес: </th>
-            <td>@OrderDto.Item?.Вес</td>
         </tr>
     </table>
 
@@ -106,7 +95,7 @@ else
         <tbody>
             @foreach (var item in OrderDto.Item.Товары)
             {
-                <tr>
+                <tr class="h5">
                     <td class="align-middle">@item.НомерСтроки</td>
                     <td class="align-middle">@item.Артикул</td>
                     <td class="align-middle">@item.Номенклатура_Name</td>

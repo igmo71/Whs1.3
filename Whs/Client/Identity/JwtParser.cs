@@ -44,17 +44,23 @@ namespace Whs.Client.Identity
             {
                 try
                 {
-                    var parsedRoles = JsonSerializer.Deserialize<string[]>(roles.ToString(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    foreach (var parsedRole in parsedRoles)
+                    string rolesString = roles.ToString();
+                    if (rolesString.StartsWith('[') && rolesString.EndsWith(']'))
                     {
-                        claims.Add(new Claim(ClaimTypes.Role, parsedRole));
+                        string[] parsedRoles = JsonSerializer.Deserialize<string[]>(rolesString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        foreach (var parsedRole in parsedRoles)
+                        {
+                            claims.Add(new Claim(ClaimTypes.Role, parsedRole));
+                        }
+                    }
+                    else
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, rolesString));
                     }
                 }
                 catch (JsonException ex)
                 {
                     Console.WriteLine($"ExtractRolesFromJWT JsonException: {Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
-                    var parsedRole = roles.ToString();
-                    claims.Add(new Claim(ClaimTypes.Role, parsedRole));
                 }
 
                 keyValuePairs.Remove(ClaimTypes.Role);
