@@ -76,30 +76,30 @@ else
     </table>
 
 
-    <table class="table table-bordered border-dark table-hover table-striped table-sm">
+    <table class="table table-sm table-striped table-hover table-bordered">
         <thead>
             <tr>
-                <th class="align-middle text-center">№</th>
-                <th class="align-middle text-center">Артикул</th>
-                <th class="align-middle text-center">Товар</th>
-                <th class="align-middle text-center">Кол</th>
+                <th class="text-center">№</th>
+                <th class="text-center">Артикул</th>
+                <th class="text-center">Товар</th>
+                <th class="text-center">Кол</th>
                 @if (OrderDto.Item?.Статус == WhsOrderStatus.Out.ToCollect)
                 {
-                    <th class="align-middle text-center d-print-none">Причина изменения</th>
-                    <th class="align-middle text-center">Кол факт</th>
+                    <th class="text-center d-print-none">Причина изменения</th>
+                    <th class="text-center">Кол факт</th>
                 }
-                <th class="align-middle text-center">Упак</th>
-                <th class="align-middle text-center">Вес</th>
+                <th class="text-center">Упак</th>
+                <th class="text-center">Вес</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in OrderDto.Item.Товары)
             {
                 <tr class="h5">
-                    <td class="align-middle">@item.НомерСтроки</td>
-                    <td class="align-middle">@item.Артикул</td>
-                    <td class="align-middle">@item.Номенклатура_Name</td>
-                    <td class="align-middle">@item.КоличествоПлан</td>
+                    <td>@item.НомерСтроки</td>
+                    <td>@item.Артикул</td>
+                    <td>@item.Номенклатура_Name</td>
+                    <td>@item.КоличествоПлан</td>
 
                     @if (OrderDto.Item?.Статус == WhsOrderStatus.Out.ToCollect)
                     {
@@ -124,8 +124,8 @@ else
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         </td>
                     }
-                    <td class="align-middle">@item.Упаковка_Name</td>
-                    <td class="align-middle">@item.Вес</td>
+                    <td>@item.Упаковка_Name</td>
+                    <td>@item.Вес</td>
                 </tr>
             }
         </tbody>
