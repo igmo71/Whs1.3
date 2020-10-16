@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @using Whs.Client.Components
+@using Whs.Shared.Models
 @page "/WhsOrdersOut/CardsByQueType"
 @page "/WhsOrdersOut/CardsByQueType/{SearchStatus}"
 @attribute [Authorize]
@@ -60,16 +61,28 @@ else
 {
     <ul class="nav nav-tabs nav-fill">
         <li class="nav-item">
-            <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["Подготовлено"]" @onclick="@(() => SearchByStatus("Подготовлено"))">Подготовлено</button>
+            <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.Prepared]"
+                    @onclick="@(() => SearchByStatus(WhsOrderStatus.Out.Prepared))">
+                WhsOrderStatus.Out.Prepared
+            </button>
         </li>
         <li class="nav-item">
-            <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["К отбору"]" @onclick="@(() => SearchByStatus("К отбору"))">К отбору</button>
+            <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.ToCollect]"
+                    @onclick="@(() => SearchByStatus(WhsOrderStatus.Out.ToCollect))">
+                WhsOrderStatus.Out.ToCollect
+            </button>
         </li>
         <li class="nav-item">
-            <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["К отгрузке"]" @onclick="@(() => SearchByStatus("К отгрузке"))">К отгрузке</button>
+            <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.ToShipment]"
+                    @onclick="@(() => SearchByStatus(WhsOrderStatus.Out.ToShipment))">
+                WhsOrderStatus.Out.ToShipment
+            </button>
         </li>
         <li class="nav-item">
-            <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons["Отгружен"]" @onclick="@(() => SearchByStatus("Отгружен"))">Отгружен</button>
+            <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.Shipped]"
+                    @onclick="@(() => SearchByStatus(WhsOrderStatus.Out.Shipped))">
+                WhsOrderStatus.Out.Shipped
+            </button>
         </li>
     </ul>
     if (OrdersDto.Items.Count == 0)
@@ -78,11 +91,11 @@ else
             <img src="/img/NotFound.svg" />
         </span>
         @*<div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <strong>Ничего не найдено!</strong>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close" @onclick="@(() => SearchClearAsync(true))">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>*@
+                <strong>Ничего не найдено!</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close" @onclick="@(() => SearchClearAsync(true))">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>*@
     }
     else
     {
@@ -94,17 +107,16 @@ else
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-
         }
         <div class="row mt-3">
             <div class="col-3">
                 <div class="row h5 text-center thqueue">
-                    <div class="col"><span class="oi oi-layers"></span>&nbsp;<span>Живая очередь</span></div>
+                    <div class="col"><span class="oi oi-layers"></span>&nbsp;<span>@QueType.Out.LiveQue</span></div>
                 </div>
                 <div class="order-items">
-                    @if (OrdersDto.Items.ContainsKey("Живая очередь"))
+                    @if (OrdersDto.Items.ContainsKey(QueType.Out.LiveQue))
                     {
-                        @foreach (var value in OrdersDto.Items["Живая очередь"])
+                        @foreach (var value in OrdersDto.Items[QueType.Out.LiveQue])
                         {
                             <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
                                 <div class="col">
@@ -117,12 +129,12 @@ else
             </div>
             <div class="col-3">
                 <div class="row h5 text-center thqueue">
-                    <div class="col"><span class="oi oi-calendar"></span>&nbsp;<span>Собрать к дате</span></div>
+                    <div class="col"><span class="oi oi-calendar"></span>&nbsp;<span>@QueType.Out.Schedule</span></div>
                 </div>
                 <div class="order-items">
-                    @if (OrdersDto.Items.ContainsKey("Собрать к дате"))
+                    @if (OrdersDto.Items.ContainsKey(QueType.Out.Schedule))
                     {
-                        @foreach (var value in OrdersDto.Items["Собрать к дате"])
+                        @foreach (var value in OrdersDto.Items[QueType.Out.Schedule])
                         {
                             <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
                                 <div class="col">
@@ -135,12 +147,12 @@ else
             </div>
             <div class="col-3">
                 <div class="row h5 text-center thqueue">
-                    <div class="col"><span class="oi oi-globe"></span>&nbsp;<span>Собственная доставка</span></div>
+                    <div class="col"><span class="oi oi-globe"></span>&nbsp;<span>@QueType.Out.SelfDelivery</span></div>
                 </div>
                 <div class="order-items">
-                    @if (OrdersDto.Items.ContainsKey("Собственная доставка"))
+                    @if (OrdersDto.Items.ContainsKey(QueType.Out.SelfDelivery))
                     {
-                        @foreach (var value in OrdersDto.Items["Собственная доставка"])
+                        @foreach (var value in OrdersDto.Items[QueType.Out.SelfDelivery])
                         {
                             <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
                                 <div class="col">
@@ -153,13 +165,12 @@ else
             </div>
             <div class="col-3">
                 <div class="row h5 text-center thqueue">
-                    <div class="col"><span class="oi oi-aperture"></span>&nbsp;<span>Очередность не указана</span></div>
+                    <div class="col"><span class="oi oi-aperture"></span>&nbsp;<span>@QueType.Out.NoQue</span></div>
                 </div>
                 <div class="order-items">
-
-                    @if (OrdersDto.Items.ContainsKey("Очередность не указана"))
+                    @if (OrdersDto.Items.ContainsKey(QueType.Out.NoQue))
                     {
-                        @foreach (var value in OrdersDto.Items["Очередность не указана"])
+                        @foreach (var value in OrdersDto.Items[QueType.Out.NoQue])
                         {
                             <div class="row" @onclick="@(() => OpenItem(value.Документ_Id))">
                                 <div class="col">

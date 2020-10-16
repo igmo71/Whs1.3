@@ -45,10 +45,15 @@ namespace Whs.Client.Pages.WhsOrdersOut
             Console.WriteLine($"OnInitializedAsync - duration: {DateTime.Now - beginTime}");
         }
 
-        private void CreateSearchStatusButtons(string initStatus = "Подготовлено")
+        private void CreateSearchStatusButtons(string initStatus = WhsOrderStatus.Out.Prepared)
         {
             SearchStatusButtons = new Dictionary<string, string>
-                { { "Подготовлено", "" }, { "К отбору", ""}, { "К отгрузке", ""}, { "Отгружен", ""} };
+                {
+                { WhsOrderStatus.Out.Prepared, "" },
+                { WhsOrderStatus.Out.ToCollect, ""},
+                { WhsOrderStatus.Out.ToShipment, ""},
+                { WhsOrderStatus.Out.Shipped, ""}
+            };
             OrderParameters.SearchStatus = string.IsNullOrEmpty(SearchStatus) ? initStatus : SearchStatus;
             if (string.IsNullOrEmpty(SearchStatus))
                 SearchStatusButtons[initStatus] = "active";

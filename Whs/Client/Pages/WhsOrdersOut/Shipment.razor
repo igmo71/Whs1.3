@@ -1,0 +1,44 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using Whs.Client.Components
+@page "/WhsOrdersOut/Shipment"
+@attribute [Authorize]
+@code
+{
+    private Notification Notification;
+    private SearchByNumber SearchByNumber;
+    private SearchByDestination SearchByDestination;
+}
+
+<Notification @ref="Notification" />
+
+<input type="hidden" id="Barcode" value="@Barcode" @onchange="ScannedBarcodeAsync" />
+
+<h3>Выдача</h3>
+<h5>Расходные ордера "К Отгрузке"</h5>
+
+@if (Orders == null)
+{
+    <span>Загрузка...</span>
+}
+else
+{
+    <table class="table table-striped table-hover table-bordered text-center h4">
+        <tr>
+            <th>Номер очереди</th>
+            <th>Получатель</th>
+            <th>Документ</th>
+            <th>Кол строк</th>
+            <th>Вес</th>
+        </tr>
+        @foreach (var item in Orders)
+        {
+            <tr>
+                <td>@item.НомерОчереди</td>
+                <td>@item.ОтправительПолучатель_Name</td>
+                <td>@item.Документ_Name</td>
+                <td>@item.КоличествоСтрок</td>
+                <td>@item.Вес</td>
+            </tr>
+        }
+    </table>
+}

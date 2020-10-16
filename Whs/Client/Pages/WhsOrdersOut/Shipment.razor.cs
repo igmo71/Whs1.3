@@ -10,15 +10,15 @@ using Whs.Shared.Models;
 
 namespace Whs.Client.Pages.WhsOrdersOut
 {
-    public partial class ShippingWorkplace
+    public partial class Shipment
     {
         [Inject] HttpClient HttpClient { get; set; }
         [Inject] public AuthenticationStateProvider AuthStateProvider { get; set; }
-        
+
         private Timer Timer;
         private string Barcode;
         private WhsOrderOut[] Orders;
-        private string warehouseId; 
+        private string warehouseId;
 
         protected override async Task OnInitializedAsync()
         {
@@ -38,7 +38,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private async Task GetOrdersAsync()
         {
-            Orders = await HttpClient.GetFromJsonAsync<WhsOrderOut[]>($"api/WhsOrdersOut/Shipping/{warehouseId}");
+            Orders = await HttpClient.GetFromJsonAsync<WhsOrderOut[]>($"api/WhsOrdersOut/Shipment/{warehouseId}");
         }
 
         private async Task ScannedBarcodeAsync(ChangeEventArgs args)
@@ -47,7 +47,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
             {
                 Notification.Show($"Запрос отгрузки...");
                 Barcode = args.Value.ToString();
-                HttpResponseMessage response = await HttpClient.PutAsJsonAsync<WhsOrderOut>($"api/WhsOrdersOut/Shipping/{Barcode}", null);
+                HttpResponseMessage response = await HttpClient.PutAsJsonAsync<WhsOrderOut>($"api/WhsOrdersOut/Shipment/{Barcode}", null);
                 string content = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
                 {

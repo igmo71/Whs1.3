@@ -269,6 +269,16 @@ namespace Whs.Server.Controllers
                     _logger.LogInformation($"---> PutTo1cAsync: Ok {whsOrder.Документ_Name}");
                     return JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
                 }
+                else if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    _logger.LogError($"---> PutTo1cAsync: Документ не найден {whsOrder.Документ_Name} {Environment.NewLine}" +
+                        $"Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                {
+                    _logger.LogError($"---> PutTo1cAsync: Внутренняя ошибка сервера {whsOrder.Документ_Name} {Environment.NewLine}" +
+                        $"Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
+                }
                 else
                 {
                     _logger.LogError($"---> PutTo1cAsync: {whsOrder.Документ_Name}{Environment.NewLine}" +
@@ -286,8 +296,8 @@ namespace Whs.Server.Controllers
         private bool Exists(string id) => _context.WhsOrdersOut.Any(e => e.Документ_Id == id);
 
         // GET: api/WhsOrdersOut/ForShipment
-        [HttpGet("Shipping/{warehouseId}")]
-        public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetShippingAsync(string warehouseId)
+        [HttpGet("Shipment/{warehouseId}")]
+        public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetShipmentAsync(string warehouseId)
         {
             WhsOrderOut[] items = await _context.WhsOrdersOut
                 .Where(e => e.Проведен && e.Статус == WhsOrderStatus.Out.ToShipment && e.Склад_Id == warehouseId)
@@ -297,8 +307,8 @@ namespace Whs.Server.Controllers
         }
 
         // PUT: api/WhsOrdersOut/Shipping/5
-        [HttpPut("Shipping/{barcode}")]
-        public async Task<IActionResult> PutShippingAsync(string barcode)
+        [HttpPut("Shipment/{barcode}")]
+        public async Task<IActionResult> PutShipmentAsync(string barcode)
         {
             string id = GuidConvert.FromNumStr(barcode);
             WhsOrderOut whsOrder = await _context.WhsOrdersOut

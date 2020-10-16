@@ -251,6 +251,16 @@ namespace Whs.Server.Controllers
                     _logger.LogInformation($"---> PutTo1cAsync: Ok {whsOrder.Документ_Name}");
                     return JsonSerializer.Deserialize<Response1cIn>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
                 }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    _logger.LogError($"---> PutTo1cAsync: Документ не найден {whsOrder.Документ_Name} {Environment.NewLine}" +
+                        $"Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                {
+                    _logger.LogError($"---> PutTo1cAsync: Внутренняя ошибка сервера {whsOrder.Документ_Name} {Environment.NewLine}" +
+                        $"Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
+                }
                 else
                 {
                     _logger.LogError($"---> PutTo1cAsync: {whsOrder.Документ_Name}{Environment.NewLine}" +
