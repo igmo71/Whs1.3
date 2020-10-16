@@ -38,21 +38,23 @@
     <span class="rightpart d_blk flt_right">
         <span class="receiver flt_left w_100">@Value.ОтправительПолучатель_NameString</span>
         @*<AuthorizeView Roles="Manager">
-            <Authorized>
-                <span class="destin flt_left w_100">@Value.Склад_NameString</span>
-            </Authorized>
-        </AuthorizeView>*@
+                <Authorized>
+                    <span class="destin flt_left w_100">@Value.Склад_NameString</span>
+                </Authorized>
+            </AuthorizeView>*@
         <span class="comment flt_left w_100">@Value.КомментарийString</span>
         <span class="date d_blk @nodisplay_timeleft">@Value.TimeUpString</span>
         <span class="date d_blk @nodisplay_timedep">@Value.LastData?.DateTimeString</span>
         <div class="foot d_blk flt_left w_100">
-            <span class="skus flt_left"><label class="val birbox">@Value.КоличествоСтрок</label></span>
-            <span class="responsible @responsible">
-                <label class="val birbox">
-                    @Value.LastData?.ApplicationUser?.Surname
-                </label>
+            <span class="skus flt_left">
+                <label class="val birbox">@Value.КоличествоСтрок</label>
             </span>
-            <span class="weight flt_right"><label class="val birbox">@Value.Вес</label></span>
+            <span class="responsible @responsible">
+                <label class="val birbox">@Value.LastData?.ApplicationUser?.Surname</label>
+            </span>
+            <span class="weight flt_right">
+                <label class="val birbox">@Value.Вес</label>
+            </span>
         </div>
     </span>
 </span>
@@ -105,7 +107,5 @@
         {
             responsible = "";
         }
-
-        StateHasChanged();
     }
 }
