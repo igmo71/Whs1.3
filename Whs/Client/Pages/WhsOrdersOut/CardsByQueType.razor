@@ -11,10 +11,19 @@
 
 <div class="row">
     <div class="col">
-        <h3>Расходные ордера на товары</h3>
+        <h4>Расходные ордера на товары</h4>
     </div>
 </div>
-<div class="row">
+<div class="row mb-2">
+    <div class="col d-print-none">
+        <SearchByNumber @ref="SearchByNumber" OnSearchChanged="SearchByNumberAsync" />
+    </div>
+    <div class="col">
+        @if (OrdersDto != null && OrdersDto.Destinations != null)
+        {
+            <SearchByDestination @ref="SearchByDestination" Destinations="OrdersDto.Destinations" OnSelect="SearchByDestinationsAsync" />
+        }
+    </div>
     <div class="col d-print-none">
         <AuthorizeView Roles="Manager">
             <Authorized>
@@ -25,21 +34,12 @@
             </Authorized>
         </AuthorizeView>
     </div>
-    <div class="col d-print-none">
-        <SearchByNumber @ref="SearchByNumber" OnSearchChanged="SearchByNumberAsync" />
-    </div>
-    <div class="col">
-        @if (OrdersDto != null && OrdersDto.Destinations != null)
-        {
-            <SearchByDestination @ref="SearchByDestination" Destinations="OrdersDto.Destinations" OnSelect="SearchByDestinationsAsync" />
-        }
-    </div>
     @if (OrdersDto != null)
     {
-        <div class="col h4 text-right">Общ Кол: @OrdersDto.TotalCount</div>
-        <div class="col h4">Вес: @OrdersDto.TotalWeight</div>
+        <div class="col h5 pt-2 text-right">Общ Кол: @OrdersDto.TotalCount</div>
+        <div class="col h5 pt-2">Вес: @OrdersDto.TotalWeight</div>
     }
-    <div class="col mb-2 d-print-none text-right">
+    <div class="col d-print-none text-right">
         @if (OrderParameters.SearchStatus != WhsOrderStatus.Out.Shipped)
         {
             <button class="btn btn-info" @onclick="Print"><span class="oi oi-print"></span> Печать </button>
@@ -49,31 +49,35 @@
 
 @if (OrdersDto == null)
 {
-    <p><em>Загрузка...</em></p>
+    <div class="row">
+        <div class="col">
+            <p><em>Загрузка...</em></p>
+        </div>
+    </div>
 }
 else
 {
     <ul class="nav nav-tabs nav-fill">
         <li class="nav-item">
-            <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.Prepared]"
+            <button class="btn btn-link btn btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.Prepared]"
                     @onclick="@(() => SearchByStatus(WhsOrderStatus.Out.Prepared))">
                 @WhsOrderStatus.Out.Prepared
             </button>
         </li>
         <li class="nav-item">
-            <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.ToCollect]"
+            <button class="btn btn-link btn btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.ToCollect]"
                     @onclick="@(() => SearchByStatus(WhsOrderStatus.Out.ToCollect))">
                 @WhsOrderStatus.Out.ToCollect
             </button>
         </li>
         <li class="nav-item">
-            <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.ToShipment]"
+            <button class="btn btn-link btn btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.ToShipment]"
                     @onclick="@(() => SearchByStatus(WhsOrderStatus.Out.ToShipment))">
                 @WhsOrderStatus.Out.ToShipment
             </button>
         </li>
         <li class="nav-item">
-            <button class="btn btn-link btn-lg btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.Shipped]"
+            <button class="btn btn-link btn btn-block nav-link @SearchStatusButtons[WhsOrderStatus.Out.Shipped]"
                     @onclick="@(() => SearchByStatus(WhsOrderStatus.Out.Shipped))">
                 @WhsOrderStatus.Out.Shipped
             </button>
@@ -81,9 +85,7 @@ else
     </ul>
     if (OrdersDto.Items.Count == 0)
     {
-        <span class="notfound">
-            <img src="/img/NotFound.svg" />
-        </span>
+        <span class="notfound"><img src="/img/NotFound.svg" /></span>
     }
     else
     {
@@ -96,7 +98,7 @@ else
                 </button>
             </div>
         }
-            
+
         <div class="row mt-3">
             <div class="col-3">
                 <div class="row h5 text-center thqueue">

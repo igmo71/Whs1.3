@@ -6,23 +6,29 @@
 <Notification @ref="Notification" />
 
 <input type="hidden" id="Barcode" value="@Barcode" @onchange="ScannedBarcodeAsync" />
-
-<h3>Выдача</h3>
-<h5>Расходные ордера "К Отгрузке"</h5>
-
-@if (Orders == null)
-{
-    <p><em>Загрузка...</em></p>
-}
-else
-{
-    <div class="card-columns">
-        @foreach (var item in Orders)
+<div class="row">
+    <div class="col">
+        <h4>Выдача</h4>
+        <h5>Расходные ордера "К Отгрузке"</h5>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        @if (Orders == null)
         {
-            <div class="card border-0"><Card Value="item" /></div>                  
+            <p><em>Загрузка...</em></p>
+        }
+        else
+        {
+            <div class="card-columns">
+                @foreach (var item in Orders)
+                {
+                    <div class="card border-0"><Card Value="item" /></div>
+                }
+            </div>
         }
     </div>
-}
+</div>
 
 @code
 {
