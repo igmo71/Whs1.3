@@ -16,10 +16,10 @@
 }
 else
 {
-    <div class="card-deck">
+    <div class="card-columns">
         @foreach (var item in Orders)
         {
-            <Card Value="item" />
+            <div class="card border-0"><Card Value="item" /></div>                  
         }
     </div>
 }
