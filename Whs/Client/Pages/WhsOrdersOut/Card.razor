@@ -1,10 +1,10 @@
 ﻿@using Whs.Shared.Models
 
-<div class="order shadow_my d_blk @queueType @ifExpired @ifMoving @departed">
+<span class="order shadow_my d_blk @queueType @ifExpired @ifMoving @departed">
     <span class="leftpart d_blk flt_left" title="@Value.Документ_Name">
         <span>@Value.НомерОчереди</span>
     </span>
-    <div class="rightpart d_blk flt_right">
+    <span class="rightpart d_blk flt_right">
         <span class="receiver flt_left w_100">@Value.ОтправительПолучатель_NameString</span>
         <span class="destin flt_left w_100">@Value.НаправлениеДоставки_Name</span>
         <span class="comment flt_left w_100">@Value.КомментарийString</span>
@@ -20,8 +20,8 @@
                 <label class="val birbox">@Value.Вес</label>
             </span>
         </div>
-    </div>
-</div>
+    </span>
+</span>
 
 @code {
     [Parameter] public WhsOrderOut Value { get; set; }
