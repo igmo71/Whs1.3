@@ -91,11 +91,11 @@ namespace Whs.Server.Controllers
         private async Task<Destination[][]> GetDestinationsAsync(WhsOrderParameters parameters)
         {
             Destination[] destinationParents = await _context.WhsOrdersOut.AsNoTracking()
-                .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus && e.НаправлениеДоставкиРодитель_Id != Guid.Empty.ToString() && e.НаправлениеДоставкиРодитель_Id != null)
+                .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus && e.НаправлениеДоставкиРодитель_Id != Guid.Empty.ToString())
                 .Select(e => new Destination { Id = e.НаправлениеДоставкиРодитель_Id, Name = e.НаправлениеДоставкиРодитель_Name })
                 .Distinct().OrderBy(e => e.Name).ToArrayAsync();
             Destination[] destinations = await _context.WhsOrdersOut.AsNoTracking()
-                .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus && e.НаправлениеДоставки_Id != Guid.Empty.ToString() && e.НаправлениеДоставки_Id != null)
+                .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus && e.НаправлениеДоставки_Id != Guid.Empty.ToString())
                 .Select(e => new Destination { Id = e.НаправлениеДоставки_Id, Name = e.НаправлениеДоставки_Name })
                 .Distinct().OrderBy(e => e.Name).ToArrayAsync();
             Destination[][] result = { destinationParents, destinations };
