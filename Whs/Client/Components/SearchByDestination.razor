@@ -1,19 +1,27 @@
 ﻿@using Whs.Shared.Models
-@*<label>*@
     @if (Destinations != null)
     {
-        <select class="form-control" @bind="DestinationId">
-            @foreach (var item in Destinations)
-            {
-                <option value="@item.Id">@item.Name</option>
-            }
-        </select>
+<select class="form-control" @bind="DestinationId">
+    <option value="0">- Все направления -</option>
+    <option value="@Guid.Empty">- Без направления -</option>
+    <optgroup label="- Районы -">
+        @foreach (var item in Destinations[0])
+        {
+            <option value="@item.Id">@item.Name</option>
+        }
+    </optgroup>
+    <optgroup label="- Нас. пункты -">
+        @foreach (var item in Destinations[1])
+        {
+            <option value="@item.Id">@item.Name</option>
+        }
+    </optgroup>
+</select>
     }
-@*</label>*@
 
 @code {
     [Parameter]
-    public Destination[] Destinations { get; set; }
+    public Destination[][] Destinations { get; set; }
 
     private string destinationId { get; set; }
     [Parameter]
@@ -40,7 +48,7 @@
     public void Clear()
     {
         isInvokeDelegate = false;
-        DestinationId = Destinations[0].Id;
+        DestinationId = "0";
         isInvokeDelegate = true;
     }
 }

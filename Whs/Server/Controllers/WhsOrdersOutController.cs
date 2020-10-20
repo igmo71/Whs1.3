@@ -88,19 +88,17 @@ namespace Whs.Server.Controllers
             return dto;
         }
 
-        private async Task<Destination[]> GetDestinationsAsync(WhsOrderParameters parameters)
+        private async Task<Destination[][]> GetDestinationsAsync(WhsOrderParameters parameters)
         {
-            Destination[] items = await _context.WhsOrdersOut.AsNoTracking()
-                .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus)
+            Destination[] destinationParents = await _context.WhsOrdersOut.AsNoTracking()
+                .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus && e.НаправлениеДоставкиРодитель_Id != Guid.Empty.ToString() && e.НаправлениеДоставкиРодитель_Id != null)
+                .Select(e => new Destination { Id = e.НаправлениеДоставкиРодитель_Id, Name = e.НаправлениеДоставкиРодитель_Name })
+                .Distinct().OrderBy(e => e.Name).ToArrayAsync();
+            Destination[] destinations = await _context.WhsOrdersOut.AsNoTracking()
+                .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus && e.НаправлениеДоставки_Id != Guid.Empty.ToString() && e.НаправлениеДоставки_Id != null)
                 .Select(e => new Destination { Id = e.НаправлениеДоставки_Id, Name = e.НаправлениеДоставки_Name })
                 .Distinct().OrderBy(e => e.Name).ToArrayAsync();
-            Destination noDestination = items.FirstOrDefault(e => e.Id == Guid.Empty.ToString());
-            if (noDestination != null)
-                noDestination.Name = "- Без направления -";
-            Destination[] item = { new Destination { Id = "0", Name = "- Все направления -" } };
-            Destination[] result = new Destination[items.Length + 1];
-            Array.Copy(item, result, 1);
-            Array.Copy(items, 0, result, 1, items.Length);
+            Destination[][] result = { destinationParents, destinations };
             return result;
         }
 

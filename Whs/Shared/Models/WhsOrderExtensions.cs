@@ -36,7 +36,12 @@ namespace Whs.Shared.Models
                 query = query.Where(e => e.Склад_Id == parameters.SearchWarehouseId);
 
             if (!(string.IsNullOrWhiteSpace(parameters.SearchDestinationId) || parameters.SearchDestinationId == "0"))
-                query = query.Where(e => e.НаправлениеДоставки_Id == parameters.SearchDestinationId);
+            {
+                if (parameters.SearchDestinationId == Guid.Empty.ToString())
+                    query = query.Where(e => e.НаправлениеДоставки_Id == Guid.Empty.ToString() && e.НаправлениеДоставкиРодитель_Id == Guid.Empty.ToString());
+                else
+                    query = query.Where(e => e.НаправлениеДоставки_Id == parameters.SearchDestinationId || e.НаправлениеДоставкиРодитель_Id == parameters.SearchDestinationId);
+            }
 
             if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
             {
