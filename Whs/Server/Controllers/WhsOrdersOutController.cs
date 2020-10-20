@@ -303,6 +303,7 @@ namespace Whs.Server.Controllers
             WhsOrderOut[] items = await _context.WhsOrdersOut.Include(e => e.Data).ThenInclude(e => e.ApplicationUser)
                 .Where(e => e.Проведен && e.Статус == WhsOrderStatus.Out.ToShipment && e.Склад_Id == warehouseId && !e.ЭтоПеремещение)
                 .OrderBy(e => e.Data.Where(e => e.Статус == WhsOrderStatus.Out.ToShipment).OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime)
+                .Take(_settings.OrdersPerPage)
                 .AsNoTracking().ToArrayAsync();
             return items;
         }
