@@ -155,7 +155,7 @@ namespace Whs.Server.Controllers
                     throw;
                 }
             }
-            _logger.LogInformation($"---> PostAsync: Ok {whsOrder.Документ_Name}");
+            _logger.LogInformation($"---> PostAsync: Ok {whsOrder.Документ_Name} - {whsOrder.Статус}");
             return CreatedAtAction("Get", new { id = whsOrder.Документ_Id }, whsOrder);
         }
 
@@ -166,7 +166,7 @@ namespace Whs.Server.Controllers
         {
             if (id != whsOrder.Документ_Id)
             {
-                _logger.LogError($"---> PutUAsync/{id}: BadRequest {whsOrder.Документ_Name}");
+                _logger.LogError($"---> PutAsync/{id}: BadRequest {whsOrder.Документ_Name}");
                 return BadRequest();
             }
 
