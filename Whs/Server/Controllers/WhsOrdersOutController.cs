@@ -227,7 +227,7 @@ namespace Whs.Server.Controllers
             }
 
             await CreateWhsOrderDataAsync(barcode, whsOrder);
-            _logger.LogInformation($"---> PutAsync: Ok {whsOrder.Документ_Name}");
+            _logger.LogInformation($"---> PutAsync: Ok {whsOrder.Документ_Name} - {whsOrder.Статус}");
             return NoContent();
         }
 
@@ -264,7 +264,6 @@ namespace Whs.Server.Controllers
                 string responseContent = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
                 {
-                    _logger.LogInformation($"---> PutTo1cAsync: Ok {whsOrder.Документ_Name}");
                     return JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
                 }
                 else
