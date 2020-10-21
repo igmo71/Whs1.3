@@ -9,9 +9,9 @@
 
 @code{
     [Parameter]
-    public EventCallback<string> OnSearchChanged { get; set; }
-    [Parameter]
     public string Value { get; set; }
+    [Parameter]
+    public EventCallback<string> OnSearchChanged { get; set; }
 
     public string SearchTerm { get; set; }
     private Timer _timer;
@@ -27,12 +27,5 @@
     {
         OnSearchChanged.InvokeAsync(SearchTerm);
         _timer.Dispose();
-    }
-
-    public void Clear()
-    {
-        SearchTerm = string.Empty;
-        //TODO : StateHasChanged() ?
-        OnSearchChanged.InvokeAsync(SearchTerm);
     }
 }

@@ -22,6 +22,8 @@
 @code {
     [Parameter]
     public Destination[][] Destinations { get; set; }
+    [Parameter]
+    public EventCallback<string> OnSelect { get; set; }
 
     private string destinationId { get; set; }
     [Parameter]
@@ -41,8 +43,6 @@
         }
     }
 
-    [Parameter]
-    public EventCallback<string> OnSelect { get; set; }
     private bool isInvokeDelegate = true;
     public void Set(string destinationId = "0")
     {
