@@ -12,6 +12,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
     {
         [Parameter] public string SearchParameters { get; set; }
         [Parameter] public string SearchStatus { get; set; }
+        [Parameter] public string SearchDestinationId { get; set; }
         [Inject] public HttpClient HttpClient { get; set; }
         [Inject] public IJSRuntime JSRuntime { get; set; }
         [Inject] public NavigationManager NavigationManager { get; set; }
@@ -43,7 +44,8 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private void Return()
         {
-            NavigationManager.NavigateTo($"WhsOrdersOut/CardsByQueType/{SearchStatus}");
+            string returnUri = string.IsNullOrEmpty(SearchDestinationId) ? $"WhsOrdersOut/CardsByQueType/{SearchStatus}" : $"WhsOrdersOut/CardsByQueType/{SearchStatus}/{SearchDestinationId}";
+            NavigationManager.NavigateTo(returnUri);
         }
     }
 }

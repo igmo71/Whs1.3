@@ -43,12 +43,11 @@
 
     [Parameter]
     public EventCallback<string> OnSelect { get; set; }
-
     private bool isInvokeDelegate = true;
-    public void Clear()
+    public void Set(string destinationId = "0")
     {
         isInvokeDelegate = false;
-        DestinationId = "0";
+        DestinationId = destinationId;
         isInvokeDelegate = true;
     }
 }

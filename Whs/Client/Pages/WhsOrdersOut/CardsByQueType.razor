@@ -3,6 +3,7 @@
 @using Whs.Shared.Models
 @page "/WhsOrdersOut/CardsByQueType"
 @page "/WhsOrdersOut/CardsByQueType/{SearchStatus}"
+@page "/WhsOrdersOut/CardsByQueType/{SearchStatus}/{SearchDestinationId}"
 @attribute [Authorize]
 
 <Notification @ref="Notification" />
@@ -19,7 +20,7 @@
         <SearchByNumber @ref="SearchByNumber" OnSearchChanged="SearchByNumberAsync" />
     </div>
     <div class="col">
-        @if (OrdersDto != null && OrdersDto.Destinations != null)
+        @if (OrdersDto?.Destinations != null)
         {
             <SearchByDestination @ref="SearchByDestination" Destinations="OrdersDto.Destinations" OnSelect="SearchByDestinationsAsync" />
         }
@@ -93,7 +94,7 @@ else
         {
             <div class="alert alert-info alert-dismissible fade show" role="alert">
                 <strong>@OrdersDto.MngrOrderName</strong>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close" @onclick="SearchByBarcodeClearAsync">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close" @onclick="() => SearchByBarcodeClearAsync(isGetOrders: true)">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
