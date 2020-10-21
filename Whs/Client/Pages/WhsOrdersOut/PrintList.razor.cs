@@ -10,7 +10,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
 {
     public partial class PrintList
     {
-        [Parameter] public string SearchParameters { get; set; }
+        [Parameter] public string SearchWarehouseId { get; set; }
         [Parameter] public string SearchStatus { get; set; }
         [Parameter] public string SearchDestinationId { get; set; }
         [Inject] public HttpClient HttpClient { get; set; }
@@ -28,7 +28,8 @@ namespace Whs.Client.Pages.WhsOrdersOut
         {
             try
             {
-                Orders = await HttpClient.GetFromJsonAsync<WhsOrderOut[]>($"api/WhsOrdersOut/PrintList?{SearchParameters}");
+                Orders = await HttpClient.GetFromJsonAsync<WhsOrderOut[]>(
+                    $"api/WhsOrdersOut/PrintList?SearchWarehouseId={SearchWarehouseId}&SearchStatus={SearchStatus}&SearchDestinationId={SearchDestinationId}");
             }
             catch (Exception ex)
             {
@@ -44,8 +45,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private void Return()
         {
-            string returnUri = string.IsNullOrEmpty(SearchDestinationId) ? $"WhsOrdersOut/CardsByQueType/{SearchStatus}" : $"WhsOrdersOut/CardsByQueType/{SearchStatus}/{SearchDestinationId}";
-            NavigationManager.NavigateTo(returnUri);
+            NavigationManager.NavigateTo($"WhsOrdersOut/CardsByQueType/{SearchStatus}/{SearchDestinationId}");
         }
     }
 }

@@ -106,7 +106,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
             }
             catch (Exception ex)
             {
-                await Notification.ShowAsync($"Ошибка загрузки ордеров.", 2);
+                await Notification.ShowAsync($"Ошибка загрузки расходных ордеров.", 2);
                 await ToBitrixErrors($"Ошибка загрузки расходных ордеров - {ex.Message}");
             }
         }
@@ -208,7 +208,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
 
         private void Print()
         {
-            NavigationManager.NavigateTo($"WhsOrdersOut/PrintList/{SearchParameters}/{OrderParameters.SearchStatus}/{OrderParameters.SearchDestinationId}");
+            NavigationManager.NavigateTo($"WhsOrdersOut/PrintList/{OrderParameters.SearchWarehouseId}/{OrderParameters.SearchStatus}/{OrderParameters.SearchDestinationId}");
         }
 
         private async Task ToBitrixErrors(string message)
