@@ -66,7 +66,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
                 else
                 {
                     await Notification.HideAsync("Cтатус изменить не удалось", 1);
-                    await ToBitrixErrors($"Cтатус изменить не удалось: {OrderDto.Item.Документ_Name}");
+                    await ToBitrixErrors($"Cтатус изменить не удалось: {OrderDto.Item.Документ_Name} {response.StatusCode} - {response.ReasonPhrase}");
                 }
             }
             catch (Exception ex)
