@@ -91,7 +91,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
                 OrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoIn>($"api/WhsOrdersIn/DtoByQueType?{SearchParameters}");
                 StateHasChanged();
                 if (OrdersDto.Items.Count == 0)
-                {                    
+                {
                     if (OrderParameters.SearchBarcode != null)
                     {
                         await Notification.ShowAsync($"По штрих коду ничего не найдено.", 1);

@@ -270,12 +270,12 @@ namespace Whs.Server.Controllers
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
-                    _logger.LogError($"---> PutTo1cAsync: Документ не найден {whsOrder.Документ_Name} {Environment.NewLine}" +
+                    _logger.LogError($"---> PutTo1cAsync: NotFound {whsOrder.Документ_Name} {Environment.NewLine}" +
                         $"Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
                 {
-                    _logger.LogError($"---> PutTo1cAsync: Внутренняя ошибка сервера {whsOrder.Документ_Name} {Environment.NewLine}" +
+                    _logger.LogError($"---> PutTo1cAsync: InternalServerError {whsOrder.Документ_Name} {Environment.NewLine}" +
                         $"Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
                 }
                 else
@@ -294,7 +294,7 @@ namespace Whs.Server.Controllers
 
         private bool Exists(string id) => _context.WhsOrdersOut.Any(e => e.Документ_Id == id);
 
-        // GET: api/WhsOrdersOut/ForShipment
+        // GET: api/WhsOrdersOut/Shipment
         [HttpGet("Shipment/{warehouseId}")]
         public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetShipmentAsync(string warehouseId)
         {
@@ -306,7 +306,7 @@ namespace Whs.Server.Controllers
             return items;
         }
 
-        // PUT: api/WhsOrdersOut/Shipping/5
+        // PUT: api/WhsOrdersOut/Shipment/5
         [HttpPut("Shipment/{barcode}")]
         public async Task<IActionResult> PutShipmentAsync(string barcode)
         {

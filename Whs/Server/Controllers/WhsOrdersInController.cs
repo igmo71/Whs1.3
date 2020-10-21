@@ -255,12 +255,12 @@ namespace Whs.Server.Controllers
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
-                    _logger.LogError($"---> PutTo1cAsync: Документ не найден {whsOrder.Документ_Name} {Environment.NewLine}" +
+                    _logger.LogError($"---> PutTo1cAsync: NotFound {whsOrder.Документ_Name} {Environment.NewLine}" +
                         $"Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
                 {
-                    _logger.LogError($"---> PutTo1cAsync: Внутренняя ошибка сервера {whsOrder.Документ_Name} {Environment.NewLine}" +
+                    _logger.LogError($"---> PutTo1cAsync: InternalServerError {whsOrder.Документ_Name} {Environment.NewLine}" +
                         $"Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
                 }
                 else
