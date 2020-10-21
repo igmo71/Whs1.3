@@ -81,7 +81,7 @@ else
         {
             <div class="alert alert-info alert-dismissible fade show" role="alert">
                 <strong>@OrdersDto.MngrOrderName</strong>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close" @onclick="SearchByBarcodeClearAsync">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close" @onclick="() => SearchByBarcodeClearAsync(isGetOrders: true)">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>

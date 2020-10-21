@@ -28,8 +28,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
         {
             try
             {
-                Orders = await HttpClient.GetFromJsonAsync<WhsOrderOut[]>(
-                    $"api/WhsOrdersOut/PrintList?SearchWarehouseId={SearchWarehouseId}&SearchStatus={SearchStatus}&SearchDestinationId={SearchDestinationId}");
+                Orders = await HttpClient.GetFromJsonAsync<WhsOrderOut[]>($"api/WhsOrdersOut/PrintList?SearchWarehouseId={SearchWarehouseId}&SearchStatus={SearchStatus}&SearchDestinationId={SearchDestinationId}");
             }
             catch (Exception ex)
             {

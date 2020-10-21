@@ -35,38 +35,35 @@ namespace Whs.Client.Pages.WhsOrdersIn
 
         protected override async Task OnInitializedAsync()
         {
-            DateTime beginTime = DateTime.Now;
-            OrderParameters = new WhsOrderParameters();
-            CreateSearchStatusButtons();
-            await GetWarehouseIdAsync();
+            await SetOrderParametersAsync();
             await GetWarehousesAsync();
             await GetOrdersDtoAsync();
             SetTimer(double.Parse(Configuration["TimerInterval"]), true);
-            Console.WriteLine($"OnInitializedAsync - duration: {DateTime.Now - beginTime}");
         }
 
-        private void CreateSearchStatusButtons()
+        private async Task SetOrderParametersAsync()
         {
-            SearchStatusButtons = new Dictionary<string, string>
+            OrderParameters = new WhsOrderParameters
             {
-                { WhsOrderStatus.In.ToReceive, "" },
-                { WhsOrderStatus.In.AtWork, ""},
-                { WhsOrderStatus.In.Received, ""}
+                SearchStatus = string.IsNullOrEmpty(SearchStatus) ? WhsOrderStatus.In.ToReceive : SearchStatus
             };
-            OrderParameters.SearchStatus = string.IsNullOrEmpty(SearchStatus) ? WhsOrderStatus.In.ToReceive : SearchStatus;
-            SearchStatusButtons[OrderParameters.SearchStatus] = "active";
-        }
 
-        private async Task GetWarehouseIdAsync()
-        {
-            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
+            AuthenticationState authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            ClaimsPrincipal user = authState.User;
             if (user.Identity.IsAuthenticated)
             {
                 warehouseId = user.FindFirst(c => c.Type == ClaimTypes.GroupSid)?.Value;
                 if (!user.IsInRole("Manager"))
                     OrderParameters.SearchWarehouseId = warehouseId;
             }
+
+            SearchStatusButtons = new Dictionary<string, string>
+            {
+                { WhsOrderStatus.In.ToReceive, "" },
+                { WhsOrderStatus.In.AtWork, ""},
+                { WhsOrderStatus.In.Received, ""}
+            };
+            SearchStatusButtons[OrderParameters.SearchStatus] = "active";
         }
 
         private async Task GetWarehousesAsync()
@@ -78,8 +75,6 @@ namespace Whs.Client.Pages.WhsOrdersIn
             catch (Exception ex)
             {
                 await Notification.ShowAsync($"Ошибка загрузки cписка складов.", 1);
-                Console.WriteLine($"GetWarehousesAsync - {ex.Message}");
-                Console.WriteLine($"{ex.StackTrace}");
                 await ToBitrixErrors($"Ошибка загрузки cписка складов - {ex.Message}");
             }
         }
@@ -88,7 +83,6 @@ namespace Whs.Client.Pages.WhsOrdersIn
         {
             try
             {
-                DateTime beginTime = DateTime.Now;
                 SearchParameters =
                     $"SearchBarcode={OrderParameters.SearchBarcode}&" +
                     $"SearchStatus={OrderParameters.SearchStatus}&" +
@@ -97,47 +91,44 @@ namespace Whs.Client.Pages.WhsOrdersIn
                 OrdersDto = await HttpClient.GetFromJsonAsync<WhsOrdersDtoIn>($"api/WhsOrdersIn/DtoByQueType?{SearchParameters}");
                 StateHasChanged();
                 if (OrdersDto.Items.Count == 0)
-                {
+                {                    
                     if (OrderParameters.SearchBarcode != null)
+                    {
+                        await Notification.ShowAsync($"По штрих коду ничего не найдено.", 1);
                         await SearchByBarcodeClearAsync();
+                    }
                 }
-                Console.WriteLine($"GetOrdersDtoAsync - duration: {DateTime.Now - beginTime}");
             }
             catch (Exception ex)
             {
-                await Notification.ShowAsync($"Ошибка загрузки ордеров.", 2);
-                Console.WriteLine($"GetOrdersDtoAsync - {ex.Message}");
-                Console.WriteLine($"{ex.StackTrace}");
+                await Notification.ShowAsync($"Ошибка загрузки приходных ордеров.", 2);
                 await ToBitrixErrors($"Ошибка загрузки приходных ордеров - {ex.Message}");
             }
         }
 
         private async Task SearchByWarehouseAsync(string searchWarehouseId)
         {
-            OrderParameters.SearchBarcode = null;
+            await SearchByBarcodeClearAsync();
             OrderParameters.SearchWarehouseId = searchWarehouseId;
             await GetOrdersDtoAsync();
         }
 
         private async Task SearchByNumberAsync(string searchTerm)
         {
-            OrderParameters.SearchBarcode = null;
+            await SearchByBarcodeClearAsync();
             OrderParameters.SearchTerm = searchTerm;
             await GetOrdersDtoAsync();
         }
 
-        private async Task SearchClearAsync(bool isGetOrders = false)
+        private void SearchByNumberClear()
         {
-            SearchByNumber.SearchTerm = string.Empty;
+            SearchByNumber.SearchTerm = "";
             OrderParameters.SearchTerm = null;
-            if (isGetOrders)
-                await GetOrdersDtoAsync();
         }
 
         private async Task SearchByStatus(string searchStatus)
         {
-            await SearchClearAsync();
-            OrderParameters.SearchBarcode = null;
+            await SearchByBarcodeClearAsync();
             OrderParameters.SearchStatus = searchStatus;
             await GetOrdersDtoAsync();
 
@@ -154,22 +145,22 @@ namespace Whs.Client.Pages.WhsOrdersIn
 
         private async Task SearchByBarcodeAsync()
         {
-            await SearchClearAsync();
+            SearchByNumberClear();
             OrderParameters.SearchBarcode = Barcode;
             await GetOrdersDtoAsync();
-
             if (!string.IsNullOrEmpty(OrdersDto.SingleId))
             {
                 OpenItem(OrdersDto.SingleId);
             }
         }
 
-        private async Task SearchByBarcodeClearAsync()
+        private async Task SearchByBarcodeClearAsync(bool isGetOrders = false)
         {
             OrdersDto.SingleId = null;
             OrdersDto.MngrOrderName = null;
             OrderParameters.SearchBarcode = null;
-            await GetOrdersDtoAsync();
+            if (isGetOrders)
+                await GetOrdersDtoAsync();
         }
 
         private void OpenItem(string id)
@@ -196,7 +187,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
 
         private void Print()
         {
-            NavigationManager.NavigateTo($"WhsOrdersIn/PrintList/{SearchParameters}/{OrderParameters.SearchStatus}");
+            NavigationManager.NavigateTo($"WhsOrdersIn/PrintList/{OrderParameters.SearchWarehouseId}/{OrderParameters.SearchStatus}");
         }
 
         private async Task ToBitrixErrors(string message)

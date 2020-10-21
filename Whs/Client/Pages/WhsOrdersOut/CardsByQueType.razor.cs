@@ -39,8 +39,8 @@ namespace Whs.Client.Pages.WhsOrdersOut
             await SetOrderParametersAsync();
             await GetWarehousesAsync();
             await GetOrdersDtoAsync();
-            SearchByDestination.Set(SearchDestinationId);
             SetTimer(double.Parse(Configuration["TimerInterval"]), true);
+            SearchByDestination.Set(SearchDestinationId);
         }
 
         private async Task SetOrderParametersAsync()

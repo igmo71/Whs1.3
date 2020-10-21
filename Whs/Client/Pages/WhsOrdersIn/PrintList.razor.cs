@@ -10,7 +10,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
 {
     public partial class PrintList
     {
-        [Parameter] public string SearchParameters { get; set; }
+        [Parameter] public string SearchWarehouseId { get; set; }
         [Parameter] public string SearchStatus { get; set; }
         [Inject] public HttpClient HttpClient { get; set; }
         [Inject] public IJSRuntime JSRuntime { get; set; }
@@ -27,7 +27,7 @@ namespace Whs.Client.Pages.WhsOrdersIn
         {
             try
             {
-                Orders = await HttpClient.GetFromJsonAsync<WhsOrderIn[]>($"api/WhsOrdersIn/PrintList?{SearchParameters}");
+                Orders = await HttpClient.GetFromJsonAsync<WhsOrderIn[]>($"api/WhsOrdersIn/PrintList?SearchWarehouseId={SearchWarehouseId}&SearchStatus={SearchStatus}");
             }
             catch (Exception ex)
             {
