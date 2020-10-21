@@ -197,8 +197,6 @@ namespace Whs.Server.Controllers
                 }
             }
 
-            await CreateWhsOrderDataAsync(barcode, whsOrder);
-
             IQueryable<ProductOut> productsToRemove = _context.ProductsOut.Where(e => e.Документ_Id == whsOrder.Документ_Id);
             _context.ProductsOut.RemoveRange(productsToRemove);
             IQueryable<MngrOrderOut> mngrOrdersToRemove = _context.MngrOrdersOut.Where(e => e.Документ_Id == whsOrder.Документ_Id);
@@ -227,6 +225,8 @@ namespace Whs.Server.Controllers
                     throw;
                 }
             }
+
+            await CreateWhsOrderDataAsync(barcode, whsOrder);
             _logger.LogInformation($"---> PutAsync: Ok {whsOrder.Документ_Name}");
             return NoContent();
         }
