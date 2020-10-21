@@ -256,31 +256,20 @@ namespace Whs.Server.Controllers
 
         private async Task<WhsOrderOut> PutTo1cAsync(WhsOrderOut whsOrder)
         {
-            string responseContent = string.Empty;
             try
             {
                 string content = JsonSerializer.Serialize(whsOrder);
                 StringContent stringContent = new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json);
                 HttpResponseMessage response = await _clientHttpService.PutAsync($"РасходныйОрдерНаТовары/{whsOrder.Документ_Id}", stringContent);
-                responseContent = await response.Content.ReadAsStringAsync();
+                string responseContent = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
                 {
                     _logger.LogInformation($"---> PutTo1cAsync: Ok {whsOrder.Документ_Name}");
                     return JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
                 }
-                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    _logger.LogError($"---> PutTo1cAsync: NotFound {whsOrder.Документ_Name} {Environment.NewLine}" +
-                        $"Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
-                }
-                else if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
-                {
-                    _logger.LogError($"---> PutTo1cAsync: InternalServerError {whsOrder.Документ_Name} {Environment.NewLine}" +
-                        $"Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
-                }
                 else
                 {
-                    _logger.LogError($"---> PutTo1cAsync: {whsOrder.Документ_Name}{Environment.NewLine}" +
+                    _logger.LogError($"---> PutTo1cAsync: {response.StatusCode} - {response.ReasonPhrase} {whsOrder.Документ_Name}{Environment.NewLine}" +
                         $"Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
                 }
             }
