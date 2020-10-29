@@ -89,8 +89,6 @@ namespace Whs.Server.Controllers
                 .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? QueType.Out.NoQue : e.Key, e => e.ToArray());
             dto.Destinations = await GetDestinationsAsync(parameters);
 
-            await NotifyLampAsync(items);
-
             return dto;
         }
 
@@ -176,10 +174,7 @@ namespace Whs.Server.Controllers
                     throw;
                 }
             }
-            _logger.LogInformation($"---> PostAsync: Ok {whsOrder.Документ_Name} - {whsOrder.Статус}");
-
-            await NotifySirenAsync(whsOrder);
-
+            _logger.LogInformation($"---> PostAsync: Ok {whsOrder.Документ_Name} - Статус: {whsOrder.Статус} - ТипОчереди: {whsOrder.ТипОчереди}");
             return CreatedAtAction("Get", new { id = whsOrder.Документ_Id }, whsOrder);
         }
 
@@ -236,7 +231,11 @@ namespace Whs.Server.Controllers
             }
 
             await CreateWhsOrderDataAsync(barcode, whsOrder);
-            _logger.LogInformation($"---> PutAsync: Ok {whsOrder.Документ_Name} - {whsOrder.Статус}");
+            _logger.LogInformation($"---> PutAsync: Ok {whsOrder.Документ_Name} - Статус: {whsOrder.Статус} - ТипОчереди: -{whsOrder.ТипОчереди}-");
+
+            await NotifySirenAsync(id);
+            await NotifyLampAsync();
+
             return NoContent();
         }
 
@@ -353,19 +352,43 @@ namespace Whs.Server.Controllers
             return Ok($"{whsOrder.НомерОчереди}  {whsOrder.Документ_Name}");
         }
 
-        private async Task NotifySirenAsync(WhsOrderOut whsOrder)
+        private async Task NotifySirenAsync(string id)
         {
-            if (whsOrder.Склад_Id == notificationWarehouseId && whsOrder.ТипОчереди == QueType.Out.LiveQue)
-                await _notficationClient.GetAsync("siren?params=0");
+            WhsOrderOut order = _context.WhsOrdersOut.Find(id);
+            _logger.LogWarning($"NotifySirenAsync----> id: {order?.Документ_Id} - {order?.Документ_Name}");
+            if (order != null)
+            {
+                _logger.LogWarning($"NotifySirenAsync----> Склад_Id: {order.Склад_Id}, Статус: {order.Статус}, ТипОчереди: -{order.ТипОчереди}-,  Склад: {order.Склад_Name}");
+                
+                if (order.Проведен && order.Склад_Id == notificationWarehouseId && order.ТипОчереди == QueType.Out.LiveQue)
+                {
+                    string requestUri = "siren?params=0";
+                    _logger.LogWarning($"NotifySirenAsync----> Url: {_notficationClient.BaseAddress}{requestUri}");
+                    await _notficationClient.GetAsync(requestUri);
+                }
+            }
         }
 
-        private async Task NotifyLampAsync(IEnumerable<WhsOrderOut> orders)
+        private async Task NotifyLampAsync()
         {
-            int itemsCount = orders.Where(e => e.Склад_Id == notificationWarehouseId && e.ТипОчереди == QueType.Out.LiveQue && e.Статус == WhsOrderStatus.Out.Prepared).Count();
+            var itemsCount = _context.WhsOrdersOut
+                .Where(e => e.Проведен && e.Склад_Id == notificationWarehouseId && e.ТипОчереди == QueType.Out.LiveQue && e.Статус == WhsOrderStatus.Out.Prepared)
+                .AsNoTracking()
+                .Count();
+            _logger.LogWarning($"NotifyLampAsync----> itemsCount: {itemsCount}");
+            string requestUri;
             if (itemsCount > 0)
-                await _notficationClient.GetAsync("lamp?params=0");
+            {
+                requestUri = "lamp?params=0";
+                _logger.LogWarning($"NotifyLampAsync----> Url: {_notficationClient.BaseAddress}{requestUri}");
+                await _notficationClient.GetAsync(requestUri);
+            }
             if (itemsCount == 0)
-                await _notficationClient.GetAsync("lamp?params=1");
+            {
+                requestUri = "lamp?params=1";
+                _logger.LogWarning($"NotifyLampAsync----> Url: {_notficationClient.BaseAddress}{requestUri}");
+                await _notficationClient.GetAsync(requestUri);
+            }
         }
 
         // GET: api/WhsOrdersOut/
