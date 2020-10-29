@@ -14,4 +14,12 @@
         public string OData { get; set; }
         public string HttpService { get; set; }
     }
+
+
+    public class HttpNotficationClientSettings
+    {
+        public const string HttpNotficationClient = "HttpNotficationClient";
+
+        public string BaseAddress { get; set; }
+    }
 }

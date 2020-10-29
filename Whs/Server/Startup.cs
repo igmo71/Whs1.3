@@ -76,6 +76,14 @@ namespace Whs.Server
                         "Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{httpClientSettings.Username}:{httpClientSettings.Password}")));
             });
 
+            HttpNotficationClientSettings httpNotficationClientSettings = Configuration.GetSection(HttpNotficationClientSettings.HttpNotficationClient).Get<HttpNotficationClientSettings>();
+
+            services.AddHttpClient("NotficationClient", httpClient =>
+            {
+                httpClient.BaseAddress = new Uri($"{httpNotficationClientSettings.BaseAddress}");
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            });
+
             services.AddControllersWithViews();
             services.AddRazorPages();
         }

@@ -25,6 +25,8 @@ namespace Whs.Server.Controllers
         private readonly WhsOrderSettings _settings;
         private readonly HttpClient _clientHttpService;
         private readonly ILogger<WhsOrdersOutController> _logger;
+        private readonly HttpClient _notficationClient;
+        private readonly string notificationWarehouseId = "b9df4055-74a3-11e0-ab18-000c29dcd88a";
 
         public WhsOrdersOutController(ApplicationDbContext context, IConfiguration configuration, IHttpClientFactory clientFactory, ILogger<WhsOrdersOutController> logger)
         {
@@ -32,6 +34,7 @@ namespace Whs.Server.Controllers
             _clientHttpService = clientFactory.CreateClient("ClientHttpService");
             _settings = configuration.GetSection(WhsOrderSettings.WhsOrder).Get<WhsOrderSettings>();
             _logger = logger;
+            _notficationClient = clientFactory.CreateClient("NotficationClient");
         }
 
         // GET: api/WhsOrdersOut/PrintList
@@ -85,6 +88,9 @@ namespace Whs.Server.Controllers
                 .GroupBy(e => e.ТипОчереди)
                 .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? QueType.Out.NoQue : e.Key, e => e.ToArray());
             dto.Destinations = await GetDestinationsAsync(parameters);
+
+            await NotifyLampAsync(items);
+
             return dto;
         }
 
@@ -171,6 +177,9 @@ namespace Whs.Server.Controllers
                 }
             }
             _logger.LogInformation($"---> PostAsync: Ok {whsOrder.Документ_Name} - {whsOrder.Статус}");
+
+            await NotifySirenAsync(whsOrder);
+
             return CreatedAtAction("Get", new { id = whsOrder.Документ_Id }, whsOrder);
         }
 
@@ -342,6 +351,21 @@ namespace Whs.Server.Controllers
             await CreateWhsOrderDataAsync(null, whsOrder);
             _logger.LogInformation($"---> PutShipmentAsync: Ok {whsOrder.Документ_Name} - {whsOrder.Статус}");
             return Ok($"{whsOrder.НомерОчереди}  {whsOrder.Документ_Name}");
+        }
+
+        private async Task NotifySirenAsync(WhsOrderOut whsOrder)
+        {
+            if (whsOrder.Склад_Id == notificationWarehouseId && whsOrder.ТипОчереди == QueType.Out.LiveQue)
+                await _notficationClient.GetAsync("siren?params=0");
+        }
+
+        private async Task NotifyLampAsync(IEnumerable<WhsOrderOut> orders)
+        {
+            int itemsCount = orders.Where(e => e.Склад_Id == notificationWarehouseId && e.ТипОчереди == QueType.Out.LiveQue && e.Статус == WhsOrderStatus.Out.Prepared).Count();
+            if (itemsCount > 0)
+                await _notficationClient.GetAsync("lamp?params=0");
+            if (itemsCount == 0)
+                await _notficationClient.GetAsync("lamp?params=1");
         }
 
         // GET: api/WhsOrdersOut/
