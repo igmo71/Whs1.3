@@ -76,9 +76,16 @@ namespace Whs.Server
                         "Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{httpClientSettings.Username}:{httpClientSettings.Password}")));
             });
 
-            //  Configure HttpBitrixClient
+            //  Configure HttpBitrixClients
             HttpBitrixClientSettings httpBitrixClientSettings = Configuration.GetSection(HttpBitrixClientSettings.HttpBitrixClient).Get<HttpBitrixClientSettings>();
-            services.AddHttpClient("BitrixClient", httpClient =>
+            
+            services.AddHttpClient("ErrorBitrixClient", httpClient =>
+            {
+                httpClient.BaseAddress = new Uri($"{httpBitrixClientSettings.BaseAddress}{httpBitrixClientSettings.Service.Error}");
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            });
+            
+            services.AddHttpClient("SirenBitrixClient", httpClient =>
             {
                 httpClient.BaseAddress = new Uri($"{httpBitrixClientSettings.BaseAddress}{httpBitrixClientSettings.Service.Siren}");
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

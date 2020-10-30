@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,18 +11,31 @@ namespace Whs.Server.Controllers
     [ApiController]
     public class ToBitrixErrorsController : ControllerBase
     {
-        private readonly string[] to = { "318", "2844" };
+        private readonly ILogger<ToBitrixErrorsController> _logger;
+        private readonly HttpClient _bitrixClient;
+        private readonly string[] recipients;
+
+        public ToBitrixErrorsController(IConfiguration configuration, IHttpClientFactory clientFactory, ILogger<ToBitrixErrorsController> logger)
+        {
+            _bitrixClient = clientFactory.CreateClient("ErrorBitrixClient");
+            recipients = configuration.GetSection("ErrorRecipients").Get<string[]>();
+            _logger = logger;
+        }
+
         // api/ToBitrixErrors/message
         [HttpPost("{message}")]
-        public async Task PostAsync(string message = "Hello, World!")
+        public async Task PostAsync(string message)
         {
-            HttpClient _clientBitrix = new HttpClient { BaseAddress = new Uri("https://portal.dobroga.ru/rest/2049/yyvnhvfv64px921o/im.notify.json") };
-            string requestUri;
-            HttpResponseMessage response;
-            foreach (var item in to)
+            try
             {
-                requestUri = $"?message={message}&to={item}";
-                response = await _clientBitrix.PostAsync(requestUri, null);
+                foreach (string recipient in recipients)
+                {
+                    _ = await _bitrixClient.PostAsync($"?message={message}&to={recipient}", null);
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"---> PostAsync: Exception - {ex.Message}");
             }
         }
     }

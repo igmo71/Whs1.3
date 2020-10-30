@@ -15,7 +15,6 @@
         public string HttpService { get; set; }
     }
 
-
     public class HttpBitrixClientSettings
     {
         public const string HttpBitrixClient = "HttpBitrixClient";
@@ -25,14 +24,7 @@
     }
     public class BitrixService
     {
+        public string Error { get; set; }
         public string Siren { get; set; }
-    }
-
-
-    public class HttpNotficationClientSettings
-    {
-        public const string HttpNotficationClient = "HttpNotficationClient";
-
-        public string BaseAddress { get; set; }
     }
 }

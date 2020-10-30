@@ -26,14 +26,16 @@ namespace Whs.Server.Controllers
         private readonly HttpClient _clientHttpService;
         private readonly HttpClient _bitrixClient;
         private readonly ILogger<WhsOrdersOutController> _logger;
+        private readonly bool _isNotifySiren;
 
         public WhsOrdersOutController(ApplicationDbContext context, IConfiguration configuration, IHttpClientFactory clientFactory, ILogger<WhsOrdersOutController> logger)
         {
             _context = context;
             _clientHttpService = clientFactory.CreateClient("ClientHttpService");
-            _bitrixClient = clientFactory.CreateClient("BitrixClient");
+            _bitrixClient = clientFactory.CreateClient("SirenBitrixClient");
             _settings = configuration.GetSection(WhsOrderSettings.WhsOrder).Get<WhsOrderSettings>();
             _logger = logger;
+            _isNotifySiren = configuration.GetSection("IsNotifySiren").Get<bool>();
         }
 
         // GET: api/WhsOrdersOut/PrintList
@@ -232,7 +234,8 @@ namespace Whs.Server.Controllers
             await CreateWhsOrderDataAsync(barcode, whsOrder);
             _logger.LogInformation($"---> PutAsync: Ok {whsOrder.Документ_Name} - Статус: {whsOrder.Статус} - ТипОчереди: -{whsOrder.ТипОчереди}-");
 
-            await NotifySirenAsync(id);
+            if (_isNotifySiren)
+                await NotifySirenAsync(id);
 
             return NoContent();
         }
@@ -284,6 +287,34 @@ namespace Whs.Server.Controllers
             }
             _logger.LogWarning($"---> PutTo1cAsync: NULL {whsOrder.Документ_Name}");
             return null;
+        }
+
+        private async Task NotifySirenAsync(string id)
+        {
+            try
+            {
+                WhsOrderOut order = _context.WhsOrdersOut.Find(id);
+                if (order != null)
+                {
+                    if (order.Проведен && order.ТипОчереди == QueType.Out.LiveQue && order.Статус == WhsOrderStatus.Out.Prepared)
+                    {
+                        _ = await _bitrixClient.GetAsync($"?type=siren&params=0&sklad={order.Склад_Name}");
+                    }
+
+                    int ordersCount = _context.WhsOrdersOut
+                        .Where(e => e.Склад_Name == order.Склад_Name && e.Проведен && e.ТипОчереди == QueType.Out.LiveQue && e.Статус == WhsOrderStatus.Out.Prepared)
+                        .Count();
+                    if (ordersCount == 0)
+                    {
+                        _ = await _bitrixClient.GetAsync($"?type=lamp&params=1&sklad={order.Склад_Name}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"---> NotifySirenAsync: Exception - {ex.Message}");
+                return;
+            }
         }
 
         private bool Exists(string id) => _context.WhsOrdersOut.Any(e => e.Документ_Id == id);
@@ -348,34 +379,6 @@ namespace Whs.Server.Controllers
             await CreateWhsOrderDataAsync(null, whsOrder);
             _logger.LogInformation($"---> PutShipmentAsync: Ok {whsOrder.Документ_Name} - {whsOrder.Статус}");
             return Ok($"{whsOrder.НомерОчереди}  {whsOrder.Документ_Name}");
-        }
-
-        private async Task NotifySirenAsync(string id)
-        {
-            try
-            {
-                WhsOrderOut order = _context.WhsOrdersOut.Find(id);
-                if (order != null)
-                {
-                    if (order.Проведен && order.ТипОчереди == QueType.Out.LiveQue && order.Статус == WhsOrderStatus.Out.Prepared)
-                    {
-                        _ = await _bitrixClient.GetAsync($"?type=siren&params=0&sklad={order.Склад_Name}");
-                    }
-
-                    int ordersCount = _context.WhsOrdersOut
-                        .Where(e => e.Склад_Name == order.Склад_Name && e.Проведен && e.ТипОчереди == QueType.Out.LiveQue && e.Статус == WhsOrderStatus.Out.Prepared)
-                        .Count();
-                    if (ordersCount == 0)
-                    {
-                        _ = await _bitrixClient.GetAsync($"?type=lamp&params=1&sklad={order.Склад_Name}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"---> NotifySirenAsync: Exception - {ex.Message}");
-                return;
-            }
         }
 
         // GET: api/WhsOrdersOut/
