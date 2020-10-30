@@ -60,7 +60,7 @@ namespace Whs.Client.Identity
                 }
                 catch (JsonException ex)
                 {
-                    Console.WriteLine($"ExtractRolesFromJWT JsonException: {Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                    Console.WriteLine($"ExtractRolesFromJWT JsonException:  {ex.Message}");
                 }
 
                 keyValuePairs.Remove(ClaimTypes.Role);

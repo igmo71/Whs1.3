@@ -66,8 +66,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
             catch (Exception ex)
             {
                 await Notification.ShowAsync($"Ошибка отгрузки.", 1);
-                Console.WriteLine($"ScannedBarcodeAsync - Exception: {ex.Message}");
-                Console.WriteLine($"{ex.StackTrace}");
+                Console.WriteLine($"ScannedBarcodeAsync Exception: {ex.Message}");
             }
         }
 
