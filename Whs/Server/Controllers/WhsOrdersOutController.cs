@@ -27,7 +27,7 @@ namespace Whs.Server.Controllers
         private readonly ILogger<WhsOrdersOutController> _logger;
         //private readonly HttpClient _notficationClient;
         private readonly HttpClient _bitrixClient;
-        private readonly string notificationWarehouseId = "b9df4055-74a3-11e0-ab18-000c29dcd88a";
+        //private readonly string notificationWarehouseId = "b9df4055-74a3-11e0-ab18-000c29dcd88a";
 
         public WhsOrdersOutController(ApplicationDbContext context, IConfiguration configuration, IHttpClientFactory clientFactory, ILogger<WhsOrdersOutController> logger)
         {
@@ -236,7 +236,6 @@ namespace Whs.Server.Controllers
             _logger.LogInformation($"---> PutAsync: Ok {whsOrder.Документ_Name} - Статус: {whsOrder.Статус} - ТипОчереди: -{whsOrder.ТипОчереди}-");
 
             await NotifySirenAsync(id);
-            await NotifyLampAsync();
 
             return NoContent();
         }
@@ -359,41 +358,32 @@ namespace Whs.Server.Controllers
             try
             {
                 WhsOrderOut order = _context.WhsOrdersOut.Find(id);
-                if (order != null)
+                if (order != null && order.Проведен && order.ТипОчереди == QueType.Out.LiveQue && order.Статус == WhsOrderStatus.Out.Prepared)
                 {
-                    //_logger.LogWarning($"NotifySirenAsync----> Склад_Id: {order.Склад_Id}, Статус: {order.Статус}, ТипОчереди: {order.ТипОчереди},  Склад: {order.Склад_Name}");
-
-                    if (order.Проведен && order.Склад_Id == notificationWarehouseId && order.ТипОчереди == QueType.Out.LiveQue && order.Статус == WhsOrderStatus.Out.Prepared)
-                    {
-                        string requestUri = "?type=siren&params=0&sklad=_Склад 1";
-                        //_logger.LogWarning($"NotifySirenAsync----> Url: {_bitrixClient.BaseAddress}{requestUri}");
-                        await _bitrixClient.GetAsync(requestUri);
-                    }
+                    string sirenRequestUri = "?type=siren&params=0&sklad=_Склад 1";
+                    await _bitrixClient.GetAsync(sirenRequestUri);
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError($"--->NotifySirenAsync: Siren - {ex.Message}");
                 return;
             }
-        }
 
-        private async Task NotifyLampAsync()
-        {
             try
             {
-                int itemsCount = _context.WhsOrdersOut
-                    .Where(e => e.Проведен && e.Склад_Id == notificationWarehouseId && e.ТипОчереди == QueType.Out.LiveQue && e.Статус == WhsOrderStatus.Out.Prepared)
+                int ordersCount = _context.WhsOrdersOut
+                    .Where(e => e.Проведен && e.ТипОчереди == QueType.Out.LiveQue && e.Статус == WhsOrderStatus.Out.Prepared)
                     .Count();
-                _logger.LogWarning($"NotifyLampAsync----> itemsCount: {itemsCount}");
-                if (itemsCount == 0)
+                if (ordersCount == 0)
                 {
-                    string requestUri = "?type=lamp&params=1&sklad=_Склад 1";
-                    _logger.LogWarning($"NotifyLampAsync---->Url: {_bitrixClient.BaseAddress}{requestUri}");
-                    await _bitrixClient.GetAsync(requestUri);
+                    string lampRequestUri = "?type=lamp&params=1&sklad=_Склад 1";
+                    await _bitrixClient.GetAsync(lampRequestUri);
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError($"--->NotifySirenAsync: Lamp - {ex.Message}");
                 return;
             }
         }
