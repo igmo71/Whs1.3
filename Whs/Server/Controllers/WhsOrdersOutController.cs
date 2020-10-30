@@ -355,32 +355,25 @@ namespace Whs.Server.Controllers
             try
             {
                 WhsOrderOut order = _context.WhsOrdersOut.Find(id);
-                if (order != null && order.Проведен && order.ТипОчереди == QueType.Out.LiveQue && order.Статус == WhsOrderStatus.Out.Prepared)
+                if (order != null)
                 {
-                    string sirenRequestUri = "?type=siren&params=0&sklad=_Склад 1";
-                    await _bitrixClient.GetAsync(sirenRequestUri);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"--->NotifySirenAsync: Siren - {ex.Message}");
-                return;
-            }
+                    if (order.Проведен && order.ТипОчереди == QueType.Out.LiveQue && order.Статус == WhsOrderStatus.Out.Prepared)
+                    {
+                        _ = await _bitrixClient.GetAsync($"?type=siren&params=0&sklad={order.Склад_Name}");
+                    }
 
-            try
-            {
-                int ordersCount = _context.WhsOrdersOut
-                    .Where(e => e.Проведен && e.ТипОчереди == QueType.Out.LiveQue && e.Статус == WhsOrderStatus.Out.Prepared)
-                    .Count();
-                if (ordersCount == 0)
-                {
-                    string lampRequestUri = "?type=lamp&params=1&sklad=_Склад 1";
-                    await _bitrixClient.GetAsync(lampRequestUri);
+                    int ordersCount = _context.WhsOrdersOut
+                        .Where(e => e.Склад_Name == order.Склад_Name && e.Проведен && e.ТипОчереди == QueType.Out.LiveQue && e.Статус == WhsOrderStatus.Out.Prepared)
+                        .Count();
+                    if (ordersCount == 0)
+                    {
+                        _ = await _bitrixClient.GetAsync($"?type=lamp&params=1&sklad={order.Склад_Name}");
+                    }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"--->NotifySirenAsync: Lamp - {ex.Message}");
+                _logger.LogError($"---> NotifySirenAsync: Exception - {ex.Message}");
                 return;
             }
         }
