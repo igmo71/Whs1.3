@@ -33,7 +33,7 @@ namespace Whs.Server.Controllers
                     _ = await _bitrixClient.PostAsync($"?message={message}&to={recipient}", null);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"---> PostAsync: Exception - {ex.Message}");
             }

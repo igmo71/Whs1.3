@@ -78,13 +78,13 @@ namespace Whs.Server
 
             //  Configure HttpBitrixClients
             HttpBitrixClientSettings httpBitrixClientSettings = Configuration.GetSection(HttpBitrixClientSettings.HttpBitrixClient).Get<HttpBitrixClientSettings>();
-            
+
             services.AddHttpClient("ErrorBitrixClient", httpClient =>
             {
                 httpClient.BaseAddress = new Uri($"{httpBitrixClientSettings.BaseAddress}{httpBitrixClientSettings.Service.Error}");
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             });
-            
+
             services.AddHttpClient("SirenBitrixClient", httpClient =>
             {
                 httpClient.BaseAddress = new Uri($"{httpBitrixClientSettings.BaseAddress}{httpBitrixClientSettings.Service.Siren}");
