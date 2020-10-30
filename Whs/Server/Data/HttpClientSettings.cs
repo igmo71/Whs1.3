@@ -16,6 +16,19 @@
     }
 
 
+    public class HttpBitrixClientSettings
+    {
+        public const string HttpBitrixClient = "HttpBitrixClient";
+
+        public string BaseAddress { get; set; }
+        public BitrixService Service { get; set; }
+    }
+    public class BitrixService
+    {
+        public string Siren { get; set; }
+    }
+
+
     public class HttpNotficationClientSettings
     {
         public const string HttpNotficationClient = "HttpNotficationClient";
