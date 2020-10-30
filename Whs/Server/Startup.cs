@@ -84,14 +84,6 @@ namespace Whs.Server
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             });
 
-            //  Configure HttpBitrixClient
-            HttpNotficationClientSettings httpNotficationClientSettings = Configuration.GetSection(HttpNotficationClientSettings.HttpNotficationClient).Get<HttpNotficationClientSettings>();
-            services.AddHttpClient("NotficationClient", httpClient =>
-            {
-                httpClient.BaseAddress = new Uri($"{httpNotficationClientSettings.BaseAddress}");
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            });
-
             services.AddControllersWithViews();
             services.AddRazorPages();
         }

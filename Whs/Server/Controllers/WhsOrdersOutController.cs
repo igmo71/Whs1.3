@@ -24,19 +24,16 @@ namespace Whs.Server.Controllers
         private readonly ApplicationDbContext _context;
         private readonly WhsOrderSettings _settings;
         private readonly HttpClient _clientHttpService;
-        private readonly ILogger<WhsOrdersOutController> _logger;
-        //private readonly HttpClient _notficationClient;
         private readonly HttpClient _bitrixClient;
-        //private readonly string notificationWarehouseId = "b9df4055-74a3-11e0-ab18-000c29dcd88a";
+        private readonly ILogger<WhsOrdersOutController> _logger;
 
         public WhsOrdersOutController(ApplicationDbContext context, IConfiguration configuration, IHttpClientFactory clientFactory, ILogger<WhsOrdersOutController> logger)
         {
             _context = context;
             _clientHttpService = clientFactory.CreateClient("ClientHttpService");
+            _bitrixClient = clientFactory.CreateClient("BitrixClient");
             _settings = configuration.GetSection(WhsOrderSettings.WhsOrder).Get<WhsOrderSettings>();
             _logger = logger;
-            //_notficationClient = clientFactory.CreateClient("NotficationClient");
-            _bitrixClient = clientFactory.CreateClient("BitrixClient");
         }
 
         // GET: api/WhsOrdersOut/PrintList
