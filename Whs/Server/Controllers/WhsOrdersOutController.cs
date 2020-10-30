@@ -296,16 +296,20 @@ namespace Whs.Server.Controllers
                 WhsOrderOut order = _context.WhsOrdersOut.Find(id);
                 if (order != null)
                 {
+                    _logger.LogInformation($"---> NotifySirenAsync: order - {order?.Номер} {order.Дата} - ТипОчереди: {order?.ТипОчереди}; Статус: {order?.Статус}; Проведен: {order?.Проведен}.");
                     if (order.Проведен && order.ТипОчереди == QueType.Out.LiveQue && order.Статус == WhsOrderStatus.Out.Prepared)
                     {
+                        _logger.LogInformation($"---> NotifySirenAsync: Siren - Buzz");
                         _ = await _bitrixClient.GetAsync($"?type=siren&params=0&sklad={order.Склад_Name}");
                     }
 
                     int ordersCount = _context.WhsOrdersOut
                         .Where(e => e.Склад_Name == order.Склад_Name && e.Проведен && e.ТипОчереди == QueType.Out.LiveQue && e.Статус == WhsOrderStatus.Out.Prepared)
                         .Count();
+                    _logger.LogInformation($"---> NotifySirenAsync: ordersCount - {ordersCount}");
                     if (ordersCount == 0)
                     {
+                        _logger.LogInformation($"---> NotifySirenAsync: Lamp - Switch Off");
                         _ = await _bitrixClient.GetAsync($"?type=lamp&params=1&sklad={order.Склад_Name}");
                     }
                 }
