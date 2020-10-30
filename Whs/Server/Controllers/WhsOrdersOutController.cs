@@ -283,7 +283,7 @@ namespace Whs.Server.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"---> PutTo1cAsync: {whsOrder.Документ_Name}{Environment.NewLine}{exception.Message}{Environment.NewLine}{exception.StackTrace} ");
+                _logger.LogError($"---> PutTo1cAsync: Exception {whsOrder.Документ_Name}{Environment.NewLine}{exception.Message}");
             }
             _logger.LogWarning($"---> PutTo1cAsync: NULL {whsOrder.Документ_Name}");
             return null;
