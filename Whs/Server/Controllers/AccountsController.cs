@@ -23,12 +23,12 @@ namespace Whs.Server.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfigurationSection _jwtSettings;
         private const string _defaultPassword = "1qaz@WSX";
+        private const string _defaultRole = "User";
 
         public AccountsController(UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _jwtSettings = configuration.GetSection("JWT");
-
         }
 
         [HttpPost("registration")]
@@ -52,7 +52,7 @@ namespace Whs.Server.Controllers
                 return BadRequest(new RegistrationResponseDto { Errors = errors });
             }
 
-            await _userManager.AddToRoleAsync(user, "User");
+            _ = await _userManager.AddToRoleAsync(user, _defaultRole);
 
             return StatusCode(201);
         }
