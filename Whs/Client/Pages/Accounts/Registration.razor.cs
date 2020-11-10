@@ -40,8 +40,6 @@ namespace Whs.Client.Pages.Accounts
         public async Task Register()
         {
             ShowRegistrationErrors = false;
-            if (string.IsNullOrEmpty(_userForRegistration.Password))
-                _userForRegistration.Password = "1qaz@WSX";
             var result = await AuthenticationService.RegisterUser(_userForRegistration);
 
             if (!result.IsSuccessfulRegistration)

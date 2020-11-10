@@ -22,6 +22,7 @@ namespace Whs.Server.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfigurationSection _jwtSettings;
+        private const string _defaultPassword = "1qaz@WSX";
 
         public AccountsController(UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
@@ -36,7 +37,7 @@ namespace Whs.Server.Controllers
             if (userForRegistration == null || !ModelState.IsValid)
                 return BadRequest();
 
-            var user = new ApplicationUser
+            ApplicationUser user = new ApplicationUser
             {
                 FullName = userForRegistration.FullName,
                 UserName = userForRegistration.Email,
@@ -44,7 +45,7 @@ namespace Whs.Server.Controllers
                 WarehouseId = userForRegistration.WarehouseId
             };
 
-            var result = await _userManager.CreateAsync(user, userForRegistration.Password);
+            IdentityResult result = await _userManager.CreateAsync(user, userForRegistration.Password ?? _defaultPassword);
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description);
@@ -130,7 +131,6 @@ namespace Whs.Server.Controllers
 
             return tokenOptions;
         }
-
 
         [HttpGet("GetUsers")]
         public IEnumerable<ApplicationUser> GetUsersAsync([FromQuery] ApplicationUserParameters parameters) =>
