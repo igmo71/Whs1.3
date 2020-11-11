@@ -114,7 +114,7 @@ namespace Whs.Server.Controllers
 
             if (item == null)
             {
-                _logger.LogError($"---> GetDto/{id}: NotFound");
+                _logger.LogError($"---> GetDto: NotFound; id = {id}");
                 return NotFound();
             }
 
@@ -146,16 +146,18 @@ namespace Whs.Server.Controllers
             {
                 if (Exists(whsOrder.Документ_Id))
                 {
-                    _logger.LogError($"---> PostAsync: DbUpdateException Conflict {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PostAsync: DbUpdateException Conflict; {whsOrder?.Документ_Name};" +
+                        $"{Environment.NewLine}{ex.Message}");
                     return Conflict();
                 }
                 else
                 {
-                    _logger.LogError($"---> PostAsync: DbUpdateException {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PostAsync: DbUpdateException; {whsOrder?.Документ_Name};" +
+                        $"{Environment.NewLine}{ex.Message}");
                     throw;
                 }
             }
-            _logger.LogInformation($"---> PostAsync: Ok {whsOrder.Документ_Name} - {whsOrder.Статус}");
+            _logger.LogInformation($"---> PostAsync: Ok; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
             return CreatedAtAction("Get", new { id = whsOrder.Документ_Id }, whsOrder);
         }
 
@@ -166,7 +168,7 @@ namespace Whs.Server.Controllers
         {
             if (id != whsOrder.Документ_Id)
             {
-                _logger.LogError($"---> PutAsync/{id}: BadRequest {whsOrder.Документ_Name}");
+                _logger.LogError($"---> PutAsync: BadRequest; {whsOrder?.Документ_Name}; id = {id};");
                 return BadRequest();
             }
 
@@ -177,7 +179,7 @@ namespace Whs.Server.Controllers
                 whsOrder = await PutTo1cAsync(whsOrder);
                 if (whsOrder == null)
                 {
-                    _logger.LogError($"---> PutAsync/{id}: Problem 1C");
+                    _logger.LogError($"---> PutAsync: Problem 1C; id = {id};"); 
                     return Problem(detail: "Problem 1C");
                 }
             }
@@ -201,18 +203,20 @@ namespace Whs.Server.Controllers
             {
                 if (!Exists(id))
                 {
-                    _logger.LogError($"---> PutAsync/{id}: DbUpdateConcurrencyException NotFound {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PutAsync: DbUpdateConcurrencyException NotFound; {whsOrder?.Документ_Name}; id = {id};" +
+                        $"{Environment.NewLine}{ex.Message}");
                     return NotFound();
                 }
                 else
                 {
-                    _logger.LogError($"---> PutAsync/{id}: DbUpdateConcurrencyException {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PutAsync: DbUpdateConcurrencyException {whsOrder?.Документ_Name}; id = {id};" +
+                        $"{Environment.NewLine}{ex.Message}");
                     throw;
                 }
             }
 
             await CreateWhsOrderDataAsync(barcode, whsOrder);
-            _logger.LogInformation($"---> PutAsync: Ok {whsOrder.Документ_Name} - {whsOrder.Статус}");
+            _logger.LogInformation($"---> PutAsync: Ok; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
             return NoContent();
         }
 
@@ -253,15 +257,15 @@ namespace Whs.Server.Controllers
                 }
                 else
                 {
-                    _logger.LogError($"---> PutTo1cAsync: {response.StatusCode} - {response.ReasonPhrase} {whsOrder.Документ_Name}{Environment.NewLine}" +
-                        $"Ошибка: {JsonSerializer.Deserialize<Response1cIn>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
+                    _logger.LogError($"---> PutTo1cAsync: Response StatusCode = {response.StatusCode} ({response.ReasonPhrase}); {whsOrder.Документ_Name};" +
+                        $"{Environment.NewLine}Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
                 }
             }
             catch (Exception exception)
             {
-                _logger.LogError($"---> PutTo1cAsync: Exception {whsOrder.Документ_Name}{Environment.NewLine}{exception.Message}");
+                _logger.LogError($"---> PutTo1cAsync: Exception; {whsOrder.Документ_Name};" +
+                    $"{Environment.NewLine}{exception.Message}");
             }
-            _logger.LogWarning($"---> PutTo1cAsync: NULL {whsOrder.Документ_Name}");
             return null;
         }
 

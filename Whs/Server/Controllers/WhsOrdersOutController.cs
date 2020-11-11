@@ -134,7 +134,7 @@ namespace Whs.Server.Controllers
 
             if (item == null)
             {
-                _logger.LogError($"---> GetDto/{id}: NotFound");
+                _logger.LogError($"---> GetDtoAsync: NotFound; id = {id};");
                 return NotFound();
             }
 
@@ -166,16 +166,18 @@ namespace Whs.Server.Controllers
             {
                 if (Exists(whsOrder.Документ_Id))
                 {
-                    _logger.LogError($"---> PostAsync: DbUpdateException Conflict {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PostAsync: DbUpdateException Conflict; {whsOrder?.Документ_Name};" +
+                        $"{Environment.NewLine}{ex.Message}");
                     return Conflict();
                 }
                 else
                 {
-                    _logger.LogError($"---> PostAsync: DbUpdateException {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PostAsync: DbUpdateException; {whsOrder?.Документ_Name};" +
+                        $"{Environment.NewLine}{ex.Message}");
                     throw;
                 }
             }
-            _logger.LogInformation($"---> PostAsync: Ok {whsOrder.Документ_Name} - Статус: {whsOrder.Статус} - ТипОчереди: {whsOrder.ТипОчереди}");
+            _logger.LogInformation($"---> PostAsync: Ok; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
             return CreatedAtAction("Get", new { id = whsOrder.Документ_Id }, whsOrder);
         }
 
@@ -186,7 +188,7 @@ namespace Whs.Server.Controllers
         {
             if (id != whsOrder.Документ_Id)
             {
-                _logger.LogError($"---> PutAsync/{id}: BadRequest {whsOrder.Документ_Name}");
+                _logger.LogError($"---> PutAsync: BadRequest; {whsOrder?.Документ_Name}; id = {id};");
                 return BadRequest();
             }
 
@@ -197,7 +199,7 @@ namespace Whs.Server.Controllers
                 whsOrder = await PutTo1cAsync(whsOrder);
                 if (whsOrder == null)
                 {
-                    _logger.LogError($"---> PutAsync/{id}: Problem 1C");
+                    _logger.LogError($"---> PutAsync: Problem 1C; id = {id};");
                     return Problem(detail: "Problem 1C");
                 }
             }
@@ -221,18 +223,20 @@ namespace Whs.Server.Controllers
             {
                 if (!Exists(id))
                 {
-                    _logger.LogError($"---> PutAsync/{id}: DbUpdateConcurrencyException NotFound {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PutAsync: DbUpdateConcurrencyException NotFound; {whsOrder?.Документ_Name}; id = {id};" +
+                        $"{Environment.NewLine}{ex.Message}");
                     return NotFound();
                 }
                 else
                 {
-                    _logger.LogError($"---> PutAsync/{id}: DbUpdateConcurrencyException {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PutAsync: DbUpdateConcurrencyException {whsOrder?.Документ_Name}; id = {id};" +
+                        $"{Environment.NewLine}{ex.Message}");
                     throw;
                 }
             }
 
             await CreateWhsOrderDataAsync(barcode, whsOrder);
-            _logger.LogInformation($"---> PutAsync: Ok {whsOrder.Документ_Name} - Статус: {whsOrder.Статус} - ТипОчереди: -{whsOrder.ТипОчереди}-");
+            _logger.LogInformation($"---> PutAsync: Ok; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
 
             if (_isNotifySiren)
                 await NotifySirenAsync(id);
@@ -277,15 +281,15 @@ namespace Whs.Server.Controllers
                 }
                 else
                 {
-                    _logger.LogError($"---> PutTo1cAsync: {response.StatusCode} - {response.ReasonPhrase} {whsOrder.Документ_Name}{Environment.NewLine}" +
-                        $"Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
+                    _logger.LogError($"---> PutTo1cAsync: Response StatusCode = {response.StatusCode} ({response.ReasonPhrase}); {whsOrder.Документ_Name};" +
+                        $"{Environment.NewLine}Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
                 }
             }
             catch (Exception exception)
             {
-                _logger.LogError($"---> PutTo1cAsync: Exception {whsOrder.Документ_Name}{Environment.NewLine}{exception.Message}");
+                _logger.LogError($"---> PutTo1cAsync: Exception; {whsOrder.Документ_Name};" +
+                    $"{Environment.NewLine}{exception.Message}");
             }
-            _logger.LogWarning($"---> PutTo1cAsync: NULL {whsOrder.Документ_Name}");
             return null;
         }
 
@@ -296,27 +300,27 @@ namespace Whs.Server.Controllers
                 WhsOrderOut order = _context.WhsOrdersOut.Find(id);
                 if (order != null)
                 {
-                    _logger.LogInformation($"---> NotifySirenAsync: order - {order?.Номер} {order.Дата} - ТипОчереди: {order?.ТипОчереди}; Статус: {order?.Статус}; Проведен: {order?.Проведен}.");
+                    _logger.LogInformation($"---> NotifySirenAsync: Order = {order?.Номер} {order.Дата}; ТипОчереди = {order?.ТипОчереди}; Статус = {order?.Статус}; Проведен = {order?.Проведен};");
                     if (order.Проведен && order.ТипОчереди == QueType.Out.LiveQue && order.Статус == WhsOrderStatus.Out.Prepared)
                     {
-                        _logger.LogInformation($"---> NotifySirenAsync: Siren - Buzz");
+                        _logger.LogInformation($"---> NotifySirenAsync: Siren => Buzz; Склад = {order.Склад_Name};");
                         _ = await _bitrixClient.GetAsync($"?type=siren&params=0&sklad={order.Склад_Name}");
                     }
 
                     int ordersCount = _context.WhsOrdersOut
                         .Where(e => e.Склад_Name == order.Склад_Name && e.Проведен && e.ТипОчереди == QueType.Out.LiveQue && e.Статус == WhsOrderStatus.Out.Prepared)
                         .Count();
-                    _logger.LogInformation($"---> NotifySirenAsync: ordersCount - {ordersCount}");
+                    _logger.LogInformation($"---> NotifySirenAsync: ordersCount = {ordersCount};");
                     if (ordersCount == 0)
                     {
-                        _logger.LogInformation($"---> NotifySirenAsync: Lamp - Switch Off");
+                        _logger.LogInformation($"---> NotifySirenAsync: Lamp => SwitchOff; Склад = {order.Склад_Name};");
                         _ = await _bitrixClient.GetAsync($"?type=lamp&params=1&sklad={order.Склад_Name}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"---> NotifySirenAsync: Exception - {ex.Message}");
+                _logger.LogError($"---> NotifySirenAsync: Exception Message = {ex.Message}");
                 return;
             }
         }
@@ -348,7 +352,7 @@ namespace Whs.Server.Controllers
 
             if (whsOrder == null || !(whsOrder.Статус == WhsOrderStatus.Out.ToCollect || whsOrder.Статус == WhsOrderStatus.Out.ToShipment))
             {
-                _logger.LogError($"---> PutShipmentAsync/{id}: NotFound");
+                _logger.LogError($"---> PutShipmentAsync: NotFound or Status not match; id = {id}");
                 return NotFound();
             }
 
@@ -357,7 +361,7 @@ namespace Whs.Server.Controllers
                 whsOrder = await PutTo1cAsync(whsOrder);
             if (whsOrder == null)
             {
-                _logger.LogError($"---> PutShipmentAsync/{id}: Problem 1C");
+                _logger.LogError($"---> PutShipmentAsync: Problem 1C; id = {id}");
                 return Problem(detail: "Problem 1C");
             }
             _context.WhsOrdersOut.Update(whsOrder);
@@ -370,18 +374,20 @@ namespace Whs.Server.Controllers
             {
                 if (!Exists(id))
                 {
-                    _logger.LogError($"---> PutShipmentAsync/{id}: DbUpdateConcurrencyException NotFound {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PutShipmentAsync: DbUpdateConcurrencyException NotFound; {whsOrder.Документ_Name}; id = {id};" +
+                        $"{Environment.NewLine}{ex.Message}");
                     return NotFound();
                 }
                 else
                 {
-                    _logger.LogError($"---> PutShipmentAsync/{id}: DbUpdateConcurrencyException {whsOrder.Документ_Name}{Environment.NewLine}{ex.Message}");
+                    _logger.LogError($"---> PutShipmentAsync: DbUpdateConcurrencyException; {whsOrder.Документ_Name}; id = {id};" +
+                        $"{Environment.NewLine}{ex.Message}");
                     throw;
                 }
             }
 
             await CreateWhsOrderDataAsync(null, whsOrder);
-            _logger.LogInformation($"---> PutShipmentAsync: Ok {whsOrder.Документ_Name} - {whsOrder.Статус}");
+            _logger.LogInformation($"---> PutShipmentAsync: Ok; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус};");
             return Ok($"{whsOrder.НомерОчереди}  {whsOrder.Документ_Name}");
         }
 
