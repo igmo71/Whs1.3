@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using Whs.Shared.Models.Accounts;
 using Whs.Shared.Utils;
 
-
 namespace Whs.Server.Controllers
 {
     [Route("api/[controller]")]

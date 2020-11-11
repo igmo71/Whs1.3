@@ -43,7 +43,7 @@ namespace Whs.Server.Controllers
         public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetPrintListAsync([FromQuery] WhsOrderParameters parameters)
         {
             WhsOrderOut[] items = await _context.WhsOrdersOut
-                .Where(e => e.Проведен)
+                .Where(e => e.Проведен && e.Оплачено)
                 .Search(parameters)
                 .OrderBy(e => e.Номер)
                 .AsNoTracking()
@@ -57,7 +57,7 @@ namespace Whs.Server.Controllers
         {
             WhsOrdersDtoOut dto = new WhsOrdersDtoOut();
             IQueryable<WhsOrderOut> query = _context.WhsOrdersOut
-                .Where(e => e.Проведен)
+                .Where(e => e.Проведен && e.Оплачено)
                 .Include(e => e.Распоряжения)
                 .Include(e => e.Data)
                     .ThenInclude(e => e.ApplicationUser)
