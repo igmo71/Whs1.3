@@ -283,16 +283,16 @@ namespace Whs.Server.Controllers
         //}
 
         // DELETE: api/WhsOrdersIn/5
-        //[HttpDelete("{id}")]
-        //public async Task<ActionResult<WhsOrderIn>> DeleteAsync(string id)
-        //{
-        //    WhsOrderIn item = await _context.WhsOrdersIn.FindAsync(id);
-        //    if (item == null)
-        //        return NotFound();
-        //    _context.WhsOrdersIn.Remove(item);
-        //    await _context.SaveChangesAsync();
-        //    return item;
-        //}
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<WhsOrderIn>> DeleteAsync(string id)
+        {
+            WhsOrderIn item = await _context.WhsOrdersIn.FindAsync(id);
+            if (item == null)
+                return NotFound();
+            _context.WhsOrdersIn.Remove(item);
+            await _context.SaveChangesAsync();
+            return item;
+        }
     }
 
 }

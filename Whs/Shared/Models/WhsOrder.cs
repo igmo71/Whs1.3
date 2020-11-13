@@ -110,6 +110,8 @@ namespace Whs.Shared.Models
         public string НаправлениеДоставкиРодитель_Id { get; set; }
         public string НаправлениеДоставкиРодитель_Name { get; set; }
         public bool Оплачено { get; set; }
+        public bool Отгрузить { get; set; }
+
 
         [NotMapped]
         public WhsOrderDataOut LastData => Data?.OrderByDescending(e => e.DateTime).FirstOrDefault();

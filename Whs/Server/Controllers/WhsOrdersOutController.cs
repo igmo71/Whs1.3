@@ -403,15 +403,15 @@ namespace Whs.Server.Controllers
         //}
 
         // DELETE: api/WhsOrdersOut/5
-        //[HttpDelete("{id}")]
-        //public async Task<ActionResult<WhsOrderOut>> DeleteAsync(string id)
-        //{
-        //    WhsOrderOut item = await _context.WhsOrdersOut.FindAsync(id);
-        //    if (item == null)
-        //        return NotFound();
-        //    _context.WhsOrdersOut.Remove(item);
-        //    await _context.SaveChangesAsync();
-        //    return item;
-        //}
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<WhsOrderOut>> DeleteAsync(string id)
+        {
+            WhsOrderOut item = await _context.WhsOrdersOut.FindAsync(id);
+            if (item == null)
+                return NotFound();
+            _context.WhsOrdersOut.Remove(item);
+            await _context.SaveChangesAsync();
+            return item;
+        }
     }
 }
