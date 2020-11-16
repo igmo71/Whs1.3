@@ -25,7 +25,8 @@ namespace Whs.Client.Identity
 
         public AuthenticationService(HttpClient httpClient, AuthenticationStateProvider authStateProvider, ILocalStorageService localStorage)
         {
-            _httpClient = httpClient; _authStateProvider = authStateProvider;
+            _httpClient = httpClient;
+            _authStateProvider = authStateProvider;
             _localStorage = localStorage;
         }
 
