@@ -59,7 +59,7 @@ namespace Whs.Server.Controllers
         {
             WhsOrdersDtoOut dto = new WhsOrdersDtoOut();
             IQueryable<WhsOrderOut> query = _context.WhsOrdersOut
-                .Where(e => e.Проведен && e.Отгрузить)
+                .Where(e => e.Проведен)
                 .Include(e => e.Распоряжения)
                 .Include(e => e.Data)
                     .ThenInclude(e => e.ApplicationUser)
@@ -68,6 +68,7 @@ namespace Whs.Server.Controllers
             IEnumerable<WhsOrderOut> items;
             if (parameters.SearchBarcode == null)
             {
+                query = query.Where(e => e.Отгрузить);
                 query = query.Search(parameters);
                 dto.TotalWeight = query.Sum(e => e.Вес).ToString();
                 dto.TotalCount = query.Count().ToString();
@@ -303,14 +304,14 @@ namespace Whs.Server.Controllers
                 if (order != null)
                 {
                     _logger.LogInformation($"---> NotifySirenAsync: Order = {order?.Номер} {order.Дата}; ТипОчереди = {order?.ТипОчереди}; Статус = {order?.Статус}; Проведен = {order?.Проведен};");
-                    if (order.Проведен && order.ТипОчереди == QueType.Out.LiveQue && order.Статус == WhsOrderStatus.Out.Prepared)
+                    if (order.Проведен && order.ТипОчереди == QueType.Out.LiveQue && order.Статус == WhsOrderStatus.Out.Prepared && order.Отгрузить)
                     {
                         _logger.LogInformation($"---> NotifySirenAsync: Siren => Buzz; Склад = {order.Склад_Name};");
                         _ = await _bitrixClient.GetAsync($"?type=siren&params=0&sklad={order.Склад_Name}");
                     }
 
                     int ordersCount = _context.WhsOrdersOut
-                        .Where(e => e.Склад_Name == order.Склад_Name && e.Проведен && e.ТипОчереди == QueType.Out.LiveQue && e.Статус == WhsOrderStatus.Out.Prepared)
+                        .Where(e => e.Склад_Name == order.Склад_Name && e.Проведен && e.ТипОчереди == QueType.Out.LiveQue && e.Статус == WhsOrderStatus.Out.Prepared && e.Отгрузить)
                         .Count();
                     _logger.LogInformation($"---> NotifySirenAsync: ordersCount = {ordersCount};");
                     if (ordersCount == 0)

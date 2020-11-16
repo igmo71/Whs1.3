@@ -36,10 +36,17 @@ else
                 @OrderDto.Item?.НомерОчереди
             </div>
             <div class="align-middle text-center border border-dark">
-                @(OrderDto.Item.Оплачено ? "оплачено" : "НЕ оплачено")
+                @(OrderDto.Item.Оплачено ? "оплачено" : "НЕ оплачено") - @(OrderDto.Item.Отгрузить ? "отгрузить" : "НЕ отгружать!")
             </div>
         </div>
     </div>
+
+    @if (!OrderDto.Item.Отгрузить)
+    {
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Обратитесь к менеджеру, возможна проблема с оплатой!</h4>
+        </div>
+    }
 
     <table class="table table-sm table-borderless">
         <tr>
