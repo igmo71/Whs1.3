@@ -303,10 +303,10 @@ namespace Whs.Server.Controllers
                 WhsOrderOut order = _context.WhsOrdersOut.Find(id);
                 if (order != null)
                 {
-                    _logger.LogInformation($"---> NotifySirenAsync: Order = {order?.Номер} {order.Дата}; ТипОчереди = {order?.ТипОчереди}; Статус = {order?.Статус}; Проведен = {order?.Проведен};");
+                    _logger.LogInformation($"---> NotifySirenAsync: Order = {order.Номер} {order.Дата}; ТипОчереди = {order.ТипОчереди}; Статус = {order.Статус}; Отгрузить = {order.Отгрузить}; Проведен = {order.Проведен};");
                     if (order.Проведен && order.ТипОчереди == QueType.Out.LiveQue && order.Статус == WhsOrderStatus.Out.Prepared && order.Отгрузить)
                     {
-                        _logger.LogInformation($"---> NotifySirenAsync: Siren => Buzz; Склад = {order.Склад_Name};");
+                        _logger.LogInformation($"---> NotifySirenAsync: Siren => Squeak; Склад = {order.Склад_Name};");
                         _ = await _bitrixClient.GetAsync($"?type=siren&params=0&sklad={order.Склад_Name}");
                     }
 
