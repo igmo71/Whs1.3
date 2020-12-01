@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Whs.Server.Data;
 
 namespace Whs.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201201144226_RenameTables2")]
+    partial class RenameTables2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -263,7 +265,7 @@ namespace Whs.Server.Data.Migrations
                     b.HasIndex("Документ_Id", "Распоряжение_Id")
                         .HasName("IX_MngOrdersIn_ДокументIdРаспоряжениеId");
 
-                    b.ToTable("WhsMngrOrdersIn");
+                    b.ToTable("MngrOrdersIn");
                 });
 
             modelBuilder.Entity("Whs.Shared.Models.MngrOrderOut", b =>
@@ -285,7 +287,7 @@ namespace Whs.Server.Data.Migrations
                     b.HasIndex("Документ_Id", "Распоряжение_Id")
                         .HasName("IX_MngOrdersOut_ДокументIdРаспоряжениеId");
 
-                    b.ToTable("WhsMngrOrdersOut");
+                    b.ToTable("MngrOrdersOut");
                 });
 
             modelBuilder.Entity("Whs.Shared.Models.ProductDataIn", b =>

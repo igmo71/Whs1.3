@@ -12,6 +12,8 @@
     <Compile Remove="Data\Migrations\20201012142020_WarehouseId.Designer.cs" />
     <Compile Remove="Data\Migrations\20201012142152_Manual_WarehouseId.cs" />
     <Compile Remove="Data\Migrations\20201012142152_Manual_WarehouseId.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201201143601_RenameTables2.cs" />
+    <Compile Remove="Data\Migrations\20201201143601_RenameTables2.Designer.cs" />
   </ItemGroup>
 	
   <ItemGroup>
