@@ -1,0 +1,22 @@
+﻿@page
+@model Whs.Server.Pages.Accounts.ListModel
+
+@{
+    ViewData["Title"] = "List";
+}
+
+<table border="1" cellpadding="4" cellspacing="0">
+    <tbody>
+        @foreach (var item in Model.ApplicationUsers)
+        {
+            <tr style="page-break-inside:avoid">
+                <td align="center">
+                    @Html.DisplayFor(modelItem => item.FirstnameSurname)
+                </td>
+                <td align="center">
+                    <img src="@Url.Page("List", "LoadQr", new { name = $"{item.Id}.png"})" width="180" />
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

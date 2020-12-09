@@ -20,6 +20,26 @@ namespace Whs.Shared.Models.Accounts
 
         [NotMapped]
         public string Surname => string.IsNullOrEmpty(FullName) ? "" : FullName.Substring(0, FullName.IndexOf(' '));
+
+        [NotMapped]
+        public string FirstName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(FullName))
+                    return "";
+
+                string str = FullName.Replace(Surname, "").TrimStart(' ');
+                int length = str.IndexOf(' ');
+                if (length < 0)
+                    length = str.Length;
+                string firstName = str.Substring(0, length);
+                return firstName;
+            }
+        }
+
+        [NotMapped]
+        public string FirstnameSurname => $"{FirstName} {Surname}";
     }
     public class ApplicationUserParameters
     {
