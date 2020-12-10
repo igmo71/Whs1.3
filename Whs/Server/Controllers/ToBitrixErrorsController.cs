@@ -13,12 +13,14 @@ namespace Whs.Server.Controllers
     {
         private readonly ILogger<ToBitrixErrorsController> _logger;
         private readonly HttpClient _bitrixClient;
+        private readonly bool isSendError;
         private readonly string[] recipients;
 
         public ToBitrixErrorsController(IConfiguration configuration, IHttpClientFactory clientFactory, ILogger<ToBitrixErrorsController> logger)
         {
             _bitrixClient = clientFactory.CreateClient("ErrorBitrixClient");
-            recipients = configuration.GetSection("ErrorRecipients").Get<string[]>();
+            isSendError = configuration.GetSection("IsSendErrorToBitrix").Get<bool>();
+            recipients = configuration.GetSection("BitrixErrorRecipients").Get<string[]>();
             _logger = logger;
         }
 
@@ -26,16 +28,21 @@ namespace Whs.Server.Controllers
         [HttpPost("{message}")]
         public async Task PostAsync(string message)
         {
-            try
+            _logger.LogError($"---> PostAsync: Client error; message={message}");
+            if (isSendError)
             {
-                foreach (string recipient in recipients)
+                try
                 {
-                    _ = await _bitrixClient.PostAsync($"?message={message}&to={recipient}", null);
+                    foreach (string recipient in recipients)
+                    {
+                        _ = await _bitrixClient.PostAsync($"?message={message}&to={recipient}", null);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"---> PostAsync: Exception - {ex.Message}");
+                catch (Exception ex)
+                {
+                    _logger.LogError($"---> PostAsync: Exception; Message = {ex.Message}");
+                }
+
             }
         }
     }
