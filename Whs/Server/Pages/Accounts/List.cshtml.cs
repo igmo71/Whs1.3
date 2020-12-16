@@ -33,7 +33,10 @@ namespace Whs.Server.Pages.Accounts
 
         public void OnGet()
         {
-            ApplicationUsers = _userManager.Users.OrderBy(e => e.WarehouseId).ThenBy(e => e.FullName).AsNoTracking().ToArray();
+            ApplicationUsers = _userManager.Users
+                //.Where(e => e.WarehouseId == "8ea06907-3ddb-11e1-99c0-000c29dcd88a")
+                .OrderBy(e => e.WarehouseId).ThenBy(e => e.FullName)
+                .AsNoTracking().ToArray();
         }
 
         public IActionResult OnGetLoadQr(string name)
