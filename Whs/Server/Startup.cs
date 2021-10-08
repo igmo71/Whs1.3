@@ -56,6 +56,9 @@ namespace Whs.Server
             });
 
             //  Configure HttpClients
+            PrinDocSettings prinDocSettings = Configuration.GetSection(PrinDocSettings.PrinDoc).Get<PrinDocSettings>();
+
+            //  Configure HttpClients
             HttpClientSettings httpClientSettings = Configuration.GetSection(HttpClientSettings.HttpClient).Get<HttpClientSettings>();
 
             services.AddHttpClient("ClientOData", httpClient =>
