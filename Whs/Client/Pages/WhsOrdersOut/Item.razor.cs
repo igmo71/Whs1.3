@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
 using System;
 using System.Net.Http;
@@ -16,6 +17,9 @@ namespace Whs.Client.Pages.WhsOrdersOut
         [Inject] HttpClient HttpClient { get; set; }
         [Inject] public IJSRuntime JSRuntime { get; set; }
         [Inject] public NavigationManager NavigationManager { get; set; }
+        [Inject] public IConfiguration Configuration { get; set; }
+
+        PrinDocSettings prinDocSettings;
 
         private string Barcode;
         WhsOrderDtoOut OrderDto;
@@ -25,6 +29,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
         {
             await GetEditingCausesAsync();
             await GetOrderDtoAsync();
+            prinDocSettings = Configuration.GetSection(PrinDocSettings.PrinDoc).Get<PrinDocSettings>();
         }
 
         private async Task GetEditingCausesAsync()
@@ -87,5 +92,11 @@ namespace Whs.Client.Pages.WhsOrdersOut
         {
             await HttpClient.PostAsync($"api/ToBitrixErrors/{message}", null);
         }
+        private void Print2Async()
+        {
+            NavigationManager.NavigateTo(
+                $"{prinDocSettings.BaseAddressOData}{prinDocSettings.Values["WhsOrderOut"].Template}/{prinDocSettings.Values["WhsOrderOut"].Endpoint}/{OrderDto.Item.Документ_Id}");
+        }
+
     }
 }
