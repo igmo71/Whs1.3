@@ -20,6 +20,7 @@ namespace Whs.Client.Pages.WhsOrdersOut
         [Inject] public IConfiguration Configuration { get; set; }
 
         PrinDocSettings prinDocSettings;
+        string prinDocUrl;
 
         private string Barcode;
         WhsOrderDtoOut OrderDto;
@@ -30,6 +31,11 @@ namespace Whs.Client.Pages.WhsOrdersOut
             await GetEditingCausesAsync();
             await GetOrderDtoAsync();
             prinDocSettings = Configuration.GetSection(PrinDocSettings.PrinDoc).Get<PrinDocSettings>();
+            prinDocUrl = $"{prinDocSettings.BaseAddress}" +
+                $"{prinDocSettings.Values["WhsOrderOut"].Template}/" +
+                $"{prinDocSettings.Values["WhsOrderOut"].Service}/" +
+                $"{prinDocSettings.Values["WhsOrderOut"].Endpoint}/" +
+                $"{OrderDto.Item.Документ_Id}";
         }
 
         private async Task GetEditingCausesAsync()
@@ -92,11 +98,5 @@ namespace Whs.Client.Pages.WhsOrdersOut
         {
             await HttpClient.PostAsync($"api/ToBitrixErrors/{message}", null);
         }
-        private void Print2Async()
-        {
-            NavigationManager.NavigateTo(
-                $"{prinDocSettings.BaseAddressOData}{prinDocSettings.Values["WhsOrderOut"].Template}/{prinDocSettings.Values["WhsOrderOut"].Endpoint}/{OrderDto.Item.Документ_Id}");
-        }
-
     }
 }
