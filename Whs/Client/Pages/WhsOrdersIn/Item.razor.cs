@@ -19,8 +19,6 @@ namespace Whs.Client.Pages.WhsOrdersIn
         [Inject] public NavigationManager NavigationManager { get; set; }
         [Inject] public IConfiguration Configuration { get; set; }
 
-        PrinDocSettings prinDocSettings;
-        string page;
         string prinDocUrl;
 
         private string Barcode;
@@ -31,28 +29,26 @@ namespace Whs.Client.Pages.WhsOrdersIn
         {
             await GetEditingCausesAsync();
             await GetOrderDtoAsync();
-            prinDocSettings = Configuration.GetSection(PrinDocSettings.PrinDoc).Get<PrinDocSettings>();
+            PrinDocSettings prinDocSettings = Configuration.GetSection(PrinDocSettings.PrinDoc).Get<PrinDocSettings>();
             prinDocUrl = GetPrinDocUrl(prinDocSettings);
         }
 
         private string GetPrinDocUrl(PrinDocSettings prinDocSettings)
         {
-            string page = prinDocSettings.Values["WhsOrderOut"].Page;
+            string page = prinDocSettings.Page;
             string prinDocUrl = "";
             if (page == "Razor")
             {
-                prinDocUrl = $"{prinDocSettings.BaseAddress}?" +
-                $"templateName={prinDocSettings.Values["WhsOrderOut"].Template}" +
-                $"&service={prinDocSettings.Values["WhsOrderOut"].Service}" +
-                $"&docSource={prinDocSettings.Values["WhsOrderOut"].Endpoint}" +
+                prinDocUrl = $"{prinDocSettings.BaseAddress}?service={prinDocSettings.Service}" +
+                $"&templateName={prinDocSettings.Values["WhsOrderIn"].Template}" +
+                $"&docSource={prinDocSettings.Values["WhsOrderIn"].Endpoint}" +
                 $"&id={OrderDto.Item.Документ_Id}";
             }
             else if (page == "Blazor")
             {
-                prinDocUrl = $"{prinDocSettings.BaseAddress}" +
-                $"{prinDocSettings.Values["WhsOrderOut"].Template}/" +
-                $"{prinDocSettings.Values["WhsOrderOut"].Service}/" +
-                $"{prinDocSettings.Values["WhsOrderOut"].Endpoint}/" +
+                prinDocUrl = $"{prinDocSettings.BaseAddress}{prinDocSettings.Service}/" +
+                $"{prinDocSettings.Values["WhsOrderIn"].Template}/" +
+                $"{prinDocSettings.Values["WhsOrderIn"].Endpoint}/" +
                 $"{OrderDto.Item.Документ_Id}";
             }
             return prinDocUrl;
