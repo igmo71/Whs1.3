@@ -20,7 +20,8 @@ namespace Whs.Client.Pages.WhsOrdersOut
         [Inject] public IConfiguration Configuration { get; set; }
 
         PrinDocSettings prinDocSettings;
-        string prinDocUrl;
+        string prinDocUrlRazorPage;
+        string prinDocUrlBlazor;
 
         private string Barcode;
         WhsOrderDtoOut OrderDto;
@@ -31,11 +32,18 @@ namespace Whs.Client.Pages.WhsOrdersOut
             await GetEditingCausesAsync();
             await GetOrderDtoAsync();
             prinDocSettings = Configuration.GetSection(PrinDocSettings.PrinDoc).Get<PrinDocSettings>();
-            prinDocUrl = $"{prinDocSettings.BaseAddress}" +
+
+            prinDocUrlBlazor = $"{prinDocSettings.BaseAddress}" +
                 $"{prinDocSettings.Values["WhsOrderOut"].Template}/" +
                 $"{prinDocSettings.Values["WhsOrderOut"].Service}/" +
                 $"{prinDocSettings.Values["WhsOrderOut"].Endpoint}/" +
                 $"{OrderDto.Item.Документ_Id}";
+
+            prinDocUrlRazorPage = $"{prinDocSettings.BaseAddress}?" +
+                $"templateName={prinDocSettings.Values["WhsOrderOut"].Template}" +
+                $"&service={prinDocSettings.Values["WhsOrderOut"].Service}" +
+                $"&docSource={prinDocSettings.Values["WhsOrderOut"].Endpoint}" +
+                $"&id={OrderDto.Item.Документ_Id}";
         }
 
         private async Task GetEditingCausesAsync()
