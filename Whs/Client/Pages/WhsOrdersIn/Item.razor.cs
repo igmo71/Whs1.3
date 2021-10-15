@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
 using System;
 using System.Net.Http;
@@ -16,6 +17,11 @@ namespace Whs.Client.Pages.WhsOrdersIn
         [Inject] HttpClient HttpClient { get; set; }
         [Inject] public IJSRuntime JSRuntime { get; set; }
         [Inject] public NavigationManager NavigationManager { get; set; }
+        [Inject] public IConfiguration Configuration { get; set; }
+
+        PrinDocSettings prinDocSettings;
+        string page;
+        string prinDocUrl;
 
         private string Barcode;
         WhsOrderDtoIn OrderDto;
@@ -25,6 +31,31 @@ namespace Whs.Client.Pages.WhsOrdersIn
         {
             await GetEditingCausesAsync();
             await GetOrderDtoAsync();
+            prinDocSettings = Configuration.GetSection(PrinDocSettings.PrinDoc).Get<PrinDocSettings>();
+            prinDocUrl = GetPrinDocUrl(prinDocSettings);
+        }
+
+        private string GetPrinDocUrl(PrinDocSettings prinDocSettings)
+        {
+            string page = prinDocSettings.Values["WhsOrderOut"].Page;
+            string prinDocUrl = "";
+            if (page == "Razor")
+            {
+                prinDocUrl = $"{prinDocSettings.BaseAddress}?" +
+                $"templateName={prinDocSettings.Values["WhsOrderOut"].Template}" +
+                $"&service={prinDocSettings.Values["WhsOrderOut"].Service}" +
+                $"&docSource={prinDocSettings.Values["WhsOrderOut"].Endpoint}" +
+                $"&id={OrderDto.Item.Документ_Id}";
+            }
+            else if (page == "Blazor")
+            {
+                prinDocUrl = $"{prinDocSettings.BaseAddress}" +
+                $"{prinDocSettings.Values["WhsOrderOut"].Template}/" +
+                $"{prinDocSettings.Values["WhsOrderOut"].Service}/" +
+                $"{prinDocSettings.Values["WhsOrderOut"].Endpoint}/" +
+                $"{OrderDto.Item.Документ_Id}";
+            }
+            return prinDocUrl;
         }
 
         private async Task GetEditingCausesAsync()

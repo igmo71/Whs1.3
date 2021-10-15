@@ -20,8 +20,8 @@ namespace Whs.Client.Pages.WhsOrdersOut
         [Inject] public IConfiguration Configuration { get; set; }
 
         PrinDocSettings prinDocSettings;
-        string prinDocUrlRazorPage;
-        string prinDocUrlBlazor;
+        string page;
+        string prinDocUrl;
 
         private string Barcode;
         WhsOrderDtoOut OrderDto;
@@ -32,18 +32,31 @@ namespace Whs.Client.Pages.WhsOrdersOut
             await GetEditingCausesAsync();
             await GetOrderDtoAsync();
             prinDocSettings = Configuration.GetSection(PrinDocSettings.PrinDoc).Get<PrinDocSettings>();
+            prinDocUrl = GetPrinDocUrl(prinDocSettings);
+            
+        }
 
-            prinDocUrlBlazor = $"{prinDocSettings.BaseAddress}" +
-                $"{prinDocSettings.Values["WhsOrderOut"].Template}/" +
-                $"{prinDocSettings.Values["WhsOrderOut"].Service}/" +
-                $"{prinDocSettings.Values["WhsOrderOut"].Endpoint}/" +
-                $"{OrderDto.Item.Документ_Id}";
-
-            prinDocUrlRazorPage = $"{prinDocSettings.BaseAddress}?" +
+        private string GetPrinDocUrl(PrinDocSettings prinDocSettings)
+        {
+            string page = prinDocSettings.Values["WhsOrderOut"].Page;
+            string prinDocUrl = "";
+            if (page == "Razor")
+            {
+                prinDocUrl = $"{prinDocSettings.BaseAddress}?" +
                 $"templateName={prinDocSettings.Values["WhsOrderOut"].Template}" +
                 $"&service={prinDocSettings.Values["WhsOrderOut"].Service}" +
                 $"&docSource={prinDocSettings.Values["WhsOrderOut"].Endpoint}" +
                 $"&id={OrderDto.Item.Документ_Id}";
+            }
+            else if (page == "Blazor")
+            {
+                prinDocUrl = $"{prinDocSettings.BaseAddress}" +
+                $"{prinDocSettings.Values["WhsOrderOut"].Template}/" +
+                $"{prinDocSettings.Values["WhsOrderOut"].Service}/" +
+                $"{prinDocSettings.Values["WhsOrderOut"].Endpoint}/" +
+                $"{OrderDto.Item.Документ_Id}";
+            }
+            return prinDocUrl;
         }
 
         private async Task GetEditingCausesAsync()

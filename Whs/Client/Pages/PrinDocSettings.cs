@@ -15,5 +15,6 @@ namespace Whs.Client.Pages
         public string Template { get; set; }
         public string Service { get; set; }
         public string Endpoint { get; set; }
+        public string Page { get; set; }
     }
 }
