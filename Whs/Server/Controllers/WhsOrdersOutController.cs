@@ -187,7 +187,7 @@ namespace Whs.Server.Controllers
 
             stopwatch.Stop();
 
-            _logger.LogInformation($"---> PostAsync: Ok - Stopwatch: {stopwatch.Elapsed.TotalMilliseconds} ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
+            _logger.LogInformation($"---> PostAsync: Ok - Stopwatch: {stopwatch.ElapsedMilliseconds}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
             return CreatedAtAction("Get", new { id = whsOrder.Документ_Id }, whsOrder);
         }
 
@@ -252,7 +252,7 @@ namespace Whs.Server.Controllers
 
             stopwatch.Stop();
 
-            _logger.LogInformation($"---> PutAsync: Ok - Stopwatch: {stopwatch.Elapsed.TotalMilliseconds} ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
+            _logger.LogInformation($"---> PutAsync: Ok - Stopwatch: {stopwatch.ElapsedMilliseconds}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
 
             if (_isNotifySiren)
                 await NotifySirenAsync(id);
