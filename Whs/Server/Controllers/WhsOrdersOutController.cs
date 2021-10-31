@@ -188,6 +188,7 @@ namespace Whs.Server.Controllers
             stopwatch.Stop();
 
             _logger.LogInformation($"---> PostAsync: Ok - duration: {stopwatch.ElapsedMilliseconds}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
+            
             return CreatedAtAction("Get", new { id = whsOrder.Документ_Id }, whsOrder);
         }
 
@@ -285,6 +286,9 @@ namespace Whs.Server.Controllers
 
         private async Task<WhsOrderOut> PutTo1cAsync(WhsOrderOut whsOrder)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+         
             try
             {
                 string content = JsonSerializer.Serialize(whsOrder);
@@ -306,6 +310,11 @@ namespace Whs.Server.Controllers
                 _logger.LogError($"---> PutTo1cAsync: Exception; {whsOrder.Документ_Name};" +
                     $"{Environment.NewLine}{exception.Message}");
             }
+
+            stopwatch.Stop();
+
+            _logger.LogInformation($"---> PutTo1cAsync: Ok - duration: {stopwatch.ElapsedMilliseconds}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
+
             return null;
         }
 
