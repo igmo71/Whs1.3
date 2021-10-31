@@ -28,7 +28,7 @@ namespace Whs.Server.Controllers
         [HttpPost("{message}")]
         public async Task PostAsync(string message)
         {
-            _logger.LogError($"---> PostAsync: Client error; message={message}");
+            _logger.LogWarning($"---> PostAsync: Client error; message={message}");
             if (isSendError)
             {
                 try

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
@@ -160,6 +161,9 @@ namespace Whs.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<WhsOrderOut>> PostAsync(WhsOrderOut whsOrder)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             _context.WhsOrdersOut.Add(whsOrder);
             try
             {
@@ -180,7 +184,10 @@ namespace Whs.Server.Controllers
                     throw;
                 }
             }
-            _logger.LogInformation($"---> PostAsync: Ok; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
+
+            stopwatch.Stop();
+
+            _logger.LogInformation($"---> PostAsync: Ok - Stopwatch: {stopwatch.Elapsed.TotalMilliseconds} ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
             return CreatedAtAction("Get", new { id = whsOrder.Документ_Id }, whsOrder);
         }
 
@@ -189,6 +196,9 @@ namespace Whs.Server.Controllers
         [HttpPut("{id}/{barcode}")]
         public async Task<IActionResult> PutAsync(string id, string barcode, WhsOrderOut whsOrder)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             if (id != whsOrder.Документ_Id)
             {
                 _logger.LogError($"---> PutAsync: BadRequest; {whsOrder?.Документ_Name}; id = {id};");
@@ -239,7 +249,10 @@ namespace Whs.Server.Controllers
             }
 
             await CreateWhsOrderDataAsync(barcode, whsOrder);
-            _logger.LogInformation($"---> PutAsync: Ok; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
+
+            stopwatch.Stop();
+
+            _logger.LogInformation($"---> PutAsync: Ok - Stopwatch: {stopwatch.Elapsed.TotalMilliseconds} ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
 
             if (_isNotifySiren)
                 await NotifySirenAsync(id);
