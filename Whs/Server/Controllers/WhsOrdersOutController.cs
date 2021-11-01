@@ -56,7 +56,7 @@ namespace Whs.Server.Controllers
 
         // GET: api/WhsOrdersOut/DtoByQueType
         [HttpGet("DtoByQueType")]
-        public async Task<ActionResult<WhsOrdersDtoOut>> GetDtoByQueTypeAsync([FromQuery] WhsOrderParameters parameters)
+        public ActionResult<WhsOrdersDtoOut> GetDtoByQueTypeAsync([FromQuery] WhsOrderParameters parameters)
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
             WhsOrdersDtoOut dto = new WhsOrdersDtoOut();
@@ -93,7 +93,7 @@ namespace Whs.Server.Controllers
                 dto.Items = items
                     .GroupBy(e => e.ТипОчереди)
                     .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? QueType.Out.NoQue : e.Key, e => e.ToArray());
-                dto.Destinations = await GetDestinationsAsync(parameters);
+                dto.Destinations = GetDestinations(parameters);
             }
             catch (Exception ex)
             {
@@ -108,16 +108,16 @@ namespace Whs.Server.Controllers
             return dto;
         }
 
-        private async Task<Destination[][]> GetDestinationsAsync(WhsOrderParameters parameters)
+        private Destination[][] GetDestinations(WhsOrderParameters parameters)
         {
-            Destination[] destinationParents = await _context.WhsOrdersOut.AsNoTracking()
+            Destination[] destinationParents =  _context.WhsOrdersOut.AsNoTracking()
                 .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus && e.НаправлениеДоставкиРодитель_Id != Guid.Empty.ToString())
                 .Select(e => new Destination { Id = e.НаправлениеДоставкиРодитель_Id, Name = e.НаправлениеДоставкиРодитель_Name })
-                .Distinct().OrderBy(e => e.Name).ToArrayAsync();
-            Destination[] destinations = await _context.WhsOrdersOut.AsNoTracking()
+                .Distinct().OrderBy(e => e.Name).ToArray();
+            Destination[] destinations = _context.WhsOrdersOut.AsNoTracking()
                 .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus && e.НаправлениеДоставки_Id != Guid.Empty.ToString())
                 .Select(e => new Destination { Id = e.НаправлениеДоставки_Id, Name = e.НаправлениеДоставки_Name })
-                .Distinct().OrderBy(e => e.Name).ToArrayAsync();
+                .Distinct().OrderBy(e => e.Name).ToArray();
             Destination[][] result = { destinationParents, destinations };
             return result;
         }
