@@ -69,32 +69,21 @@ namespace Whs.Server.Controllers
                     .ThenInclude(e => e.ApplicationUser)
                 .AsNoTracking();
 
-                //IEnumerable<WhsOrderOut> items;
                 List<WhsOrderOut> items;
                 if (parameters.SearchBarcode == null)
                 {
-                    //query = query.Where(e => e.Отгрузить);
-                    //query = query.Search(parameters);
-                    //items = query.Take(_settings.OrdersPerPage).AsEnumerable();
-                    //dto.TotalWeight = query.Sum(e => e.Вес).ToString();
-                    //dto.TotalCount = query.Count().ToString();
                     query = query.Where(e => e.Отгрузить).Search(parameters);
                     items = query.Take(_settings.OrdersPerPage).ToList();
-
                 }
                 else
                 {
                     string id = GuidConvert.FromNumStr(parameters.SearchBarcode);
-                    //items = query.Where(e => e.Документ_Id == id).AsEnumerable();
                     items = query.Where(e => e.Документ_Id == id).ToList();
                     if (items.Count() == 0)
                     {
-                        //items = query.Where(e => e.Распоряжения.Any(o => o.Распоряжение_Id == id)).AsEnumerable();
                         items = query.Where(e => e.Распоряжения.Any(o => o.Распоряжение_Id == id)).ToList();
                         dto.MngrOrderName = items.FirstOrDefault()?.Распоряжения.FirstOrDefault(e => e.Распоряжение_Id == id).Распоряжение_Name;
                     }
-                    //dto.TotalCount = query.Count().ToString();
-                    //dto.TotalWeight = query.Sum(e => e.Вес).ToString();
                     if (items.Count() == 1)
                         dto.SingleId = items.FirstOrDefault()?.Документ_Id;
                 }
@@ -108,13 +97,14 @@ namespace Whs.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"---> GetDtoByQueTypeAsync: Exception: {ex.ToString()};");
+                _logger.LogError($"---> GetDtoByQueTypeAsync: Exception: {ex};");
+                throw;
             }
 
             stopwatch.Stop();
             long duration = stopwatch.ElapsedMilliseconds;
             if (duration > _settings.PerfTime*1000)
-                _logger.LogInformation($"---> GetDtoByQueTypeAsync: Ok - duration: {duration}ms;");
+                _logger.LogWarning($"---> GetDtoByQueTypeAsync: Ok - duration: {duration}ms;");
             return dto;
         }
 
@@ -231,10 +221,9 @@ namespace Whs.Server.Controllers
             if (!(barcode == null || barcode == Guid.Empty.ToString()))  //  Если запрос пришел от клиента
             {
                 await CreateProductsDataAsync(whsOrder);
-                _logger.LogInformation($"---> PutAsync: Запрос пришел от клиента - CreateProductsDataAsync: {stopwatch.ElapsedMilliseconds}ms");
 
                 whsOrder = await PutTo1cAsync(whsOrder);
-                _logger.LogInformation($"---> PutAsync: Запрос пришел от клиента - PutTo1cAsync: {stopwatch.ElapsedMilliseconds}ms");
+                _logger.LogInformation($"---> PutAsync (Запрос пришел от клиента) -> PutTo1cAsync - duration: {stopwatch.ElapsedMilliseconds}ms");
                 if (whsOrder == null)
                 {
                     _logger.LogError($"---> PutAsync: Problem 1C; id = {id};");
@@ -251,13 +240,12 @@ namespace Whs.Server.Controllers
             try
             {
                 await _context.SaveChangesAsync();
-                _logger.LogInformation($"---> PutAsync: productsToRemove and mngrOrdersToRemove: {stopwatch.ElapsedMilliseconds}ms");
             }
             catch (Exception ex)
             {
-                await _context.SaveChangesAsync();
-                _logger.LogError($"---> PutAsync: productsToRemove and mngrOrdersToRemove; {whsOrder?.Документ_Name}; id = {id};" +
+                _logger.LogError($"---> PutAsync: Exception (productsToRemove and mngrOrdersToRemove); {whsOrder?.Документ_Name}; id = {id};" +
                         $"{Environment.NewLine}{ex.Message}");
+                throw;
             }
 
 
@@ -292,8 +280,6 @@ namespace Whs.Server.Controllers
             _logger.LogInformation($"---> PutAsync: CreateWhsOrderDataAsync: {stopwatch.ElapsedMilliseconds}ms");
             if (_isNotifySiren)
                 await NotifySirenAsync(id);
-
-            _logger.LogInformation($"---> PutAsync: NotifySirenAsync: {stopwatch.ElapsedMilliseconds}ms");
 
             stopwatch.Stop();
             long duration = stopwatch.ElapsedMilliseconds;
@@ -342,6 +328,9 @@ namespace Whs.Server.Controllers
                 string responseContent = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
                 {
+                    stopwatch.Stop();
+
+                    _logger.LogInformation($"---> PutTo1cAsync: Ok - duration: {stopwatch.ElapsedMilliseconds}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
                     return JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
                 }
                 else
@@ -356,10 +345,6 @@ namespace Whs.Server.Controllers
                     $"{Environment.NewLine}{exception.Message}");
             }
 
-            stopwatch.Stop();
-
-            _logger.LogInformation($"---> PutTo1cAsync: Ok - duration: {stopwatch.ElapsedMilliseconds}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
-
             return null;
         }
 
@@ -370,20 +355,20 @@ namespace Whs.Server.Controllers
                 WhsOrderOut order = _context.WhsOrdersOut.Find(id);
                 if (order != null)
                 {
-                    _logger.LogInformation($"---> NotifySirenAsync: Order = {order.Номер} {order.Дата}; ТипОчереди = {order.ТипОчереди}; Статус = {order.Статус}; Отгрузить = {order.Отгрузить}; Проведен = {order.Проведен};");
+                    //_logger.LogInformation($"---> NotifySirenAsync: Order = {order.Номер} {order.Дата}; ТипОчереди = {order.ТипОчереди}; Статус = {order.Статус}; Отгрузить = {order.Отгрузить}; Проведен = {order.Проведен};");
                     if (order.Проведен && order.ТипОчереди == QueType.Out.LiveQue && order.Статус == WhsOrderStatus.Out.Prepared && order.Отгрузить)
                     {
-                        _logger.LogInformation($"---> NotifySirenAsync: Siren => Squeak; Склад = {order.Склад_Name};");
+                        //_logger.LogInformation($"---> NotifySirenAsync: Siren => Squeak; Склад = {order.Склад_Name};");
                         _ = await _bitrixClient.GetAsync($"?type=siren&params=0&sklad={order.Склад_Name}");
                     }
 
                     int ordersCount = _context.WhsOrdersOut
                         .Where(e => e.Склад_Name == order.Склад_Name && e.Проведен && e.ТипОчереди == QueType.Out.LiveQue && e.Статус == WhsOrderStatus.Out.Prepared && e.Отгрузить)
                         .Count();
-                    _logger.LogInformation($"---> NotifySirenAsync: ordersCount = {ordersCount};");
+                    //_logger.LogInformation($"---> NotifySirenAsync: ordersCount = {ordersCount};");
                     if (ordersCount == 0)
                     {
-                        _logger.LogInformation($"---> NotifySirenAsync: Lamp => SwitchOff; Склад = {order.Склад_Name};");
+                        //_logger.LogInformation($"---> NotifySirenAsync: Lamp => SwitchOff; Склад = {order.Склад_Name};");
                         _ = await _bitrixClient.GetAsync($"?type=lamp&params=1&sklad={order.Склад_Name}");
                     }
                 }
@@ -429,6 +414,8 @@ namespace Whs.Server.Controllers
             }
 
             whsOrder = await PutTo1cAsync(whsOrder);
+            _logger.LogInformation($"---> PutShipmentAsync -> PutTo1cAsync - duration: {stopwatch.ElapsedMilliseconds}ms");
+
             if (whsOrder.Статус == WhsOrderStatus.Out.ToShipment)
                 whsOrder = await PutTo1cAsync(whsOrder);
             if (whsOrder == null)
@@ -436,6 +423,7 @@ namespace Whs.Server.Controllers
                 _logger.LogError($"---> PutShipmentAsync: Problem 1C; id = {id}");
                 return Problem(detail: "Problem 1C");
             }
+
             _context.WhsOrdersOut.Update(whsOrder);
 
             try
@@ -461,7 +449,13 @@ namespace Whs.Server.Controllers
             await CreateWhsOrderDataAsync(null, whsOrder);
 
             stopwatch.Stop();
-            _logger.LogInformation($"---> PutShipmentAsync: Ok - duration: {stopwatch.ElapsedMilliseconds}ms;; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус};");
+            long duration = stopwatch.ElapsedMilliseconds;
+
+            if (duration > _settings.PerfTime * 1000)
+                _logger.LogWarning($"---> PutShipmentAsync: Ok - duration>3000ms: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
+            else
+                _logger.LogInformation($"---> PutShipmentAsync: Ok - duration: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
+
             return Ok($"{whsOrder.НомерОчереди}  {whsOrder.Документ_Name}");
         }
 
