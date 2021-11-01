@@ -58,42 +58,63 @@ namespace Whs.Server.Controllers
         [HttpGet("DtoByQueType")]
         public async Task<ActionResult<WhsOrdersDtoOut>> GetDtoByQueTypeAsync([FromQuery] WhsOrderParameters parameters)
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
             WhsOrdersDtoOut dto = new WhsOrdersDtoOut();
-            IQueryable<WhsOrderOut> query = _context.WhsOrdersOut
+            try
+            {
+                IQueryable<WhsOrderOut> query = _context.WhsOrdersOut
                 .Where(e => e.Проведен)
                 .Include(e => e.Распоряжения)
                 .Include(e => e.Data)
                     .ThenInclude(e => e.ApplicationUser)
                 .AsNoTracking();
 
-            IEnumerable<WhsOrderOut> items;
-            if (parameters.SearchBarcode == null)
-            {
-                query = query.Where(e => e.Отгрузить);
-                query = query.Search(parameters);
-                dto.TotalWeight = query.Sum(e => e.Вес).ToString();
-                dto.TotalCount = query.Count().ToString();
-                items = query.Take(_settings.OrdersPerPage).AsEnumerable();
-            }
-            else
-            {
-                string id = GuidConvert.FromNumStr(parameters.SearchBarcode);
-                items = query.Where(e => e.Документ_Id == id).AsEnumerable();
-                if (items.Count() == 0)
+                //IEnumerable<WhsOrderOut> items;
+                List<WhsOrderOut> items;
+                if (parameters.SearchBarcode == null)
                 {
-                    items = query.Where(e => e.Распоряжения.Any(o => o.Распоряжение_Id == id)).AsEnumerable();
-                    dto.MngrOrderName = items.FirstOrDefault()?.Распоряжения.FirstOrDefault(e => e.Распоряжение_Id == id).Распоряжение_Name;
-                }
-                dto.TotalCount = query.Count().ToString();
-                dto.TotalWeight = query.Sum(e => e.Вес).ToString();
-                if (items.Count() == 1)
-                    dto.SingleId = items.FirstOrDefault()?.Документ_Id;
-            }
-            dto.Items = items
-                .GroupBy(e => e.ТипОчереди)
-                .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? QueType.Out.NoQue : e.Key, e => e.ToArray());
-            dto.Destinations = await GetDestinationsAsync(parameters);
+                    //query = query.Where(e => e.Отгрузить);
+                    //query = query.Search(parameters);
+                    //items = query.Take(_settings.OrdersPerPage).AsEnumerable();
+                    //dto.TotalWeight = query.Sum(e => e.Вес).ToString();
+                    //dto.TotalCount = query.Count().ToString();
+                    query = query.Where(e => e.Отгрузить).Search(parameters);
+                    items = query.Take(_settings.OrdersPerPage).ToList();
 
+                }
+                else
+                {
+                    string id = GuidConvert.FromNumStr(parameters.SearchBarcode);
+                    //items = query.Where(e => e.Документ_Id == id).AsEnumerable();
+                    items = query.Where(e => e.Документ_Id == id).ToList();
+                    if (items.Count() == 0)
+                    {
+                        //items = query.Where(e => e.Распоряжения.Any(o => o.Распоряжение_Id == id)).AsEnumerable();
+                        items = query.Where(e => e.Распоряжения.Any(o => o.Распоряжение_Id == id)).ToList();
+                        dto.MngrOrderName = items.FirstOrDefault()?.Распоряжения.FirstOrDefault(e => e.Распоряжение_Id == id).Распоряжение_Name;
+                    }
+                    //dto.TotalCount = query.Count().ToString();
+                    //dto.TotalWeight = query.Sum(e => e.Вес).ToString();
+                    if (items.Count() == 1)
+                        dto.SingleId = items.FirstOrDefault()?.Документ_Id;
+                }
+
+                dto.TotalWeight = items.Sum(e => e.Вес).ToString();
+                dto.TotalCount = items.Count().ToString();
+                dto.Items = items
+                    .GroupBy(e => e.ТипОчереди)
+                    .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? QueType.Out.NoQue : e.Key, e => e.ToArray());
+                dto.Destinations = await GetDestinationsAsync(parameters);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"---> GetDtoByQueTypeAsync: Exception: {ex.ToString()};");
+            }
+
+            stopwatch.Stop();
+            long duration = stopwatch.ElapsedMilliseconds;
+            if (duration > _settings.PerfTime*1000)
+                _logger.LogInformation($"---> GetDtoByQueTypeAsync: Ok - duration: {duration}ms;");
             return dto;
         }
 
@@ -277,7 +298,7 @@ namespace Whs.Server.Controllers
             stopwatch.Stop();
             long duration = stopwatch.ElapsedMilliseconds;
 
-            if (duration > 3000)
+            if (duration > _settings.PerfTime * 1000)
                 _logger.LogWarning($"---> PutAsync: Ok - duration>3000ms: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
             else
                 _logger.LogInformation($"---> PutAsync: Ok - duration: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
