@@ -245,7 +245,7 @@ namespace Whs.Server.Controllers
             {
                 _logger.LogError($"---> PutAsync: Exception (productsToRemove and mngrOrdersToRemove); {whsOrder?.Документ_Name}; id = {id};" +
                         $"{Environment.NewLine}{ex.Message}");
-                return Problem();
+                return Problem(ex.Message);
             }
 
 
