@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
@@ -55,57 +56,68 @@ namespace Whs.Server.Controllers
 
         // GET: api/WhsOrdersOut/DtoByQueType
         [HttpGet("DtoByQueType")]
-        public async Task<ActionResult<WhsOrdersDtoOut>> GetDtoByQueTypeAsync([FromQuery] WhsOrderParameters parameters)
+        public ActionResult<WhsOrdersDtoOut> GetDtoByQueTypeAsync([FromQuery] WhsOrderParameters parameters)
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
             WhsOrdersDtoOut dto = new WhsOrdersDtoOut();
-            IQueryable<WhsOrderOut> query = _context.WhsOrdersOut
+            try
+            {
+                IQueryable<WhsOrderOut> query = _context.WhsOrdersOut
                 .Where(e => e.Проведен)
                 .Include(e => e.Распоряжения)
                 .Include(e => e.Data)
                     .ThenInclude(e => e.ApplicationUser)
                 .AsNoTracking();
 
-            IEnumerable<WhsOrderOut> items;
-            if (parameters.SearchBarcode == null)
-            {
-                query = query.Where(e => e.Отгрузить);
-                query = query.Search(parameters);
-                dto.TotalWeight = query.Sum(e => e.Вес).ToString();
-                dto.TotalCount = query.Count().ToString();
-                items = query.Take(_settings.OrdersPerPage).AsEnumerable();
-            }
-            else
-            {
-                string id = GuidConvert.FromNumStr(parameters.SearchBarcode);
-                items = query.Where(e => e.Документ_Id == id).AsEnumerable();
-                if (items.Count() == 0)
+                List<WhsOrderOut> items;
+                if (parameters.SearchBarcode == null)
                 {
-                    items = query.Where(e => e.Распоряжения.Any(o => o.Распоряжение_Id == id)).AsEnumerable();
-                    dto.MngrOrderName = items.FirstOrDefault()?.Распоряжения.FirstOrDefault(e => e.Распоряжение_Id == id).Распоряжение_Name;
+                    query = query.Where(e => e.Отгрузить).Search(parameters);
+                    items = query.Take(_settings.OrdersPerPage).ToList();
                 }
-                dto.TotalCount = query.Count().ToString();
-                dto.TotalWeight = query.Sum(e => e.Вес).ToString();
-                if (items.Count() == 1)
-                    dto.SingleId = items.FirstOrDefault()?.Документ_Id;
-            }
-            dto.Items = items
-                .GroupBy(e => e.ТипОчереди)
-                .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? QueType.Out.NoQue : e.Key, e => e.ToArray());
-            dto.Destinations = await GetDestinationsAsync(parameters);
+                else
+                {
+                    string id = GuidConvert.FromNumStr(parameters.SearchBarcode);
+                    items = query.Where(e => e.Документ_Id == id).ToList();
+                    if (items.Count() == 0)
+                    {
+                        items = query.Where(e => e.Распоряжения.Any(o => o.Распоряжение_Id == id)).ToList();
+                        dto.MngrOrderName = items.FirstOrDefault()?.Распоряжения.FirstOrDefault(e => e.Распоряжение_Id == id).Распоряжение_Name;
+                    }
+                    if (items.Count() == 1)
+                        dto.SingleId = items.FirstOrDefault()?.Документ_Id;
+                }
 
+                dto.TotalWeight = items.Sum(e => e.Вес).ToString();
+                dto.TotalCount = items.Count().ToString();
+                dto.Items = items
+                    .GroupBy(e => e.ТипОчереди)
+                    .ToDictionary(e => string.IsNullOrEmpty(e.Key) ? QueType.Out.NoQue : e.Key, e => e.ToArray());
+                dto.Destinations = GetDestinations(parameters);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"---> GetDtoByQueTypeAsync: Exception: {ex};");
+                return Problem(ex.Message);
+            }
+
+            stopwatch.Stop();
+            long duration = stopwatch.ElapsedMilliseconds;
+            if (duration > _settings.PerfTime * 1000)
+                _logger.LogWarning($"---> GetDtoByQueTypeAsync: Ok - duration: {duration}ms;");
             return dto;
         }
 
-        private async Task<Destination[][]> GetDestinationsAsync(WhsOrderParameters parameters)
+        private Destination[][] GetDestinations(WhsOrderParameters parameters)
         {
-            Destination[] destinationParents = await _context.WhsOrdersOut.AsNoTracking()
+            Destination[] destinationParents =  _context.WhsOrdersOut.AsNoTracking()
                 .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus && e.НаправлениеДоставкиРодитель_Id != Guid.Empty.ToString())
                 .Select(e => new Destination { Id = e.НаправлениеДоставкиРодитель_Id, Name = e.НаправлениеДоставкиРодитель_Name })
-                .Distinct().OrderBy(e => e.Name).ToArrayAsync();
-            Destination[] destinations = await _context.WhsOrdersOut.AsNoTracking()
+                .Distinct().OrderBy(e => e.Name).ToArray();
+            Destination[] destinations = _context.WhsOrdersOut.AsNoTracking()
                 .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus && e.НаправлениеДоставки_Id != Guid.Empty.ToString())
                 .Select(e => new Destination { Id = e.НаправлениеДоставки_Id, Name = e.НаправлениеДоставки_Name })
-                .Distinct().OrderBy(e => e.Name).ToArrayAsync();
+                .Distinct().OrderBy(e => e.Name).ToArray();
             Destination[][] result = { destinationParents, destinations };
             return result;
         }
@@ -160,6 +172,9 @@ namespace Whs.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<WhsOrderOut>> PostAsync(WhsOrderOut whsOrder)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             _context.WhsOrdersOut.Add(whsOrder);
             try
             {
@@ -177,10 +192,14 @@ namespace Whs.Server.Controllers
                 {
                     _logger.LogError($"---> PostAsync: DbUpdateException; {whsOrder?.Документ_Name};" +
                         $"{Environment.NewLine}{ex.Message}");
-                    throw;
+                    return Problem(ex.Message);
                 }
             }
-            _logger.LogInformation($"---> PostAsync: Ok; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
+
+            stopwatch.Stop();
+
+            _logger.LogInformation($"---> PostAsync: Ok - duration: {stopwatch.ElapsedMilliseconds}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
+
             return CreatedAtAction("Get", new { id = whsOrder.Документ_Id }, whsOrder);
         }
 
@@ -189,6 +208,10 @@ namespace Whs.Server.Controllers
         [HttpPut("{id}/{barcode}")]
         public async Task<IActionResult> PutAsync(string id, string barcode, WhsOrderOut whsOrder)
         {
+            _logger.LogInformation($"---> PutAsync: Start; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             if (id != whsOrder.Документ_Id)
             {
                 _logger.LogError($"---> PutAsync: BadRequest; {whsOrder?.Документ_Name}; id = {id};");
@@ -200,6 +223,7 @@ namespace Whs.Server.Controllers
                 await CreateProductsDataAsync(whsOrder);
 
                 whsOrder = await PutTo1cAsync(whsOrder);
+                
                 if (whsOrder == null)
                 {
                     _logger.LogError($"---> PutAsync: Problem 1C; id = {id};");
@@ -209,9 +233,21 @@ namespace Whs.Server.Controllers
 
             IQueryable<ProductOut> productsToRemove = _context.ProductsOut.Where(e => e.Документ_Id == whsOrder.Документ_Id);
             _context.ProductsOut.RemoveRange(productsToRemove);
+
             IQueryable<MngrOrderOut> mngrOrdersToRemove = _context.MngrOrdersOut.Where(e => e.Документ_Id == whsOrder.Документ_Id);
             _context.MngrOrdersOut.RemoveRange(mngrOrdersToRemove);
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"---> PutAsync: Exception (productsToRemove and mngrOrdersToRemove); {whsOrder?.Документ_Name}; id = {id};" +
+                        $"{Environment.NewLine}{ex.Message}");
+                return Problem(ex.Message);
+            }
+
 
             _context.Entry(whsOrder).State = EntityState.Modified;
 
@@ -234,17 +270,137 @@ namespace Whs.Server.Controllers
                 {
                     _logger.LogError($"---> PutAsync: DbUpdateConcurrencyException {whsOrder?.Документ_Name}; id = {id};" +
                         $"{Environment.NewLine}{ex.Message}");
-                    throw;
+                    return Problem(ex.Message);
                 }
             }
 
             await CreateWhsOrderDataAsync(barcode, whsOrder);
-            _logger.LogInformation($"---> PutAsync: Ok; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
 
             if (_isNotifySiren)
                 await NotifySirenAsync(id);
 
+            stopwatch.Stop();
+            long duration = stopwatch.ElapsedMilliseconds;
+
+            if (duration > _settings.PerfTime * 1000)
+                _logger.LogWarning($"---> PutAsync: Ok - duration>{_settings.PerfTime * 1000}ms: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
+            else
+                _logger.LogInformation($"---> PutAsync: Ok - duration: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
+
             return NoContent();
+        }
+
+        // GET: api/WhsOrdersOut/Shipment
+        [HttpGet("Shipment/{warehouseId}")]
+        public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetShipmentAsync(string warehouseId)
+        {
+            WhsOrderOut[] items = await _context.WhsOrdersOut.Include(e => e.Data).ThenInclude(e => e.ApplicationUser)
+                .Where(e => e.Проведен && e.Отгрузить && e.Статус == WhsOrderStatus.Out.ToShipment && e.Склад_Id == warehouseId && !e.ЭтоПеремещение)
+                .OrderBy(e => e.Data.Where(e => e.Статус == WhsOrderStatus.Out.ToShipment).OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime)
+                .Take(_settings.OrdersPerPage)
+                .AsNoTracking().ToArrayAsync();
+            return items;
+        }
+
+        // PUT: api/WhsOrdersOut/Shipment/5
+        [HttpPut("Shipment/{barcode}")]
+        public async Task<IActionResult> PutShipmentAsync(string barcode)
+        {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            string id = GuidConvert.FromNumStr(barcode);
+            WhsOrderOut whsOrder = await _context.WhsOrdersOut
+                .Include(e => e.Товары)
+                .Include(e => e.Распоряжения)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Документ_Id == id);
+
+            _logger.LogInformation($"---> PutAsync: Start; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
+
+            if (whsOrder == null || !(whsOrder.Статус == WhsOrderStatus.Out.ToCollect || whsOrder.Статус == WhsOrderStatus.Out.ToShipment))
+            {
+                _logger.LogError($"---> PutShipmentAsync: NotFound or Status not match; id = {id}");
+                return NotFound();
+            }
+
+            //whsOrder = await PutTo1cAsync(whsOrder);            
+
+            if (whsOrder.Статус == WhsOrderStatus.Out.ToShipment)
+            {
+                whsOrder = await PutTo1cAsync(whsOrder);
+
+                if (whsOrder == null)
+                {
+                    _logger.LogError($"---> PutShipmentAsync -> PutTo1cAsync: Problem 1C; id = {id}");
+                    return Problem(detail: "Problem 1C");
+                }
+            }
+
+            _context.WhsOrdersOut.Update(whsOrder);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                if (!Exists(id))
+                {
+                    _logger.LogError($"---> PutShipmentAsync: DbUpdateConcurrencyException NotFound; {whsOrder.Документ_Name}; id = {id};" +
+                        $"{Environment.NewLine}{ex.Message}");
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogError($"---> PutShipmentAsync: DbUpdateConcurrencyException; {whsOrder.Документ_Name}; id = {id};" +
+                        $"{Environment.NewLine}{ex.Message}");
+                    return Problem(ex.Message);
+                }
+            }
+
+            await CreateWhsOrderDataAsync(null, whsOrder);
+
+            stopwatch.Stop();
+            long duration = stopwatch.ElapsedMilliseconds;
+
+            if (duration > _settings.PerfTime * 1000)
+                _logger.LogWarning($"---> PutShipmentAsync: Ok - duration>{_settings.PerfTime * 1000}ms: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
+            else
+                _logger.LogInformation($"---> PutShipmentAsync: Ok - duration: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
+
+            return Ok($"{whsOrder.НомерОчереди}  {whsOrder.Документ_Name}");
+        }
+
+        private async Task<WhsOrderOut> PutTo1cAsync(WhsOrderOut whsOrder)
+        {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            try
+            {
+                string content = JsonSerializer.Serialize(whsOrder);
+                StringContent stringContent = new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json);
+                HttpResponseMessage response = await _clientHttpService.PutAsync($"РасходныйОрдерНаТовары/{whsOrder.Документ_Id}", stringContent);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    stopwatch.Stop();
+
+                    _logger.LogInformation($"---> PutTo1cAsync: Ok - duration: {stopwatch.ElapsedMilliseconds}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
+                    return JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
+                }
+                else
+                {
+                    _logger.LogError($"---> PutTo1cAsync: Response StatusCode = {response.StatusCode} ({response.ReasonPhrase}); {whsOrder.Документ_Name};" +
+                        $"{Environment.NewLine}Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
+                }
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"---> PutTo1cAsync: Exception; {whsOrder.Документ_Name};" +
+                    $"{Environment.NewLine}{exception.Message}");
+            }
+
+            return null;
         }
 
         private async Task CreateProductsDataAsync(WhsOrderOut whsOrder)
@@ -270,32 +426,6 @@ namespace Whs.Server.Controllers
             await _context.SaveChangesAsync();
         }
 
-        private async Task<WhsOrderOut> PutTo1cAsync(WhsOrderOut whsOrder)
-        {
-            try
-            {
-                string content = JsonSerializer.Serialize(whsOrder);
-                StringContent stringContent = new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json);
-                HttpResponseMessage response = await _clientHttpService.PutAsync($"РасходныйОрдерНаТовары/{whsOrder.Документ_Id}", stringContent);
-                string responseContent = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
-                {
-                    return JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
-                }
-                else
-                {
-                    _logger.LogError($"---> PutTo1cAsync: Response StatusCode = {response.StatusCode} ({response.ReasonPhrase}); {whsOrder.Документ_Name};" +
-                        $"{Environment.NewLine}Ошибка: {JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Ошибка}");
-                }
-            }
-            catch (Exception exception)
-            {
-                _logger.LogError($"---> PutTo1cAsync: Exception; {whsOrder.Документ_Name};" +
-                    $"{Environment.NewLine}{exception.Message}");
-            }
-            return null;
-        }
-
         private async Task NotifySirenAsync(string id)
         {
             try
@@ -303,20 +433,20 @@ namespace Whs.Server.Controllers
                 WhsOrderOut order = _context.WhsOrdersOut.Find(id);
                 if (order != null)
                 {
-                    _logger.LogInformation($"---> NotifySirenAsync: Order = {order.Номер} {order.Дата}; ТипОчереди = {order.ТипОчереди}; Статус = {order.Статус}; Отгрузить = {order.Отгрузить}; Проведен = {order.Проведен};");
+                    //_logger.LogInformation($"---> NotifySirenAsync: Order = {order.Номер} {order.Дата}; ТипОчереди = {order.ТипОчереди}; Статус = {order.Статус}; Отгрузить = {order.Отгрузить}; Проведен = {order.Проведен};");
                     if (order.Проведен && order.ТипОчереди == QueType.Out.LiveQue && order.Статус == WhsOrderStatus.Out.Prepared && order.Отгрузить)
                     {
-                        _logger.LogInformation($"---> NotifySirenAsync: Siren => Squeak; Склад = {order.Склад_Name};");
+                        //_logger.LogInformation($"---> NotifySirenAsync: Siren => Squeak; Склад = {order.Склад_Name};");
                         _ = await _bitrixClient.GetAsync($"?type=siren&params=0&sklad={order.Склад_Name}");
                     }
 
                     int ordersCount = _context.WhsOrdersOut
                         .Where(e => e.Склад_Name == order.Склад_Name && e.Проведен && e.ТипОчереди == QueType.Out.LiveQue && e.Статус == WhsOrderStatus.Out.Prepared && e.Отгрузить)
                         .Count();
-                    _logger.LogInformation($"---> NotifySirenAsync: ordersCount = {ordersCount};");
+                    //_logger.LogInformation($"---> NotifySirenAsync: ordersCount = {ordersCount};");
                     if (ordersCount == 0)
                     {
-                        _logger.LogInformation($"---> NotifySirenAsync: Lamp => SwitchOff; Склад = {order.Склад_Name};");
+                        //_logger.LogInformation($"---> NotifySirenAsync: Lamp => SwitchOff; Склад = {order.Склад_Name};");
                         _ = await _bitrixClient.GetAsync($"?type=lamp&params=1&sklad={order.Склад_Name}");
                     }
                 }
@@ -329,92 +459,5 @@ namespace Whs.Server.Controllers
         }
 
         private bool Exists(string id) => _context.WhsOrdersOut.Any(e => e.Документ_Id == id);
-
-        // GET: api/WhsOrdersOut/Shipment
-        [HttpGet("Shipment/{warehouseId}")]
-        public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetShipmentAsync(string warehouseId)
-        {
-            WhsOrderOut[] items = await _context.WhsOrdersOut.Include(e => e.Data).ThenInclude(e => e.ApplicationUser)
-                .Where(e => e.Проведен && e.Отгрузить && e.Статус == WhsOrderStatus.Out.ToShipment && e.Склад_Id == warehouseId && !e.ЭтоПеремещение)
-                .OrderBy(e => e.Data.Where(e => e.Статус == WhsOrderStatus.Out.ToShipment).OrderByDescending(d => d.DateTime).FirstOrDefault().DateTime)
-                .Take(_settings.OrdersPerPage)
-                .AsNoTracking().ToArrayAsync();
-            return items;
-        }
-
-        // PUT: api/WhsOrdersOut/Shipment/5
-        [HttpPut("Shipment/{barcode}")]
-        public async Task<IActionResult> PutShipmentAsync(string barcode)
-        {
-            string id = GuidConvert.FromNumStr(barcode);
-            WhsOrderOut whsOrder = await _context.WhsOrdersOut
-                .Include(e => e.Товары)
-                .Include(e => e.Распоряжения)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(e => e.Документ_Id == id);
-
-            if (whsOrder == null || !(whsOrder.Статус == WhsOrderStatus.Out.ToCollect || whsOrder.Статус == WhsOrderStatus.Out.ToShipment))
-            {
-                _logger.LogError($"---> PutShipmentAsync: NotFound or Status not match; id = {id}");
-                return NotFound();
-            }
-
-            whsOrder = await PutTo1cAsync(whsOrder);
-            if (whsOrder.Статус == WhsOrderStatus.Out.ToShipment)
-                whsOrder = await PutTo1cAsync(whsOrder);
-            if (whsOrder == null)
-            {
-                _logger.LogError($"---> PutShipmentAsync: Problem 1C; id = {id}");
-                return Problem(detail: "Problem 1C");
-            }
-            _context.WhsOrdersOut.Update(whsOrder);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                if (!Exists(id))
-                {
-                    _logger.LogError($"---> PutShipmentAsync: DbUpdateConcurrencyException NotFound; {whsOrder.Документ_Name}; id = {id};" +
-                        $"{Environment.NewLine}{ex.Message}");
-                    return NotFound();
-                }
-                else
-                {
-                    _logger.LogError($"---> PutShipmentAsync: DbUpdateConcurrencyException; {whsOrder.Документ_Name}; id = {id};" +
-                        $"{Environment.NewLine}{ex.Message}");
-                    throw;
-                }
-            }
-
-            await CreateWhsOrderDataAsync(null, whsOrder);
-            _logger.LogInformation($"---> PutShipmentAsync: Ok; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус};");
-            return Ok($"{whsOrder.НомерОчереди}  {whsOrder.Документ_Name}");
-        }
-
-        // GET: api/WhsOrdersOut/
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<WhsOrderOut>>> GetListAsync()
-        //{
-        //    return await _context.WhsOrdersOut
-        //        .Include(e => e.Товары)
-        //        .Include(e => e.Распоряжения)
-        //        .AsNoTracking()
-        //        .ToListAsync();
-        //}
-
-        // DELETE: api/WhsOrdersOut/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<WhsOrderOut>> DeleteAsync(string id)
-        {
-            WhsOrderOut item = await _context.WhsOrdersOut.FindAsync(id);
-            if (item == null)
-                return NotFound();
-            _context.WhsOrdersOut.Remove(item);
-            await _context.SaveChangesAsync();
-            return item;
-        }
     }
 }
