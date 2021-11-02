@@ -315,7 +315,7 @@ namespace Whs.Server.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Документ_Id == id);
 
-            _logger.LogInformation($"---> PutShipmentAsync: Start; {whsOrder?.Документ_Name};");
+            _logger.LogInformation($"---> PutShipmentAsync: Start; {whsOrder?.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
 
             if (whsOrder == null || !(whsOrder.Статус == WhsOrderStatus.Out.ToCollect || whsOrder.Статус == WhsOrderStatus.Out.ToShipment))
             {
@@ -377,10 +377,12 @@ namespace Whs.Server.Controllers
                 string responseContent = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
                 {
-                    stopwatch.Stop();
+                    WhsOrderOut result = JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
 
-                    _logger.LogInformation($"---> PutTo1cAsync: Ok - duration: {stopwatch.ElapsedMilliseconds}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
-                    return JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
+                    stopwatch.Stop();
+                    _logger.LogInformation($"---> PutTo1cAsync: Ok - duration: {stopwatch.ElapsedMilliseconds}ms; {result.Документ_Name}; Статус = {result.Статус}; ТипОчереди = {result?.ТипОчереди}; Проведен = {result?.Проведен};");
+                    
+                    return result;
                 }
                 else
                 {
