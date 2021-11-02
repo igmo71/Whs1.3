@@ -110,7 +110,7 @@ namespace Whs.Server.Controllers
 
         private Destination[][] GetDestinations(WhsOrderParameters parameters)
         {
-            Destination[] destinationParents =  _context.WhsOrdersOut.AsNoTracking()
+            Destination[] destinationParents = _context.WhsOrdersOut.AsNoTracking()
                 .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus && e.НаправлениеДоставкиРодитель_Id != Guid.Empty.ToString())
                 .Select(e => new Destination { Id = e.НаправлениеДоставкиРодитель_Id, Name = e.НаправлениеДоставкиРодитель_Name })
                 .Distinct().OrderBy(e => e.Name).ToArray();
@@ -223,7 +223,7 @@ namespace Whs.Server.Controllers
                 await CreateProductsDataAsync(whsOrder);
 
                 whsOrder = await PutTo1cAsync(whsOrder);
-                
+
                 if (whsOrder == null)
                 {
                     _logger.LogError($"---> PutAsync: Problem 1C; id = {id};");
@@ -323,17 +323,12 @@ namespace Whs.Server.Controllers
                 return NotFound();
             }
 
-            //whsOrder = await PutTo1cAsync(whsOrder);  
-            //if (whsOrder.Статус == WhsOrderStatus.Out.ToShipment)
-            //{
-                whsOrder = await PutTo1cAsync(whsOrder);
-
-                if (whsOrder == null)
-                {
-                    _logger.LogError($"---> PutShipmentAsync -> PutTo1cAsync: Problem 1C; id = {id}");
-                    return Problem(detail: "Problem 1C");
-                }
-            //}
+            whsOrder = await PutTo1cAsync(whsOrder);
+            if (whsOrder == null)
+            {
+                _logger.LogError($"---> PutShipmentAsync -> PutTo1cAsync: Problem 1C; id = {id}");
+                return Problem(detail: "Problem 1C");
+            }
 
             _context.WhsOrdersOut.Update(whsOrder);
 
