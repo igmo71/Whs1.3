@@ -323,10 +323,9 @@ namespace Whs.Server.Controllers
                 return NotFound();
             }
 
-            //whsOrder = await PutTo1cAsync(whsOrder);            
-
-            if (whsOrder.Статус == WhsOrderStatus.Out.ToShipment)
-            {
+            //whsOrder = await PutTo1cAsync(whsOrder);  
+            //if (whsOrder.Статус == WhsOrderStatus.Out.ToShipment)
+            //{
                 whsOrder = await PutTo1cAsync(whsOrder);
 
                 if (whsOrder == null)
@@ -334,7 +333,7 @@ namespace Whs.Server.Controllers
                     _logger.LogError($"---> PutShipmentAsync -> PutTo1cAsync: Problem 1C; id = {id}");
                     return Problem(detail: "Problem 1C");
                 }
-            }
+            //}
 
             _context.WhsOrdersOut.Update(whsOrder);
 
