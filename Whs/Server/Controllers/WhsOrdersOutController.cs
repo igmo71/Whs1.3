@@ -105,12 +105,13 @@ namespace Whs.Server.Controllers
             long duration = stopwatch.ElapsedMilliseconds;
             if (duration > _settings.PerfTime * 1000)
                 _logger.LogWarning($"---> GetDtoByQueTypeAsync: Ok - duration: {duration}ms;");
+
             return dto;
         }
 
         private Destination[][] GetDestinations(WhsOrderParameters parameters)
         {
-            Destination[] destinationParents =  _context.WhsOrdersOut.AsNoTracking()
+            Destination[] destinationParents = _context.WhsOrdersOut.AsNoTracking()
                 .Where(e => e.Проведен == true && e.Склад_Id == parameters.SearchWarehouseId && e.Статус == parameters.SearchStatus && e.НаправлениеДоставкиРодитель_Id != Guid.Empty.ToString())
                 .Select(e => new Destination { Id = e.НаправлениеДоставкиРодитель_Id, Name = e.НаправлениеДоставкиРодитель_Name })
                 .Distinct().OrderBy(e => e.Name).ToArray();
@@ -197,8 +198,11 @@ namespace Whs.Server.Controllers
             }
 
             stopwatch.Stop();
-
-            _logger.LogInformation($"---> PostAsync: Ok - duration: {stopwatch.ElapsedMilliseconds}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
+            long duration = stopwatch.ElapsedMilliseconds;
+            if (duration > _settings.PerfTime * 1000)
+                _logger.LogInformation($"---> PostAsync: Ok - duration: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
+            else
+                _logger.LogWarning($"---> PostAsync: Ok - duration: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
 
             return CreatedAtAction("Get", new { id = whsOrder.Документ_Id }, whsOrder);
         }
@@ -209,8 +213,8 @@ namespace Whs.Server.Controllers
         public async Task<IActionResult> PutAsync(string id, string barcode, WhsOrderOut whsOrder)
         {
             _logger.LogInformation($"---> PutAsync: Start; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
             if (id != whsOrder.Документ_Id)
             {
@@ -223,10 +227,9 @@ namespace Whs.Server.Controllers
                 await CreateProductsDataAsync(whsOrder);
 
                 whsOrder = await PutTo1cAsync(whsOrder);
-                
                 if (whsOrder == null)
                 {
-                    _logger.LogError($"---> PutAsync: Problem 1C; id = {id};");
+                    _logger.LogError($"---> PutAsync -> PutTo1cAsync: Problem 1C; id = {id};");
                     return Problem(detail: "Problem 1C");
                 }
             }
@@ -281,7 +284,6 @@ namespace Whs.Server.Controllers
 
             stopwatch.Stop();
             long duration = stopwatch.ElapsedMilliseconds;
-
             if (duration > _settings.PerfTime * 1000)
                 _logger.LogWarning($"---> PutAsync: Ok - duration>{_settings.PerfTime * 1000}ms: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
             else
@@ -309,13 +311,14 @@ namespace Whs.Server.Controllers
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             string id = GuidConvert.FromNumStr(barcode);
+
             WhsOrderOut whsOrder = await _context.WhsOrdersOut
                 .Include(e => e.Товары)
                 .Include(e => e.Распоряжения)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Документ_Id == id);
 
-            _logger.LogInformation($"---> PutShipmentAsync: Start; {whsOrder?.Документ_Name};");
+            _logger.LogInformation($"---> PutShipmentAsync: Start; {whsOrder?.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
 
             if (whsOrder == null || !(whsOrder.Статус == WhsOrderStatus.Out.ToCollect || whsOrder.Статус == WhsOrderStatus.Out.ToShipment))
             {
@@ -323,17 +326,13 @@ namespace Whs.Server.Controllers
                 return NotFound();
             }
 
-            //whsOrder = await PutTo1cAsync(whsOrder);            
-
+            whsOrder = await PutTo1cAsync(whsOrder);
             if (whsOrder.Статус == WhsOrderStatus.Out.ToShipment)
-            {
                 whsOrder = await PutTo1cAsync(whsOrder);
-
-                if (whsOrder == null)
-                {
-                    _logger.LogError($"---> PutShipmentAsync -> PutTo1cAsync: Problem 1C; id = {id}");
-                    return Problem(detail: "Problem 1C");
-                }
+            if (whsOrder == null)
+            {
+                _logger.LogError($"---> PutShipmentAsync -> PutTo1cAsync: Problem 1C; id = {id}");
+                return Problem(detail: "Problem 1C");
             }
 
             _context.WhsOrdersOut.Update(whsOrder);
@@ -362,7 +361,6 @@ namespace Whs.Server.Controllers
 
             stopwatch.Stop();
             long duration = stopwatch.ElapsedMilliseconds;
-
             if (duration > _settings.PerfTime * 1000)
                 _logger.LogWarning($"---> PutShipmentAsync: Ok - duration>{_settings.PerfTime * 1000}ms: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
             else
@@ -373,6 +371,7 @@ namespace Whs.Server.Controllers
 
         private async Task<WhsOrderOut> PutTo1cAsync(WhsOrderOut whsOrder)
         {
+            _logger.LogInformation($"---> PutTo1cAsync: Start; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             try
@@ -383,10 +382,16 @@ namespace Whs.Server.Controllers
                 string responseContent = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
                 {
-                    stopwatch.Stop();
+                    WhsOrderOut result = JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
 
-                    _logger.LogInformation($"---> PutTo1cAsync: Ok - duration: {stopwatch.ElapsedMilliseconds}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
-                    return JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
+                    stopwatch.Stop();
+                    long duration = stopwatch.ElapsedMilliseconds;
+                    if (duration > _settings.PerfTime * 1000)
+                        _logger.LogWarning($"---> PutTo1cAsync: Ok - duration>{_settings.PerfTime * 1000}ms: {duration}ms; {result.Документ_Name}; Статус = {result.Статус}; ТипОчереди = {result.ТипОчереди}; Проведен = {result.Проведен};");
+                    else
+                        _logger.LogInformation($"---> PutTo1cAsync: Ok - duration: {duration}ms; {result.Документ_Name}; Статус = {result.Статус}; ТипОчереди = {result.ТипОчереди}; Проведен = {result.Проведен};");
+                    
+                    return result;
                 }
                 else
                 {
