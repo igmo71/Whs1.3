@@ -324,6 +324,8 @@ namespace Whs.Server.Controllers
             }
 
             whsOrder = await PutTo1cAsync(whsOrder);
+            if (whsOrder.Статус == WhsOrderStatus.Out.ToShipment)
+                whsOrder = await PutTo1cAsync(whsOrder);
             if (whsOrder == null)
             {
                 _logger.LogError($"---> PutShipmentAsync -> PutTo1cAsync: Problem 1C; id = {id}");
