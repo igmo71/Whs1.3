@@ -383,7 +383,12 @@ namespace Whs.Server.Controllers
                     WhsOrderOut result = JsonSerializer.Deserialize<Response1cOut>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).Результат;
 
                     stopwatch.Stop();
-                    _logger.LogInformation($"---> PutTo1cAsync: Ok - duration: {stopwatch.ElapsedMilliseconds}ms; {result.Документ_Name}; Статус = {result.Статус}; ТипОчереди = {result?.ТипОчереди}; Проведен = {result?.Проведен};");
+                    long duration = stopwatch.ElapsedMilliseconds;
+
+                    if (duration > _settings.PerfTime * 1000)
+                        _logger.LogWarning($"---> PutTo1cAsync: Ok - duration>{_settings.PerfTime * 1000}ms: {duration}ms; {result.Документ_Name}; Статус = {result.Статус}; ТипОчереди = {result.ТипОчереди}; Проведен = {result.Проведен};");
+                    else
+                        _logger.LogInformation($"---> PutTo1cAsync: Ok - duration: {duration}ms; {result.Документ_Name}; Статус = {result.Статус}; ТипОчереди = {result.ТипОчереди}; Проведен = {result.Проведен};");
                     
                     return result;
                 }
