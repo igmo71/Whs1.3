@@ -226,7 +226,7 @@ namespace Whs.Server.Controllers
 
                 if (whsOrder == null)
                 {
-                    _logger.LogError($"---> PutAsync: Problem 1C; id = {id};");
+                    _logger.LogError($"---> PutAsync -> PutTo1cAsync: Problem 1C; id = {id};");
                     return Problem(detail: "Problem 1C");
                 }
             }
