@@ -200,9 +200,9 @@ namespace Whs.Server.Controllers
             stopwatch.Stop();
             long duration = stopwatch.ElapsedMilliseconds;
             if (duration > _settings.PerfTime * 1000)
-                _logger.LogInformation($"---> PostAsync: Ok - duration: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
+                _logger.LogWarning($"---> PostAsync: Ok - duration>{_settings.PerfTime * 1000}ms: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
             else
-                _logger.LogWarning($"---> PostAsync: Ok - duration: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
+                _logger.LogInformation($"---> PostAsync: Ok - duration: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
 
             return CreatedAtAction("Get", new { id = whsOrder.Документ_Id }, whsOrder);
         }
