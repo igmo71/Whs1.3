@@ -105,6 +105,7 @@ namespace Whs.Server.Controllers
             long duration = stopwatch.ElapsedMilliseconds;
             if (duration > _settings.PerfTime * 1000)
                 _logger.LogWarning($"---> GetDtoByQueTypeAsync: Ok - duration: {duration}ms;");
+
             return dto;
         }
 
@@ -197,8 +198,11 @@ namespace Whs.Server.Controllers
             }
 
             stopwatch.Stop();
-
-            _logger.LogInformation($"---> PostAsync: Ok - duration: {stopwatch.ElapsedMilliseconds}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
+            long duration = stopwatch.ElapsedMilliseconds;
+            if (duration > _settings.PerfTime * 1000)
+                _logger.LogInformation($"---> PostAsync: Ok - duration: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
+            else
+                _logger.LogWarning($"---> PostAsync: Ok - duration: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
 
             return CreatedAtAction("Get", new { id = whsOrder.Документ_Id }, whsOrder);
         }
@@ -280,7 +284,6 @@ namespace Whs.Server.Controllers
 
             stopwatch.Stop();
             long duration = stopwatch.ElapsedMilliseconds;
-
             if (duration > _settings.PerfTime * 1000)
                 _logger.LogWarning($"---> PutAsync: Ok - duration>{_settings.PerfTime * 1000}ms: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
             else
@@ -358,7 +361,6 @@ namespace Whs.Server.Controllers
 
             stopwatch.Stop();
             long duration = stopwatch.ElapsedMilliseconds;
-
             if (duration > _settings.PerfTime * 1000)
                 _logger.LogWarning($"---> PutShipmentAsync: Ok - duration>{_settings.PerfTime * 1000}ms: {duration}ms; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
             else
@@ -384,7 +386,6 @@ namespace Whs.Server.Controllers
 
                     stopwatch.Stop();
                     long duration = stopwatch.ElapsedMilliseconds;
-
                     if (duration > _settings.PerfTime * 1000)
                         _logger.LogWarning($"---> PutTo1cAsync: Ok - duration>{_settings.PerfTime * 1000}ms: {duration}ms; {result.Документ_Name}; Статус = {result.Статус}; ТипОчереди = {result.ТипОчереди}; Проведен = {result.Проведен};");
                     else
