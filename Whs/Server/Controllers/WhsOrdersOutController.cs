@@ -209,8 +209,8 @@ namespace Whs.Server.Controllers
         public async Task<IActionResult> PutAsync(string id, string barcode, WhsOrderOut whsOrder)
         {
             _logger.LogInformation($"---> PutAsync: Start; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder.ТипОчереди}; Проведен = {whsOrder.Проведен};");
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
             if (id != whsOrder.Документ_Id)
             {
@@ -223,7 +223,6 @@ namespace Whs.Server.Controllers
                 await CreateProductsDataAsync(whsOrder);
 
                 whsOrder = await PutTo1cAsync(whsOrder);
-
                 if (whsOrder == null)
                 {
                     _logger.LogError($"---> PutAsync -> PutTo1cAsync: Problem 1C; id = {id};");
@@ -309,6 +308,7 @@ namespace Whs.Server.Controllers
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             string id = GuidConvert.FromNumStr(barcode);
+
             WhsOrderOut whsOrder = await _context.WhsOrdersOut
                 .Include(e => e.Товары)
                 .Include(e => e.Распоряжения)
@@ -367,6 +367,7 @@ namespace Whs.Server.Controllers
 
         private async Task<WhsOrderOut> PutTo1cAsync(WhsOrderOut whsOrder)
         {
+            _logger.LogInformation($"---> PutTo1cAsync: Start; {whsOrder.Документ_Name}; Статус = {whsOrder.Статус}; ТипОчереди = {whsOrder?.ТипОчереди}; Проведен = {whsOrder?.Проведен};");
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             try
