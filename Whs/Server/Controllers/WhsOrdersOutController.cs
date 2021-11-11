@@ -56,7 +56,7 @@ namespace Whs.Server.Controllers
 
         // GET: api/WhsOrdersOut/DtoByQueType
         [HttpGet("DtoByQueType")]
-        public ActionResult<WhsOrdersDtoOut> GetDtoByQueTypeAsync([FromQuery] WhsOrderParameters parameters)
+        public ActionResult<WhsOrdersDtoOut> GetDtoByQueType([FromQuery] WhsOrderParameters parameters)
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
             WhsOrdersDtoOut dto = new WhsOrdersDtoOut();
@@ -72,16 +72,27 @@ namespace Whs.Server.Controllers
                 List<WhsOrderOut> items;
                 if (parameters.SearchBarcode == null)
                 {
-                    query = query.Where(e => e.Отгрузить).Search(parameters);
-                    items = query.Take(_settings.OrdersPerPage).ToList();
+                    items = query
+                        .Where(e => e.Отгрузить)
+                        .Search(parameters)
+                        .Take(_settings.OrdersPerPage)
+                        .ToList();
                 }
                 else
                 {
                     string id = GuidConvert.FromNumStr(parameters.SearchBarcode);
-                    items = query.Where(e => e.Документ_Id == id).ToList();
+                    
+                    items = query
+                        .Where(e => e.Документ_Id == id)
+                        .ToList();
+                    
                     if (items.Count() == 0)
                     {
-                        items = query.Where(e => e.Распоряжения.Any(o => o.Распоряжение_Id == id)).ToList();
+                        items = query
+                            .Where(e => e.Распоряжения
+                            .Any(o => o.Распоряжение_Id == id))
+                            .ToList();
+
                         dto.MngrOrderName = items.FirstOrDefault()?.Распоряжения.FirstOrDefault(e => e.Распоряжение_Id == id).Распоряжение_Name;
                     }
                     if (items.Count() == 1)
@@ -97,14 +108,14 @@ namespace Whs.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"---> GetDtoByQueTypeAsync: Exception: {ex};");
+                _logger.LogError($"---> GetDtoByQueType: Exception: {ex};");
                 return Problem(ex.Message);
             }
 
             stopwatch.Stop();
             long duration = stopwatch.ElapsedMilliseconds;
             if (duration > _settings.PerfTime * 1000)
-                _logger.LogWarning($"---> GetDtoByQueTypeAsync: Ok - duration: {duration}ms;");
+                _logger.LogWarning($"---> GetDtoByQueType: Ok - duration: {duration}ms;");
 
             return dto;
         }
